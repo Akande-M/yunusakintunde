@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BiographyRouteImport } from './routes/biography'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as GetInvolvedRouteImport } from './routes/get-involved'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as RecordAgendaRouteImport } from './routes/record-agenda'
 
@@ -30,6 +31,11 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GetInvolvedRoute = GetInvolvedRouteImport.update({
+  id: '/get-involved',
+  path: '/get-involved',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
   '/gallery': typeof GalleryRoute
+  '/get-involved': typeof GetInvolvedRoute
   '/news': typeof NewsRoute
   '/record-agenda': typeof RecordAgendaRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
   '/gallery': typeof GalleryRoute
+  '/get-involved': typeof GetInvolvedRoute
   '/news': typeof NewsRoute
   '/record-agenda': typeof RecordAgendaRoute
 }
@@ -60,21 +68,42 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
   '/gallery': typeof GalleryRoute
+  '/get-involved': typeof GetInvolvedRoute
   '/news': typeof NewsRoute
   '/record-agenda': typeof RecordAgendaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
+  fullPaths:
+    | '/'
+    | '/biography'
+    | '/gallery'
+    | '/get-involved'
+    | '/news'
+    | '/record-agenda'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
-  id: '__root__' | '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
+  to:
+    | '/'
+    | '/biography'
+    | '/gallery'
+    | '/get-involved'
+    | '/news'
+    | '/record-agenda'
+  id:
+    | '__root__'
+    | '/'
+    | '/biography'
+    | '/gallery'
+    | '/get-involved'
+    | '/news'
+    | '/record-agenda'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BiographyRoute: typeof BiographyRoute
   GalleryRoute: typeof GalleryRoute
+  GetInvolvedRoute: typeof GetInvolvedRoute
   NewsRoute: typeof NewsRoute
   RecordAgendaRoute: typeof RecordAgendaRoute
 }
@@ -102,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/get-involved': {
+      id: '/get-involved'
+      path: '/get-involved'
+      fullPath: '/get-involved'
+      preLoaderRoute: typeof GetInvolvedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news': {
       id: '/news'
       path: '/news'
@@ -123,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiographyRoute: BiographyRoute,
   GalleryRoute: GalleryRoute,
+  GetInvolvedRoute: GetInvolvedRoute,
   NewsRoute: NewsRoute,
   RecordAgendaRoute: RecordAgendaRoute,
 }
