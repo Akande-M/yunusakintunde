@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BiographyRouteImport } from './routes/biography'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as RecordAgendaRouteImport } from './routes/record-agenda'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BiographyRoute = BiographyRouteImport.update({
+  id: '/biography',
+  path: '/biography',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordAgendaRoute = RecordAgendaRouteImport.update({
+  id: '/record-agenda',
+  path: '/record-agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/biography': typeof BiographyRoute
+  '/gallery': typeof GalleryRoute
+  '/news': typeof NewsRoute
+  '/record-agenda': typeof RecordAgendaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/biography': typeof BiographyRoute
+  '/gallery': typeof GalleryRoute
+  '/news': typeof NewsRoute
+  '/record-agenda': typeof RecordAgendaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/biography': typeof BiographyRoute
+  '/gallery': typeof GalleryRoute
+  '/news': typeof NewsRoute
+  '/record-agenda': typeof RecordAgendaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
+  id: '__root__' | '/' | '/biography' | '/gallery' | '/news' | '/record-agenda'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BiographyRoute: typeof BiographyRoute
+  GalleryRoute: typeof GalleryRoute
+  NewsRoute: typeof NewsRoute
+  RecordAgendaRoute: typeof RecordAgendaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +88,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biography': {
+      id: '/biography'
+      path: '/biography'
+      fullPath: '/biography'
+      preLoaderRoute: typeof BiographyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/record-agenda': {
+      id: '/record-agenda'
+      path: '/record-agenda'
+      fullPath: '/record-agenda'
+      preLoaderRoute: typeof RecordAgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BiographyRoute: BiographyRoute,
+  GalleryRoute: GalleryRoute,
+  NewsRoute: NewsRoute,
+  RecordAgendaRoute: RecordAgendaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
