@@ -52,7 +52,7 @@ function Field({
   htmlFor,
 }: {
   label: string;
-  error?: string;
+  error?: string | undefined;
   children: React.ReactNode;
   htmlFor: string;
 }) {
