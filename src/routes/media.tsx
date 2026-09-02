@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GALLERY, GALLERY_FILTERS } from "@/lib/site-data";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
 
-export const Route = createFileRoute("/gallery")({
+export const Route = createFileRoute("/media")({
   head: () => ({
     meta: [
       { title: "Gallery — In office and on the 2027 campaign trail | Akintunde" },
