@@ -24,8 +24,8 @@ export function StatusStamp({
   className = "",
 }: {
   status: StatusKey;
-  label?: string;
-  className?: string;
+  label?: string | undefined;
+  className?: string | undefined;
 }) {
   const s = STYLES[status];
   return (
