@@ -112,6 +112,7 @@ function GetInvolved() {
       <section className="py-12 sm:py-14">
         <div className="wrap grid items-start gap-12 lg:grid-cols-2">
           <div>
+            <ApcBadge className="mb-6" />
             <ul>
               {CONTACT.map((c) => (
                 <li key={c.label} className="flex gap-3.5 border-b border-border py-4">
