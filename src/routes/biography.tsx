@@ -100,11 +100,12 @@ function Biography() {
               <SmartImage
                 src={img.portraitStanding}
                 alt="Senator Dr. Yunus Akintunde in a cap and polo shirt"
-                ratio="aspect-[4/3]"
+                ratio="aspect-[4/5] sm:aspect-[4/3]"
+                imgClassName="object-[center_12%]"
                 className="rounded-lg"
               />
               <figcaption className="mt-2 text-[13px] text-muted-foreground">
-                Dr. Yunus Akintunde, Oyo town.
+                Dr. Yunus Akintunde, Oyo Central.
               </figcaption>
             </figure>
           </div>

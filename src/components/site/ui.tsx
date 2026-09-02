@@ -90,6 +90,7 @@ export function SmartImage({
   ratio = "aspect-[16/10]",
   priority = false,
   overlay,
+  imgClassName = "",
 }: {
   src: string;
   alt: string;
@@ -97,6 +98,7 @@ export function SmartImage({
   ratio?: string;
   priority?: boolean;
   overlay?: ReactNode;
+  imgClassName?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
   return (
@@ -109,9 +111,9 @@ export function SmartImage({
         decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
-        className={`size-full object-cover transition-opacity duration-500 ${
+        className={`size-full object-cover transition-all duration-500 ${
           loaded ? "opacity-100" : "opacity-0"
-        }`}
+        } ${imgClassName}`}
       />
       {overlay}
     </div>
