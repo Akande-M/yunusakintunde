@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { img } from "@/lib/site-data";
 import { Eyebrow, SmartImage } from "@/components/site/ui";
+import { ApcBadge } from "@/components/site/ApcBadge";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/biography")({
   head: () => ({
@@ -43,6 +45,13 @@ const TIMELINE = [
   },
 ];
 
+const FACTS = [
+  { n: "1962", l: "Born in Pakoyi, Oyo town" },
+  { n: "Ph.D.", l: "Energy & Environmental Studies, UI" },
+  { n: "2002", l: "Founded Trade Codes Limited" },
+  { n: "APC", l: "All Progressives Congress candidate" },
+];
+
 function Biography() {
   return (
     <>
@@ -58,6 +67,7 @@ function Biography() {
               term in 2027. Businessman, academic and philanthropist from Onikanko Compound, Pakoyi,
               Oyo town.
             </p>
+            <ApcBadge className="mt-6" />
           </div>
           <SmartImage
             src={img.portraitVictory}
@@ -66,6 +76,17 @@ function Biography() {
             priority
             className="rounded-lg"
           />
+        </div>
+      </section>
+
+      <section className="border-b border-border py-10">
+        <div className="wrap hairline-grid grid sm:grid-cols-2 lg:grid-cols-4">
+          {FACTS.map((f, i) => (
+            <Reveal key={f.l} delay={i * 80} className="bg-card px-5 py-6">
+              <div className="font-serif text-[24px] font-semibold text-primary-deep">{f.n}</div>
+              <div className="mt-1 text-[13px] text-muted-foreground">{f.l}</div>
+            </Reveal>
+          ))}
         </div>
       </section>
 

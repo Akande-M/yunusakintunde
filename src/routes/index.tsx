@@ -214,10 +214,10 @@ function Home() {
                 <blockquote className="font-serif text-[17px] leading-relaxed text-foreground italic">
                   “{e.quote}”
                 </blockquote>
-                <figcaption className="mt-4">
+                <div className="mt-4">
                   <span className="block text-sm font-bold text-primary-deep">{e.name}</span>
                   <span className="block text-[13px] text-muted-foreground">{e.role}</span>
-                </figcaption>
+                </div>
               </Reveal>
             ))}
           </div>
