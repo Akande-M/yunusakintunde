@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BiographyRouteImport } from './routes/biography'
-import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as GetInvolvedRouteImport } from './routes/get-involved'
+import { Route as MediaRouteImport } from './routes/media'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecordAgendaRouteImport } from './routes/record-agenda'
@@ -28,14 +28,14 @@ const BiographyRoute = BiographyRouteImport.update({
   path: '/biography',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const GetInvolvedRoute = GetInvolvedRouteImport.update({
   id: '/get-involved',
   path: '/get-involved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MediaRoute = MediaRouteImport.update({
+  id: '/media',
+  path: '/media',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -62,8 +62,8 @@ const SitemapRoute = SitemapRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
-  '/gallery': typeof GalleryRoute
   '/get-involved': typeof GetInvolvedRoute
+  '/media': typeof MediaRoute
   '/news': typeof NewsRoute
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
@@ -72,8 +72,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
-  '/gallery': typeof GalleryRoute
   '/get-involved': typeof GetInvolvedRoute
+  '/media': typeof MediaRoute
   '/news': typeof NewsRoute
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
@@ -83,8 +83,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
-  '/gallery': typeof GalleryRoute
   '/get-involved': typeof GetInvolvedRoute
+  '/media': typeof MediaRoute
   '/news': typeof NewsRoute
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
@@ -95,8 +95,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/biography'
-    | '/gallery'
     | '/get-involved'
+    | '/media'
     | '/news'
     | '/privacy'
     | '/record-agenda'
@@ -105,8 +105,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/biography'
-    | '/gallery'
     | '/get-involved'
+    | '/media'
     | '/news'
     | '/privacy'
     | '/record-agenda'
@@ -115,8 +115,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/biography'
-    | '/gallery'
     | '/get-involved'
+    | '/media'
     | '/news'
     | '/privacy'
     | '/record-agenda'
@@ -126,8 +126,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BiographyRoute: typeof BiographyRoute
-  GalleryRoute: typeof GalleryRoute
   GetInvolvedRoute: typeof GetInvolvedRoute
+  MediaRoute: typeof MediaRoute
   NewsRoute: typeof NewsRoute
   PrivacyRoute: typeof PrivacyRoute
   RecordAgendaRoute: typeof RecordAgendaRoute
@@ -150,18 +150,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BiographyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/get-involved': {
       id: '/get-involved'
       path: '/get-involved'
       fullPath: '/get-involved'
       preLoaderRoute: typeof GetInvolvedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/media': {
+      id: '/media'
+      path: '/media'
+      fullPath: '/media'
+      preLoaderRoute: typeof MediaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -198,8 +198,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiographyRoute: BiographyRoute,
-  GalleryRoute: GalleryRoute,
   GetInvolvedRoute: GetInvolvedRoute,
+  MediaRoute: MediaRoute,
   NewsRoute: NewsRoute,
   PrivacyRoute: PrivacyRoute,
   RecordAgendaRoute: RecordAgendaRoute,
