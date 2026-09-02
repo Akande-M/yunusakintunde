@@ -153,15 +153,42 @@ function Home() {
       </section>
 
       <section className="bg-primary-deep py-15 text-on-dark">
-        <div className="wrap">
-          <blockquote className="max-w-[820px] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
-            “In 2023, Oyo Central gave me a mandate on the strength of a promise. Today, I am asking
-            for a second term on the strength of a record — and a plan to finish what we started
-            together.”
-          </blockquote>
-          <div className="mt-5 text-sm font-semibold text-on-dark-muted">
-            Dr. Yunus Akintunde — Senator, Oyo Central Senatorial District
-          </div>
+        <div className="wrap grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
+          <Reveal>
+            <blockquote className="max-w-[46ch] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
+              “In 2023, Oyo Central gave me a mandate on the strength of a promise. Today, I am
+              asking for a second term on the strength of a record — and a plan to finish what we
+              started together.”
+            </blockquote>
+            <div className="mt-5 text-sm font-semibold text-on-dark-muted">
+              Dr. Yunus Akintunde — Senator, Oyo Central Senatorial District
+            </div>
+            <ApcBadge variant="dark" className="mt-5" />
+          </Reveal>
+
+          <Reveal delay={120}>
+            <figure className="group relative overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
+              <div className="relative aspect-video">
+                <img
+                  src={img.portraitFist}
+                  alt="Placeholder still from the forthcoming Akintunde 2027 campaign film"
+                  loading="lazy"
+                  className="size-full object-cover object-[center_25%] opacity-40 transition-transform duration-700 group-hover:scale-105"
+                />
+                <span className="absolute inset-0 grid place-items-center">
+                  <span className="grid size-16 place-items-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
+                    <Play size={26} strokeWidth={2.4} className="ml-0.5" aria-hidden />
+                  </span>
+                </span>
+                <span className="absolute top-3 left-3 rounded-sm bg-primary-deep/85 px-2.5 py-1 text-[11.5px] font-bold text-on-dark">
+                  Placeholder — campaign film coming soon
+                </span>
+              </div>
+              <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
+                Headline campaign video: “Four years of delivery” — Akintunde 2027.
+              </figcaption>
+            </figure>
+          </Reveal>
         </div>
       </section>
 
