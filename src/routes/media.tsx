@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GALLERY, GALLERY_FILTERS } from "@/lib/site-data";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/media")({
   head: () => ({
@@ -43,13 +44,19 @@ function Media() {
             ))}
           </div>
           <ul className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-            {items.map((g) => (
-              <li key={g.caption} className="rise-in group relative">
+            {items.map((g, i) => (
+              <Reveal
+                key={g.caption}
+                delay={Math.min(i, 7) * 60}
+                as="li"
+                className="group relative"
+              >
                 <SmartImage
                   src={g.image}
                   alt={g.alt}
                   ratio="aspect-square"
                   className="rounded-sm"
+                  imgClassName="group-hover:scale-105"
                   overlay={
                     <>
                       <span className="absolute bottom-2 left-2 rounded-sm bg-primary-deep/85 px-2 py-1 text-[11px] font-bold text-primary-foreground">
@@ -74,7 +81,7 @@ function Media() {
                   }
                 />
                 <p className="mt-2 text-[13px] text-muted-foreground">{g.caption}</p>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
