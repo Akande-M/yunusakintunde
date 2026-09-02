@@ -8,7 +8,7 @@ export const Route = createFileRoute("/sitemap")({
       {
         name: "description",
         content:
-          "Every page on the Akintunde 2027 website: record and agenda, biography, news, gallery and get involved.",
+          "Every page on the Akintunde 2027 website: record and agenda, biography, news, media and get involved.",
       },
       { property: "og:title", content: "Sitemap — Akintunde 2027" },
       { property: "og:description", content: "All pages on the Akintunde 2027 website." },
@@ -26,7 +26,7 @@ const PAGES = [
   },
   { to: "/biography", label: "Biography", d: "Education, business and public-service timeline." },
   { to: "/news", label: "News", d: "Senate floor, constituency and campaign-trail updates." },
-  { to: "/gallery", label: "Gallery", d: "Photos and video from office and the campaign trail." },
+  { to: "/media", label: "Media", d: "Photos and video from office and the campaign trail." },
   { to: "/get-involved", label: "Get Involved", d: "Volunteer, sign up, or contact the office." },
   { to: "/privacy", label: "Privacy Policy", d: "How supporter data is handled." },
 ] as const;

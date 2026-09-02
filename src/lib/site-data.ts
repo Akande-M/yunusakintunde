@@ -30,6 +30,8 @@ export const SITE = {
   email: "office@yunusakintunde.com",
   phone: "+234 (0) 800 000 0000",
   office: "Oyo town, Oyo West LGA, Oyo State",
+  party: "All Progressives Congress (APC)",
+  partyShort: "APC",
   hours: "Mon–Fri, 9am–4pm",
 };
 
@@ -38,8 +40,7 @@ export const NAV = [
   { to: "/record-agenda", label: "Record & Agenda" },
   { to: "/biography", label: "Biography" },
   { to: "/news", label: "News" },
-  { to: "/gallery", label: "Gallery" },
-  { to: "/get-involved", label: "Get Involved" },
+  { to: "/media", label: "Media" },
 ] as const;
 
 export type StatusKey = "delivered" | "progress" | "upcoming";

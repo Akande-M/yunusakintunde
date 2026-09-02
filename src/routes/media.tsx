@@ -6,30 +6,30 @@ import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
 export const Route = createFileRoute("/media")({
   head: () => ({
     meta: [
-      { title: "Gallery — In office and on the 2027 campaign trail | Akintunde" },
+      { title: "Media — Photos & video from Oyo Central | Akintunde 2027" },
       {
         name: "description",
         content:
           "Photographs from the Senate chamber, delivered constituency projects, town halls and the 2027 campaign trail, plus an archived 2023 set.",
       },
-      { property: "og:title", content: "Gallery — Senator Dr. Yunus Akintunde" },
+      { property: "og:title", content: "Media — Senator Dr. Yunus Akintunde" },
       {
         property: "og:description",
         content: "Senate proceedings, delivered projects and the road to 2027 in pictures.",
       },
     ],
   }),
-  component: Gallery,
+  component: Media,
 });
 
-function Gallery() {
+function Media() {
   const [filter, setFilter] = useState<(typeof GALLERY_FILTERS)[number]>("All");
   const items = GALLERY.filter((g) => filter === "All" || g.category === filter);
 
   return (
     <>
       <PageHeader
-        eyebrow="Media gallery"
+        eyebrow="Photos & video"
         title="In office, on the campaign trail"
         lede="Senate proceedings, constituency visits, delivered projects, and the road to 2027 — plus an archived record of 2023."
       />

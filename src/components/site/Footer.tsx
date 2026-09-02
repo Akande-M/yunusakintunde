@@ -5,7 +5,7 @@ const explore = [
   { to: "/record-agenda", label: "Record & Agenda" },
   { to: "/biography", label: "Biography" },
   { to: "/news", label: "News" },
-  { to: "/gallery", label: "Gallery" },
+  { to: "/media", label: "Media" },
 ] as const;
 
 const socials = [
