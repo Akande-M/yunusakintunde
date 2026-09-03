@@ -3,7 +3,7 @@ import { ENDORSEMENTS, NEWS, img } from "@/lib/site-data";
 import { Play } from "lucide-react";
 import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
-import { CountUp } from "@/components/site/CountUp";
+
 import { ApcBadge } from "@/components/site/ApcBadge";
 
 export const Route = createFileRoute("/")({
@@ -108,7 +108,7 @@ function Home() {
                 <dt className="sr-only">{s.l}</dt>
                 <dd>
                   <div className="font-serif text-[30px] font-semibold text-primary-deep sm:text-[34px]">
-                    <CountUp value={s.n} />
+                    {s.n}
                   </div>
                   <div className="mt-1 text-[12.5px] text-muted-foreground">{s.l}</div>
                 </dd>
