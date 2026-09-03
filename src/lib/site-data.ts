@@ -24,7 +24,7 @@ export const img = {
 
 export const SITE = {
   name: "Senator Yunus Abiodun Akintunde, PhD",
-  shortName: "Sen. Yunus Akintunde, PhD",
+  shortName: "Sen. Yunus Akintunde",
   role: "Senator · Oyo Central",
   tagline:
     "Official website of Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District",
