@@ -102,12 +102,12 @@ function Home() {
               <Reveal
                 key={s.l}
                 delay={i * 80}
-                className="border-b border-border py-6 pr-4 sm:border-r sm:last:border-r-0"
+                className="border-b border-border px-3 py-6 text-center sm:border-r sm:last:border-r-0"
               >
                 <dt className="sr-only">{s.l}</dt>
                 <dd>
-                  <div className="font-serif text-[28px] font-semibold text-primary-deep sm:text-[30px]">
-                    {s.n}
+                  <div className="font-serif text-[30px] font-semibold text-primary-deep sm:text-[34px]">
+                    <CountUp value={s.n} />
                   </div>
                   <div className="mt-1 text-[12.5px] text-muted-foreground">{s.l}</div>
                 </dd>
