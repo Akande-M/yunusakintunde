@@ -1,5 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { SITE, img } from "@/lib/site-data";
+import senateSeal from "@/assets/senate-seal.png.asset.json";
+import oyoArms from "@/assets/oyo-arms.png.asset.json";
+import apcMark from "@/assets/apc-mark.png.asset.json";
+import thumbprint from "@/assets/thumbprint.png.asset.json";
+
+const emblems = [
+  { src: senateSeal.url, alt: "Seal of the Nigerian Senate" },
+  { src: oyoArms.url, alt: "Coat of arms of Oyo State" },
+  { src: apcMark.url, alt: "All Progressives Congress (APC) logo" },
+  { src: thumbprint.url, alt: "Ballot thumbprint" },
+];
 
 const explore = [
   { to: "/record-agenda", label: "Record & Agenda" },
