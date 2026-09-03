@@ -38,7 +38,7 @@ export function Footer() {
           {emblems.map((e) => (
             <li
               key={e.alt}
-              className="grid size-20 place-items-center rounded-sm bg-primary-foreground/95 p-2.5 transition-transform duration-300 hover:-translate-y-0.5 sm:size-24"
+              className="grid size-16 place-items-center rounded-sm bg-primary-foreground/95 p-2 transition-transform duration-300 hover:-translate-y-0.5 sm:size-24 sm:p-2.5"
             >
               <img
                 src={e.src}
