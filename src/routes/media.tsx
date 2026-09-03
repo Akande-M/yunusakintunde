@@ -13,7 +13,7 @@ export const Route = createFileRoute("/media")({
         content:
           "Photographs from the Senate chamber, delivered constituency projects, town halls and the 2027 campaign trail, plus an archived 2023 set.",
       },
-      { property: "og:title", content: "Media — Senator Dr. Yunus Akintunde" },
+      { property: "og:title", content: "Media — Senator Yunus Abiodun Akintunde, PhD" },
       {
         property: "og:description",
         content: "Senate proceedings, delivered projects and the road to 2027 in pictures.",

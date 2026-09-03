@@ -80,11 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Senator Dr. Yunus Akintunde — Oyo Central" },
+      { title: "Senator Yunus Abiodun Akintunde, PhD — Oyo Central" },
       {
         name: "description",
         content:
-          "Official website of Senator Dr. Yunus Akintunde, Oyo Central Senatorial District, seeking re-election in 2027.",
+          "Official website of Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District, seeking re-election in 2027.",
       },
       { name: "author", content: "Akintunde 2027" },
       { property: "og:type", content: "website" },

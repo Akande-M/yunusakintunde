@@ -14,7 +14,7 @@ export const Route = createFileRoute("/get-involved")({
       {
         name: "description",
         content:
-          "Volunteer, get updates, report a constituency issue or host a town hall. Reach the Oyo Central constituency office of Senator Dr. Yunus Akintunde.",
+          "Volunteer, get updates, report a constituency issue or host a town hall. Reach the Oyo Central constituency office of Senator Yunus Abiodun Akintunde, PhD.",
       },
       { property: "og:title", content: "Join the Akintunde 2027 campaign" },
       {

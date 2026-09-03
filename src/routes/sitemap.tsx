@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/site/ui";
 export const Route = createFileRoute("/sitemap")({
   head: () => ({
     meta: [
-      { title: "Sitemap — Senator Dr. Yunus Akintunde, Oyo Central" },
+      { title: "Sitemap — Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
       {
         name: "description",
         content:

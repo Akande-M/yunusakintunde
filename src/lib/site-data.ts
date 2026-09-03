@@ -23,10 +23,11 @@ export const img = {
 };
 
 export const SITE = {
-  name: "Dr. Yunus Akintunde",
+  name: "Senator Yunus Abiodun Akintunde, PhD",
+  shortName: "Sen. Yunus Akintunde, PhD",
   role: "Senator · Oyo Central",
   tagline:
-    "Official website of Senator Dr. Yunus Akintunde — Oyo Central Senatorial District",
+    "Official website of Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District",
   email: "office@yunusakintunde.com",
   phone: "+234 (0) 800 000 0000",
   office: "Oyo town, Oyo West LGA, Oyo State",
@@ -215,7 +216,7 @@ export const NEWS: NewsItem[] = [
     title: "Akintunde 2027 volunteer drive launches in Ogbomoso",
     summary: "First wave of ward coordinators announced ahead of the re-election push.",
     image: img.portraitFist,
-    alt: "Senator Dr. Yunus Akintunde raising his fist",
+    alt: "Senator Yunus Abiodun Akintunde, PhD raising his fist",
   },
   {
     date: "Aug 09, 2026",
@@ -239,7 +240,7 @@ export const NEWS: NewsItem[] = [
     title: "Press: “Akintunde pushes for Oyo Central ICT investment”",
     summary: "Coverage of the Senator's remarks on the floor of the National Assembly.",
     image: img.portraitWhite,
-    alt: "Portrait of Senator Dr. Yunus Akintunde in white agbada",
+    alt: "Portrait of Senator Yunus Abiodun Akintunde, PhD in white agbada",
   },
   {
     date: "Jun 05, 2026",

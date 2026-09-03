@@ -1,5 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { SITE, img } from "@/lib/site-data";
+import senateSeal from "@/assets/senate-seal.png.asset.json";
+import oyoArms from "@/assets/oyo-arms.png.asset.json";
+import apcOnly from "@/assets/apc-only.png.asset.json";
+import thumbprint from "@/assets/thumbprint.png.asset.json";
+
+const emblems = [
+  { src: senateSeal.url, alt: "Seal of the Nigerian Senate" },
+  { src: oyoArms.url, alt: "Coat of arms of Oyo State" },
+  { src: apcOnly.url, alt: "All Progressives Congress (APC) logo" },
+  { src: thumbprint.url, alt: "Ballot thumbprint" },
+];
 
 const explore = [
   { to: "/record-agenda", label: "Record & Agenda" },
@@ -18,7 +29,28 @@ const socials = [
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="bg-primary-deep pt-13 pb-6 text-on-dark-muted">
+    <footer className="bg-primary-deep pt-10 pb-6 text-on-dark-muted">
+      <div className="wrap mb-10 border-b border-on-dark-line pb-9">
+        <p className="mb-5 text-center text-[12.5px] font-semibold tracking-wide text-on-dark-muted">
+          Senator Yunus Abiodun Akintunde, PhD · Nigerian Senate · Oyo State · APC
+        </p>
+        <ul className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+          {emblems.map((e) => (
+            <li
+              key={e.alt}
+              className="grid size-16 place-items-center rounded-sm bg-primary-foreground/95 p-2 transition-transform duration-300 hover:-translate-y-0.5 sm:size-24 sm:p-2.5"
+            >
+              <img
+                src={e.src}
+                alt={e.alt}
+                loading="lazy"
+                className="max-h-full max-w-full object-contain"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="wrap grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="mb-3.5 flex items-center gap-3">
@@ -37,7 +69,7 @@ export function Footer() {
             </span>
           </div>
           <p className="max-w-[34ch] text-[13.5px]">
-            Official website of Senator Dr. Yunus Akintunde — seeking re-election for Oyo Central
+            Official website of Senator Yunus Abiodun Akintunde, PhD — seeking re-election for Oyo Central
             Senatorial District in 2027.
           </p>
         </div>
@@ -80,7 +112,7 @@ export function Footer() {
 
       <div className="wrap mt-10 flex flex-wrap justify-between gap-2.5 border-t border-on-dark-line pt-5 text-[12.5px] text-on-dark-dim">
         <span>
-          © {year} Dr. Yunus Akintunde · Oyo Central Senatorial District — All Rights Reserved
+          © {year} Senator Yunus Abiodun Akintunde, PhD · Oyo Central Senatorial District — All Rights Reserved
         </span>
         <span className="flex gap-3">
           <Link to="/privacy" className="hover:text-primary-foreground">
