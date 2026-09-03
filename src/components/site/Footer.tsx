@@ -29,7 +29,28 @@ const socials = [
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="bg-primary-deep pt-13 pb-6 text-on-dark-muted">
+    <footer className="bg-primary-deep pt-10 pb-6 text-on-dark-muted">
+      <div className="wrap mb-10 border-b border-on-dark-line pb-9">
+        <p className="mb-5 text-center text-[12.5px] font-semibold tracking-wide text-on-dark-muted">
+          Senator Yunus Abiodun Akintunde, PhD · Nigerian Senate · Oyo State · APC
+        </p>
+        <ul className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+          {emblems.map((e) => (
+            <li
+              key={e.alt}
+              className="grid size-20 place-items-center rounded-sm bg-primary-foreground/95 p-2.5 transition-transform duration-300 hover:-translate-y-0.5 sm:size-24"
+            >
+              <img
+                src={e.src}
+                alt={e.alt}
+                loading="lazy"
+                className="max-h-full max-w-full object-contain"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="wrap grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="mb-3.5 flex items-center gap-3">
