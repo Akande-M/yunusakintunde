@@ -8,13 +8,13 @@ import { ApcBadge } from "@/components/site/ApcBadge";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Senator Dr. Yunus Akintunde — Oyo Central | Re-Election 2027" },
+      { title: "Senator Yunus Abiodun Akintunde, PhD — Oyo Central | Re-Election 2027" },
       {
         name: "description",
         content:
           "Four years of delivery in Oyo Central: 38 projects, 6 bills, 9 of 9 promises kept. The record and the plan for a second term in 2027.",
       },
-      { property: "og:title", content: "Dr. Yunus Akintunde — Senator, Oyo Central" },
+      { property: "og:title", content: "Senator Yunus Abiodun Akintunde, PhD — Senator, Oyo Central" },
       {
         property: "og:description",
         content:
@@ -62,13 +62,13 @@ function Home() {
                 Four years of delivery. Now, I&apos;m asking Oyo Central to let us finish the job.
               </h1>
               <p className="mt-4 max-w-[62ch] text-[17px] text-muted-foreground sm:text-lg">
-                Dr. Yunus Abiodun Akintunde is the sitting Senator for Oyo Central Senatorial
+                Senator Yunus Abiodun Akintunde, PhD, is the sitting Senator for Oyo Central Senatorial
                 District — asking for a second term on the strength of 38 delivered projects, 6
                 sponsored bills, and a promise-tracker that shows exactly what has been kept.
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
                 <Link to="/get-involved" className={btn.gold}>
-                  Stand With Dr. Yunus — 2027
+                  Stand With Senator Yunus — 2027
                 </Link>
                 <Link to="/record-agenda" className={btn.outline}>
                   See My Full Record
@@ -80,7 +80,7 @@ function Home() {
             <div className="relative rise-in sm:mb-8">
               <SmartImage
                 src={img.portraitWhite}
-                alt="Senator Dr. Yunus Akintunde, Oyo Central Senatorial District"
+                alt="Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District"
                 ratio="aspect-[4/5]"
                 priority
                 className="rounded-lg"
@@ -169,7 +169,7 @@ function Home() {
               started together.”
             </blockquote>
             <div className="mt-5 text-sm font-semibold text-on-dark-muted">
-              Dr. Yunus Akintunde — Senator, Oyo Central Senatorial District
+              Senator Yunus Abiodun Akintunde, PhD — Senator, Oyo Central Senatorial District
             </div>
             <ApcBadge variant="dark" className="mt-5" />
           </Reveal>
@@ -233,7 +233,7 @@ function Home() {
             Volunteer your time, join a ward team, or simply stay in the loop as we head into 2027.
           </p>
           <Link to="/get-involved" className={`${btn.gold} px-7 text-[15px]`}>
-            Stand With Dr. Yunus
+            Stand With Senator Yunus
           </Link>
         </div>
       </section>

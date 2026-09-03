@@ -7,13 +7,13 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/biography")({
   head: () => ({
     meta: [
-      { title: "Biography — Senator Dr. Yunus Abiodun Akintunde, Oyo Central" },
+      { title: "Biography — Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
       {
         name: "description",
         content:
-          "From Pakoyi, Oyo town to the 10th National Assembly: the education, business and public-service record of Senator Dr. Yunus Akintunde.",
+          "From Pakoyi, Oyo town to the 10th National Assembly: the education, business and public-service record of Senator Yunus Abiodun Akintunde, PhD.",
       },
-      { property: "og:title", content: "Biography — Senator Dr. Yunus Abiodun Akintunde" },
+      { property: "og:title", content: "Biography — Senator Yunus Abiodun Akintunde, PhD" },
       {
         property: "og:description",
         content:
@@ -60,7 +60,7 @@ function Biography() {
           <div className="rise-in">
             <Eyebrow>Biography</Eyebrow>
             <h1 className="text-[28px] leading-tight font-semibold sm:text-[34px]">
-              Senator Dr. Yunus Abiodun Akintunde
+              Senator Yunus Abiodun Akintunde, PhD
             </h1>
             <p className="mt-3.5 max-w-[62ch] text-[17px] text-muted-foreground">
               Sitting Senator, Oyo Central Senatorial District, since 2023 — now seeking a second
@@ -71,7 +71,7 @@ function Biography() {
           </div>
           <SmartImage
             src={img.portraitVictory}
-            alt="Senator Dr. Yunus Akintunde greeting supporters"
+            alt="Senator Yunus Abiodun Akintunde, PhD greeting supporters"
             ratio="aspect-[4/3]"
             priority
             className="rounded-lg"
@@ -120,13 +120,13 @@ function Biography() {
             <figure className="mt-8">
               <SmartImage
                 src={img.portraitStanding}
-                alt="Senator Dr. Yunus Akintunde in a cap and polo shirt"
+                alt="Senator Yunus Abiodun Akintunde, PhD in a cap and polo shirt"
                 ratio="aspect-[4/5] sm:aspect-[4/3]"
                 imgClassName="object-[center_12%]"
                 className="rounded-lg"
               />
               <figcaption className="mt-2 text-[13px] text-muted-foreground">
-                Dr. Yunus Akintunde, Oyo Central.
+                Senator Yunus Abiodun Akintunde, PhD, Oyo Central.
               </figcaption>
             </figure>
           </div>

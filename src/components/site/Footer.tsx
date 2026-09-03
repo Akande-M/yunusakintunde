@@ -37,7 +37,7 @@ export function Footer() {
             </span>
           </div>
           <p className="max-w-[34ch] text-[13.5px]">
-            Official website of Senator Dr. Yunus Akintunde — seeking re-election for Oyo Central
+            Official website of Senator Yunus Abiodun Akintunde, PhD — seeking re-election for Oyo Central
             Senatorial District in 2027.
           </p>
         </div>
@@ -80,7 +80,7 @@ export function Footer() {
 
       <div className="wrap mt-10 flex flex-wrap justify-between gap-2.5 border-t border-on-dark-line pt-5 text-[12.5px] text-on-dark-dim">
         <span>
-          © {year} Dr. Yunus Akintunde · Oyo Central Senatorial District — All Rights Reserved
+          © {year} Senator Yunus Abiodun Akintunde, PhD · Oyo Central Senatorial District — All Rights Reserved
         </span>
         <span className="flex gap-3">
           <Link to="/privacy" className="hover:text-primary-foreground">
