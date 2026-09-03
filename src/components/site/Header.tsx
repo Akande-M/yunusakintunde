@@ -25,7 +25,7 @@ export function Header() {
           </span>
           <span className="min-w-0">
             <span className="block truncate font-serif text-[17px] leading-tight font-semibold text-primary-deep">
-              {SITE.name}
+              {SITE.shortName}
             </span>
             <span className="hidden text-xs text-muted-foreground sm:block">{SITE.role}</span>
           </span>
@@ -46,7 +46,7 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <ApcBadge label="APC" size="sm" className="hidden xl:inline-flex" />
+          <ApcBadge label="APC Candidate" size="sm" className="hidden lg:inline-flex" />
           <Link to="/get-involved" className={`${btn.gold} hidden sm:inline-flex`}>
             Get Involved
           </Link>

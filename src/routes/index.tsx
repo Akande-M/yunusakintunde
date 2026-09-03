@@ -75,7 +75,7 @@ function Home() {
                   See My Full Record
                 </Link>
               </div>
-              <ApcBadge size="md" className="mt-6" />
+              <ApcBadge size="lg" className="mt-6" />
             </div>
 
             <div className="relative rise-in sm:mb-8">
