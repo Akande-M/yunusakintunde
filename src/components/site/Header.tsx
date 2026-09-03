@@ -46,10 +46,14 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <ApcBadge label="APC Candidate" size="sm" className="hidden lg:inline-flex" />
-          <Link to="/get-involved" className={`${btn.gold} hidden sm:inline-flex`}>
-            Get Involved
-          </Link>
+          <span className="hidden lg:block">
+            <ApcBadge label="APC Candidate" size="sm" />
+          </span>
+          <span className="hidden sm:block">
+            <Link to="/get-involved" className={btn.gold}>
+              Get Involved
+            </Link>
+          </span>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
