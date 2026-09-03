@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
         content:
           "Four years of delivery in Oyo Central: 38 projects, 6 bills, 9 of 9 promises kept. The record and the plan for a second term in 2027.",
       },
-      { property: "og:title", content: "Senator Yunus Abiodun Akintunde, PhD — Senator, Oyo Central" },
+      { property: "og:title", content: "Senator Yunus Abiodun Akintunde, PhD — Oyo Central" },
       {
         property: "og:description",
         content:
@@ -169,7 +169,7 @@ function Home() {
               started together.”
             </blockquote>
             <div className="mt-5 text-sm font-semibold text-on-dark-muted">
-              Senator Yunus Abiodun Akintunde, PhD — Senator, Oyo Central Senatorial District
+              Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
             </div>
             <ApcBadge variant="dark" className="mt-5" />
           </Reveal>
