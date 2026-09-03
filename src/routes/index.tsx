@@ -3,6 +3,7 @@ import { ENDORSEMENTS, NEWS, img } from "@/lib/site-data";
 import { Play } from "lucide-react";
 import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
+import { CountUp } from "@/components/site/CountUp";
 import { ApcBadge } from "@/components/site/ApcBadge";
 
 export const Route = createFileRoute("/")({
