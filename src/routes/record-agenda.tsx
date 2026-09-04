@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   AGENDA_2027,
+  img,
   PROJECTS,
   PROJECT_REGIONS,
   PROMISES_KEPT,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/site-data";
 import { StatusStamp } from "@/components/site/StatusStamp";
 import { Chip, PageHeader, SectionHead, SmartImage } from "@/components/site/ui";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/record-agenda")({
   head: () => ({
@@ -73,6 +75,46 @@ function RecordAgenda() {
 
       <section className="py-12 sm:py-14">
         <div className="wrap">
+          <Reveal className="mb-10 grid items-center gap-8 lg:grid-cols-[.9fr_1.1fr]">
+            <figure className="overflow-hidden rounded-lg border border-border bg-card">
+              <SmartImage
+                src={img.portraitWhite}
+                alt="Senator Yunus Abiodun Akintunde, PhD, in Oyo Central Senatorial District"
+                ratio="aspect-[4/5]"
+                imgClassName="object-[center_15%]"
+                priority
+              />
+              <figcaption className="border-t border-border px-4 py-3 text-[13px] text-muted-foreground">
+                Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
+              </figcaption>
+            </figure>
+            <div>
+              <p className="max-w-[62ch] text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
+                In 2023, Oyo Central was asked for a mandate on the strength of a promise. Today,
+                the record is measured in 38 delivered projects, 6 sponsored bills and 9 of 9
+                commitments kept — with a clear plan to finish the job in a second term.
+              </p>
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {[
+                  { n: "38", l: "Projects" },
+                  { n: "6", l: "Bills" },
+                  { n: "9/9", l: "Promises kept" },
+                  { n: "12", l: "LGAs reached" },
+                ].map((s) => (
+                  <div
+                    key={s.l}
+                    className="border border-border bg-card px-3 py-4 text-center"
+                  >
+                    <div className="font-serif text-[22px] font-semibold text-primary-deep">
+                      {s.n}
+                    </div>
+                    <div className="mt-0.5 text-[11.5px] text-muted-foreground">{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
           <div
             role="tablist"
             aria-label="Record and agenda views"

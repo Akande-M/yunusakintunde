@@ -69,7 +69,7 @@ function Home() {
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
                 <Link to="/get-involved" className={btn.gold}>
-                  Stand With Senator Yunus — 2027
+                  Stand With Senator Akintunde — 2027
                 </Link>
                 <Link to="/record-agenda" className={btn.outline}>
                   See My Full Record
@@ -234,7 +234,7 @@ function Home() {
             Volunteer your time, join a ward team, or simply stay in the loop as we head into 2027.
           </p>
           <Link to="/get-involved" className={`${btn.gold} px-7 text-[15px]`}>
-            Stand With Senator Yunus
+            Stand With Senator Akintunde
           </Link>
         </div>
       </section>
