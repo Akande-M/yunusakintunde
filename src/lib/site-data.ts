@@ -8,6 +8,7 @@ import townhall from "@/assets/townhall.jpg.asset.json";
 import skills from "@/assets/skills.jpg.asset.json";
 import medical from "@/assets/medical.jpg.asset.json";
 import senate from "@/assets/senate.jpg.asset.json";
+import roadFlagoff from "@/assets/akintunde-tinubu-road-flagoff.jpg.asset.json";
 
 export const img = {
   portraitVictory: portrait1.url,
@@ -20,6 +21,7 @@ export const img = {
   skills: skills.url,
   medical: medical.url,
   senate: senate.url,
+  roadFlagoff: roadFlagoff.url,
 };
 
 export const SITE = {
@@ -201,6 +203,15 @@ export type NewsItem = {
 };
 
 export const NEWS: NewsItem[] = [
+  {
+    date: "Sep 03, 2026",
+    category: "Constituency",
+    title: "Sen Yunus Akintunde commends Tinubu at Ibadan–Ijebu-Ode road flag-off",
+    summary:
+      "Akintunde Commends Tinubu as Ibadan–Ijebu-Ode Road Reconstruction Begins, Pledges Greater Support for Tinubu in 2027.",
+    image: img.roadFlagoff,
+    alt: "Senator Yunus Akintunde addressing the press at the Ibadan–Ijebu-Ode road reconstruction flag-off",
+  },
   {
     date: "Aug 24, 2026",
     category: "Constituency",
