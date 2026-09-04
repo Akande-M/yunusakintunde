@@ -200,10 +200,13 @@ export type NewsItem = {
   summary: string;
   image: string;
   alt: string;
+  /** When set, the card links to /news/$slug with the full article. */
+  slug?: string;
 };
 
 export const NEWS: NewsItem[] = [
   {
+    slug: "ibadan-ijebu-ode-road-flagoff",
     date: "Sep 03, 2026",
     category: "Constituency",
     title: "Sen Yunus Akintunde commends Tinubu at Ibadan–Ijebu-Ode road flag-off",

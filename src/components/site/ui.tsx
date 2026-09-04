@@ -135,6 +135,7 @@ export function NewsCard({
   summary,
   image,
   alt,
+  slug,
 }: {
   date: string;
   category?: string;
@@ -142,6 +143,7 @@ export function NewsCard({
   summary: string;
   image: string;
   alt: string;
+  slug?: string;
 }) {
   return (
     <article className="group flex flex-col bg-card transition-colors hover:bg-primary-tint/40">
@@ -153,12 +155,19 @@ export function NewsCard({
         </span>
         <h3 className="text-[18px] leading-snug font-semibold">{title}</h3>
         <p className="text-sm text-muted-foreground">{summary}</p>
-        <Link
-          to="/news"
-          className="mt-auto pt-2 text-[13px] font-bold text-primary underline decoration-transparent underline-offset-4 transition group-hover:decoration-current"
-        >
-          Read update
-        </Link>
+        {slug ? (
+          <Link
+            to="/news/$slug"
+            params={{ slug }}
+            className="mt-auto pt-2 text-[13px] font-bold text-primary underline decoration-transparent underline-offset-4 transition group-hover:decoration-current"
+          >
+            Read update
+          </Link>
+        ) : (
+          <span className="mt-auto pt-2 text-[13px] font-bold text-muted-foreground">
+            Full story coming soon
+          </span>
+        )}
       </div>
     </article>
   );
