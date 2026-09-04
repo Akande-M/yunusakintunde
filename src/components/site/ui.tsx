@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const BASE =
   "inline-flex items-center justify-center gap-2 rounded-sm text-sm font-bold transition-colors min-h-11 px-5 py-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
@@ -101,10 +101,18 @@ export function SmartImage({
   imgClassName?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // Images already decoded before hydration never fire onLoad.
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, [src]);
+
   return (
     <div className={`relative overflow-hidden bg-paper-2 ${ratio} ${className}`}>
       {!loaded && <div className="skeleton-shimmer absolute inset-0" aria-hidden />}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
