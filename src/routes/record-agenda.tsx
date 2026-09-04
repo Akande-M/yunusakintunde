@@ -122,7 +122,7 @@ function RecordAgenda() {
           >
             {(
               [
-                ["kept", "Promises Kept (2023–2026)"],
+                ["kept", "Promises Kept (2023–2027)"],
                 ["next", "2027 Agenda"],
               ] as const
             ).map(([key, label]) => (

@@ -22,7 +22,7 @@ const PAGES = [
   {
     to: "/record-agenda",
     label: "Record & Agenda",
-    d: "Promises kept 2023–2026, the 2027 agenda, and the evidence base.",
+    d: "Promises kept 2023–2027, the 2027 agenda, and the evidence base.",
   },
   { to: "/biography", label: "Biography", d: "Education, business and public-service timeline." },
   { to: "/news", label: "News", d: "Senate floor, constituency and campaign-trail updates." },
