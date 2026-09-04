@@ -8,6 +8,7 @@ import townhall from "@/assets/townhall.jpg.asset.json";
 import skills from "@/assets/skills.jpg.asset.json";
 import medical from "@/assets/medical.jpg.asset.json";
 import senate from "@/assets/senate.jpg.asset.json";
+import roadFlagoff from "@/assets/akintunde-tinubu-road-flagoff.jpg.asset.json";
 
 export const img = {
   portraitVictory: portrait1.url,
@@ -20,6 +21,7 @@ export const img = {
   skills: skills.url,
   medical: medical.url,
   senate: senate.url,
+  roadFlagoff: roadFlagoff.url,
 };
 
 export const SITE = {
