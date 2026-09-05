@@ -17,6 +17,8 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecordAgendaRouteImport } from './routes/record-agenda'
 import { Route as SitemapRouteImport } from './routes/sitemap'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,26 +60,39 @@ const SitemapRoute = SitemapRouteImport.update({
   path: '/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NewsRoute,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
   '/get-involved': typeof GetInvolvedRoute
   '/media': typeof MediaRoute
-  '/news': typeof NewsRoute
+  '/news': typeof NewsRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/news/': typeof NewsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biography': typeof BiographyRoute
   '/get-involved': typeof GetInvolvedRoute
   '/media': typeof MediaRoute
-  '/news': typeof NewsRoute
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/news': typeof NewsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +100,12 @@ export interface FileRoutesById {
   '/biography': typeof BiographyRoute
   '/get-involved': typeof GetInvolvedRoute
   '/media': typeof MediaRoute
-  '/news': typeof NewsRoute
+  '/news': typeof NewsRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/news/': typeof NewsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,16 +118,19 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/news/$slug'
+    | '/news/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/biography'
     | '/get-involved'
     | '/media'
-    | '/news'
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/news/$slug'
+    | '/news'
   id:
     | '__root__'
     | '/'
@@ -121,6 +141,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/news/$slug'
+    | '/news/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,7 +150,7 @@ export interface RootRouteChildren {
   BiographyRoute: typeof BiographyRoute
   GetInvolvedRoute: typeof GetInvolvedRoute
   MediaRoute: typeof MediaRoute
-  NewsRoute: typeof NewsRoute
+  NewsRoute: typeof NewsRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   RecordAgendaRoute: typeof RecordAgendaRoute
   SitemapRoute: typeof SitemapRoute
@@ -192,15 +214,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news/': {
+      id: '/news/'
+      path: '/'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
   }
 }
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+  NewsIndexRoute: typeof NewsIndexRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+  NewsIndexRoute: NewsIndexRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiographyRoute: BiographyRoute,
   GetInvolvedRoute: GetInvolvedRoute,
   MediaRoute: MediaRoute,
-  NewsRoute: NewsRoute,
+  NewsRoute: NewsRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   RecordAgendaRoute: RecordAgendaRoute,
   SitemapRoute: SitemapRoute,
