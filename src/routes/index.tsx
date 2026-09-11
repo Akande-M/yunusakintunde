@@ -166,8 +166,8 @@ function Home() {
           <Reveal>
             <blockquote className="max-w-[46ch] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
               “In 2023, Oyo Central gave me a mandate on the strength of a promise. Today, I am
-              asking for a second term on the strength of a record — and a plan to finish what we
-              started together.”
+              asking for a second term on the strength of a record — and a plan to continue the
+              good work we started together.”
             </blockquote>
             <div className="mt-5 text-sm font-semibold text-on-dark-muted">
               Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
