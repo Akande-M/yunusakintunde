@@ -92,7 +92,7 @@ function RecordAgenda() {
               <p className="max-w-[62ch] text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
                 In 2023, Oyo Central was asked for a mandate on the strength of a promise. Today,
                 the record is measured in 38 delivered projects, 6 sponsored bills and 9 of 9
-                commitments kept — with a clear plan to finish the job in a second term.
+                commitments kept — with a clear plan to continue the good work in a second term.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {[

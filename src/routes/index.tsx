@@ -60,7 +60,7 @@ function Home() {
             <div className="rise-in">
               <Eyebrow>Oyo Central · Seeking re-election, 2027</Eyebrow>
               <h1 className="text-[30px] leading-[1.08] font-semibold sm:text-[40px] lg:text-[48px]">
-                Four years of delivery. Now, I&apos;m asking Oyo Central to let us finish the job.
+                Four years of delivery. Now, I&apos;m asking Oyo Central to let us continue the good work.
               </h1>
               <p className="mt-4 max-w-[62ch] text-[17px] text-muted-foreground sm:text-lg">
                 Senator Yunus Abiodun Akintunde, PhD, is the sitting Senator for Oyo Central Senatorial
@@ -228,7 +228,7 @@ function Home() {
       <section className="border-t border-border bg-paper-2 py-16">
         <div className="wrap text-center">
           <h2 className="text-[24px] font-semibold sm:text-[28px]">
-            I can&apos;t finish this work without you.
+            I can&apos;t continue this good work without you.
           </h2>
           <p className="mx-auto mt-3 mb-7 max-w-[58ch] text-[17px] text-muted-foreground">
             Volunteer your time, join a ward team, or simply stay in the loop as we head into 2027.
