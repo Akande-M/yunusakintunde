@@ -1,25 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  AGENDA_2027,
-  img,
-  PROJECTS,
-  PROJECT_REGIONS,
-  PROMISES_KEPT,
-  type Commitment,
-} from "@/lib/site-data";
+import { img, PROJECT_REGIONS, type Commitment } from "@/lib/site-data";
+import { getRecord } from "@/lib/cms";
 import { StatusStamp } from "@/components/site/StatusStamp";
 import { Chip, PageHeader, SectionHead, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/record-agenda")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Record & Agenda — Promises Kept, Plans Ahead | Akintunde 2027" },
       {
         name: "description",
-        content:
-          "Every 2023 commitment tracked with a status stamp — 9 of 9 delivered — plus the five-point 2027 agenda for Oyo Central.",
+        content: `Every 2023 commitment tracked with a status stamp — ${
+          loaderData ? loaderData.kept.filter((p) => p.status === "delivered").length : 9
+        } of ${loaderData?.kept.length ?? 9} delivered — plus the 2027 agenda for Oyo Central.`,
       },
       { property: "og:title", content: "Promises Kept. Plans Ahead. — Senator Akintunde" },
       {
@@ -29,6 +24,7 @@ export const Route = createFileRoute("/record-agenda")({
       },
     ],
   }),
+  loader: () => getRecord(),
   component: RecordAgenda,
 });
 
@@ -50,6 +46,7 @@ function CommitmentRow({ item, index }: { item: Commitment; index: number }) {
 }
 
 function RecordAgenda() {
+  const { kept: PROMISES_KEPT, agenda: AGENDA_2027, projects: PROJECTS } = Route.useLoaderData();
   const [view, setView] = useState<"kept" | "next">("kept");
   const [region, setRegion] = useState<(typeof PROJECT_REGIONS)[number]>("All regions");
 
@@ -60,7 +57,7 @@ function RecordAgenda() {
       upcoming: PROMISES_KEPT.filter((p) => p.status === "upcoming").length,
       total: PROMISES_KEPT.length,
     }),
-    [],
+    [PROMISES_KEPT],
   );
 
   const projects = PROJECTS.filter((p) => region === "All regions" || p.region === region);
@@ -91,20 +88,18 @@ function RecordAgenda() {
             <div>
               <p className="max-w-[62ch] text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
                 In 2023, Oyo Central was asked for a mandate on the strength of a promise. Today,
-                the record is measured in 38 delivered projects, 6 sponsored bills and 9 of 9
-                commitments kept — with a clear plan to continue the good work in a second term.
+                the record is measured in 38 delivered projects, 6 sponsored bills and{" "}
+                {counts.delivered} of {counts.total} commitments kept — with a clear plan to
+                continue the good work in a second term.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {[
                   { n: "38", l: "Projects" },
                   { n: "6", l: "Bills" },
-                  { n: "9/9", l: "Promises kept" },
+                  { n: `${counts.delivered}/${counts.total}`, l: "Promises kept" },
                   { n: "12", l: "LGAs reached" },
                 ].map((s) => (
-                  <div
-                    key={s.l}
-                    className="border border-border bg-card px-3 py-4 text-center"
-                  >
+                  <div key={s.l} className="border border-border bg-card px-3 py-4 text-center">
                     <div className="font-serif text-[22px] font-semibold text-primary-deep">
                       {s.n}
                     </div>
@@ -147,9 +142,9 @@ function RecordAgenda() {
             <div key="kept" className="rise-in">
               <div className="mb-9 grid gap-8 lg:grid-cols-2">
                 <p className="max-w-[62ch] text-[15.5px] text-muted-foreground">
-                  In 2023, Oyo Central was asked for a mandate on the strength of nine specific
-                  commitments. Here is where each one stands today — updated as work progresses, not
-                  only at election time.
+                  In 2023, Oyo Central was asked for a mandate on the strength of {counts.total}{" "}
+                  specific commitments. Here is where each one stands today — updated as work
+                  progresses, not only at election time.
                 </p>
                 <div className="flex flex-col gap-2.5 border border-border bg-card p-6">
                   {(

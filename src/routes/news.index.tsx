@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { NEWS, NEWS_FILTERS } from "@/lib/site-data";
+import { NEWS_FILTERS } from "@/lib/site-data";
+import { getNewsList } from "@/lib/cms";
 import { Chip, NewsCard, PageHeader } from "@/components/site/ui";
 
 export const Route = createFileRoute("/news/")({
@@ -19,12 +20,14 @@ export const Route = createFileRoute("/news/")({
       },
     ],
   }),
+  loader: () => getNewsList(),
   component: News,
 });
 
 function News() {
+  const news = Route.useLoaderData();
   const [filter, setFilter] = useState<(typeof NEWS_FILTERS)[number]>("All");
-  const items = NEWS.filter((n) => filter === "All" || n.category === filter);
+  const items = news.filter((n) => filter === "All" || n.category === filter);
 
   return (
     <>

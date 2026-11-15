@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SITE } from "@/lib/site-data";
+import { useSiteSettings } from "@/lib/use-settings";
 import { PageHeader } from "@/components/site/ui";
 
 export const Route = createFileRoute("/privacy")({
@@ -45,6 +45,7 @@ const SECTIONS = [
 ];
 
 function Privacy() {
+  const { contact: SITE } = useSiteSettings();
   return (
     <>
       <PageHeader

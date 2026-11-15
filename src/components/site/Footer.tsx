@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { SITE, img } from "@/lib/site-data";
+import { useSiteSettings } from "@/lib/use-settings";
 import senateSeal from "@/assets/senate-seal.png.asset.json";
 import oyoArms from "@/assets/oyo-arms.png.asset.json";
 import apcOnly from "@/assets/apc-only.png.asset.json";
@@ -19,14 +20,15 @@ const explore = [
   { to: "/media", label: "Media" },
 ] as const;
 
-const socials = [
-  { label: "Facebook", href: "#" },
-  { label: "Instagram", href: "#" },
-  { label: "X (Twitter)", href: "#" },
-  { label: "LinkedIn", href: "#" },
-];
-
 export function Footer() {
+  const { socials: s } = useSiteSettings();
+  const socials = [
+    { label: "Facebook", href: s.facebook },
+    { label: "Instagram", href: s.instagram },
+    { label: "X (Twitter)", href: s.x },
+    { label: "YouTube", href: s.youtube },
+    { label: "LinkedIn", href: s.linkedin },
+  ].filter((l) => l.href);
   const year = new Date().getFullYear();
   return (
     <footer className="bg-primary-deep pt-10 pb-6 text-on-dark-muted">
@@ -69,8 +71,8 @@ export function Footer() {
             </span>
           </div>
           <p className="max-w-[34ch] text-[13.5px]">
-            Official website of Senator Yunus Abiodun Akintunde, PhD — seeking re-election for Oyo Central
-            Senatorial District in 2027.
+            Official website of Senator Yunus Abiodun Akintunde, PhD — seeking re-election for Oyo
+            Central Senatorial District in 2027.
           </p>
         </div>
 
@@ -79,7 +81,11 @@ export function Footer() {
             Explore
           </h2>
           {explore.map((l) => (
-            <Link key={l.to} to={l.to} className="mb-2.5 block text-sm hover:text-primary-foreground">
+            <Link
+              key={l.to}
+              to={l.to}
+              className="mb-2.5 block text-sm hover:text-primary-foreground"
+            >
               {l.label}
             </Link>
           ))}
@@ -100,19 +106,30 @@ export function Footer() {
           ))}
         </nav>
 
-        <nav aria-label="Follow">
-          <h2 className="mb-3.5 font-sans text-[13px] font-bold text-primary-foreground">Follow</h2>
-          {socials.map((s) => (
-            <a key={s.label} href={s.href} className="mb-2.5 block text-sm hover:text-primary-foreground">
-              {s.label}
-            </a>
-          ))}
-        </nav>
+        {socials.length > 0 && (
+          <nav aria-label="Follow">
+            <h2 className="mb-3.5 font-sans text-[13px] font-bold text-primary-foreground">
+              Follow
+            </h2>
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mb-2.5 block text-sm hover:text-primary-foreground"
+              >
+                {s.label}
+              </a>
+            ))}
+          </nav>
+        )}
       </div>
 
       <div className="wrap mt-10 flex flex-wrap justify-between gap-2.5 border-t border-on-dark-line pt-5 text-[12.5px] text-on-dark-dim">
         <span>
-          © {year} Senator Yunus Abiodun Akintunde, PhD · Oyo Central Senatorial District — All Rights Reserved
+          © {year} Senator Yunus Abiodun Akintunde, PhD · Oyo Central Senatorial District — All
+          Rights Reserved
         </span>
         <span className="flex gap-3">
           <Link to="/privacy" className="hover:text-primary-foreground">

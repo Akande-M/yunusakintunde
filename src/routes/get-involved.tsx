@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { SITE } from "@/lib/site-data";
+import { useSiteSettings } from "@/lib/use-settings";
 import { signupSchema, submitSignup, type SignupInput } from "@/lib/signup.functions";
 import { PageHeader, btn } from "@/components/site/ui";
 
@@ -25,13 +25,6 @@ export const Route = createFileRoute("/get-involved")({
   }),
   component: GetInvolved,
 });
-
-const CONTACT = [
-  { icon: "✉", label: "Email", value: SITE.email },
-  { icon: "☎", label: "Phone", value: SITE.phone },
-  { icon: "⚑", label: "Constituency office", value: SITE.office },
-  { icon: "◷", label: "Office hours", value: SITE.hours },
-];
 
 const EMPTY: SignupInput = {
   fullName: "",
@@ -76,6 +69,13 @@ function GetInvolved() {
   const [values, setValues] = useState<SignupInput>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const submit = useServerFn(submitSignup);
+  const { contact } = useSiteSettings();
+  const CONTACT = [
+    { icon: "✉", label: "Email", value: contact.email },
+    { icon: "☎", label: "Phone", value: contact.phone },
+    { icon: "⚑", label: "Constituency office", value: contact.office },
+    { icon: "◷", label: "Office hours", value: contact.hours },
+  ].filter((c) => c.value);
 
   const mutation = useMutation({
     mutationFn: (data: SignupInput) => submit({ data }),
@@ -136,10 +136,7 @@ function GetInvolved() {
 
             <p className="mt-5 text-[13px] text-muted-foreground">
               Prefer to support the campaign financially instead?{" "}
-              <a
-                href="#signup"
-                className="font-semibold text-primary underline underline-offset-2"
-              >
+              <a href="#signup" className="font-semibold text-primary underline underline-offset-2">
                 Learn how to contribute
               </a>
               .
@@ -250,7 +247,10 @@ function GetInvolved() {
                   <span className="text-[12.5px] leading-relaxed">
                     I consent to receive campaign updates and newsletters by email and/or phone from
                     the Akintunde 2027 campaign, in line with the{" "}
-                    <Link to="/privacy" className="font-bold text-primary underline underline-offset-2">
+                    <Link
+                      to="/privacy"
+                      className="font-bold text-primary underline underline-offset-2"
+                    >
                       Privacy Policy
                     </Link>
                     . I can unsubscribe at any time.

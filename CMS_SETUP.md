@@ -1,0 +1,75 @@
+# Website CMS — setup & handover
+
+The site now has a built-in admin at **`/admin`**. Everything that used to be hardcoded in
+`src/lib/site-data.ts` (news, gallery, projects, promises, endorsements, contact details) is
+editable there, and **Get Involved sign-ups are now saved** (before this, they were only
+logged and then lost, because no webhook was configured).
+
+## 1. Deploy (one time, ~10 minutes)
+
+1. **Upload the files to GitHub.** Unzip the package. On github.com/Akande-M/yunusakintunde, click
+   **Add file → Upload files**, drag in the `src` and `supabase` folders plus this file,
+   and click **Commit changes**. Existing files get replaced; that's expected.
+2. **Wait for Lovable to sync.** Open the project in Lovable. The commit shows up in the history within a minute or two.
+3. **Create the database tables.** In the Lovable chat, send:
+   > Apply the two SQL migrations in `supabase/migrations/` (`20261116090000_cms_schema.sql`, then
+   > `20261116090100_cms_seed.sql`) to the Cloud database exactly as written. Do not change any other code.
+
+   Approve the migration when Lovable asks. The seed copies today's content in, so the live site
+   looks exactly the same afterwards.
+4. **Publish** in Lovable.
+5. **Create the first admin.** Go to **`<your-site>/admin/setup`**, enter the private setup code (sent
+   separately; it is *not* in this repo), and enter the senator's team lead's name, email and a password.
+   This page stops working as soon as one admin exists.
+6. **Recommended:** in Lovable Cloud → Users/Auth settings, turn **off public sign-ups**. Staff
+   accounts are only ever created from the admin's Team page.
+
+> Until step 3 is done, the site keeps showing the original built-in content, so nothing breaks
+> in between.
+
+## 2. Who can do what
+
+| | Editor | Admin |
+|---|---|---|
+| Write, edit, publish, unpublish news | ✅ | ✅ |
+| Photos, videos, projects, promises, endorsements, homepage text, contact, socials | ✅ | ✅ |
+| View sign-ups, mark them followed up, export to Excel | ✅ | ✅ |
+| Delete sign-ups | — | ✅ |
+| Add/remove team members, reset passwords, change roles | — | ✅ |
+
+**Adding someone:** Team → Add team member. The site creates a temporary password. Copy the
+message and send it privately (WhatsApp/call). They choose their own password at first sign-in.
+**Forgotten password:** an admin clicks the key icon on that person's row.
+
+## 3. Day-to-day
+
+- **News.** *Publish* puts a story live immediately. Set a future date to schedule it. A story with no
+  "Full story" text shows as a card only ("Full story coming soon"). Changing the web address of a
+  live story breaks links that were already shared.
+- **Media.** Upload several photos at once; they're shrunk automatically for mobile data. For videos,
+  paste a **YouTube link** (best for anything long) or upload a short clip (50 MB max).
+- **Homepage campaign film.** Site content → Homepage → paste the YouTube link. The placeholder
+  disappears automatically.
+- **Sign-ups.** Call or WhatsApp straight from the list, and tick "Followed up" when done. Export gives a
+  CSV that opens in Excel or Google Sheets.
+- **Placeholders.** Fields still containing `[brackets]` or the dummy phone number show a ⚠ warning.
+
+## 4. Optional: forward sign-ups somewhere else
+
+Sign-ups are always stored in the database. To *also* push each one to Mailchimp, Google Sheets,
+Zapier or a CRM, add a secret **`SIGNUP_WEBHOOK_URL`** in Lovable Cloud → Secrets pointing at that
+tool's webhook URL. The form only tells a visitor "success" if at least one of the two actually stored it.
+
+## 5. Technical notes
+
+- Tables: `news_posts`, `gallery_items`, `projects`, `commitments`, `endorsements`, `site_settings`,
+  `signups`, `user_roles`. Storage bucket: `media` (public read, staff write, 50 MB/file).
+- Row-level security: the public reads only published rows; only staff (`user_roles`) can write;
+  nobody can grant themselves a role (roles are changed only by admin-checked server functions using
+  the service role). `created_by` / `updated_by` are stamped automatically on every change.
+- The public read layer (`src/lib/cms.ts`) always filters to published content, and falls back to the
+  original static content if the database is unreachable.
+- `src/lib/db.ts` uses a loosely-typed client, so the code compiles both before and after Lovable
+  regenerates `integrations/supabase/types.ts`.
+- Not yet in the CMS (still in code): the Biography page and the three "evidence" cards on Record &
+  Agenda. The site header name and role also still come from `src/lib/site-data.ts`.

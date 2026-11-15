@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ENDORSEMENTS, NEWS, img } from "@/lib/site-data";
+import { img } from "@/lib/site-data";
+import { getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
+import { useSiteSettings } from "@/lib/use-settings";
 import { Play } from "lucide-react";
 import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
@@ -23,15 +25,12 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async () => {
+    const [news, endorsements] = await Promise.all([getNewsList(3), getEndorsements()]);
+    return { news, endorsements };
+  },
   component: Home,
 });
-
-const STATS = [
-  { n: "38", l: "Projects delivered" },
-  { n: "12", l: "LGAs & wards reached" },
-  { n: "6", l: "Bills sponsored" },
-  { n: "100%", l: "2023 promises delivered" },
-];
 
 const VALUE_PROPS = [
   {
@@ -51,21 +50,50 @@ const VALUE_PROPS = [
   },
 ];
 
+function CampaignVideo({ url, caption }: { url: string; caption: string }) {
+  const yt = youtubeId(url);
+  return (
+    <figure className="overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
+      <div className="relative aspect-video bg-black">
+        {yt ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${yt}?rel=0`}
+            title={caption || "Akintunde 2027 campaign video"}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+            className="absolute inset-0 size-full"
+          />
+        ) : (
+          <video src={url} controls preload="metadata" className="absolute inset-0 size-full" />
+        )}
+      </div>
+      {caption && (
+        <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
 function Home() {
+  const { news, endorsements } = Route.useLoaderData();
+  const { home } = useSiteSettings();
+  const headlineStat = home.stats[0];
+
   return (
     <>
       <section className="bg-gradient-to-b from-paper to-paper-2 pt-12 pb-0">
         <div className="wrap">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
             <div className="rise-in">
-              <Eyebrow>Oyo Central · Seeking re-election, 2027</Eyebrow>
+              <Eyebrow>{home.heroEyebrow}</Eyebrow>
               <h1 className="text-[30px] leading-[1.08] font-semibold sm:text-[40px] lg:text-[48px]">
-                Four years of delivery. Now, I&apos;m asking Oyo Central to let us continue the good work.
+                {home.heroTitle}
               </h1>
               <p className="mt-4 max-w-[62ch] text-[17px] text-muted-foreground sm:text-lg">
-                Senator Yunus Abiodun Akintunde, PhD, is the sitting Senator for Oyo Central Senatorial
-                District — asking for a second term on the strength of 38 delivered projects, 6
-                sponsored bills, and a promise-tracker that shows exactly what has been kept.
+                {home.heroBody}
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
                 <Link to="/get-involved" className={btn.gold}>
@@ -89,17 +117,19 @@ function Home() {
               <span className="absolute top-3 right-3 rounded-sm bg-accent px-3 py-1.5 text-xs font-extrabold text-accent-foreground shadow-lg sm:top-5 sm:-right-3 sm:rotate-3 sm:px-4 sm:py-2 sm:text-[13px]">
                 RE-ELECT 2027
               </span>
-              <div className="mt-4 max-w-[240px] border border-border bg-card px-5 py-4 sm:absolute sm:-bottom-8 sm:-left-5 sm:mt-0 sm:shadow-[0_12px_30px_rgba(18,52,36,.12)]">
-                <div className="font-serif text-[26px] font-bold text-primary">38</div>
-                <div className="text-[12.5px] text-muted-foreground">
-                  community projects delivered in four years
+              {headlineStat && (
+                <div className="mt-4 max-w-[240px] border border-border bg-card px-5 py-4 sm:absolute sm:-bottom-8 sm:-left-5 sm:mt-0 sm:shadow-[0_12px_30px_rgba(18,52,36,.12)]">
+                  <div className="font-serif text-[26px] font-bold text-primary">
+                    {headlineStat.n}
+                  </div>
+                  <div className="text-[12.5px] text-muted-foreground">{headlineStat.l}</div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
           <dl className="mt-14 grid grid-cols-2 border-t border-border sm:grid-cols-4">
-            {STATS.map((s, i) => (
+            {home.stats.map((s, i) => (
               <Reveal
                 key={s.l}
                 delay={i * 80}
@@ -152,7 +182,7 @@ function Home() {
             }
           />
           <div className="hairline-grid grid md:grid-cols-3">
-            {NEWS.slice(0, 3).map((n, i) => (
+            {news.map((n, i) => (
               <Reveal key={n.title} delay={i * 90} className="flex">
                 <NewsCard {...n} />
               </Reveal>
@@ -165,9 +195,7 @@ function Home() {
         <div className="wrap grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <Reveal>
             <blockquote className="max-w-[46ch] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
-              “In 2023, Oyo Central gave me a mandate on the strength of a promise. Today, I am
-              asking for a second term on the strength of a record — and a plan to continue the
-              good work we started together.”
+              “{home.quote}”
             </blockquote>
             <div className="mt-5 text-sm font-semibold text-on-dark-muted">
               Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
@@ -176,27 +204,31 @@ function Home() {
           </Reveal>
 
           <Reveal delay={120}>
-            <figure className="group relative overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
-              <div className="relative aspect-video">
-                <img
-                  src={img.portraitFist}
-                  alt="Placeholder still from the forthcoming Akintunde 2027 campaign film"
-                  loading="lazy"
-                  className="size-full object-cover object-[center_25%] opacity-40 transition-transform duration-700 group-hover:scale-105"
-                />
-                <span className="absolute inset-0 grid place-items-center">
-                  <span className="grid size-16 place-items-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
-                    <Play size={26} strokeWidth={2.4} className="ml-0.5" aria-hidden />
+            {home.campaignVideoUrl ? (
+              <CampaignVideo url={home.campaignVideoUrl} caption={home.campaignVideoCaption} />
+            ) : (
+              <figure className="group relative overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
+                <div className="relative aspect-video">
+                  <img
+                    src={img.portraitFist}
+                    alt="Placeholder still from the forthcoming Akintunde 2027 campaign film"
+                    loading="lazy"
+                    className="size-full object-cover object-[center_25%] opacity-40 transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <span className="absolute inset-0 grid place-items-center">
+                    <span className="grid size-16 place-items-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
+                      <Play size={26} strokeWidth={2.4} className="ml-0.5" aria-hidden />
+                    </span>
                   </span>
-                </span>
-                <span className="absolute top-3 left-3 rounded-sm bg-primary-deep/85 px-2.5 py-1 text-[11.5px] font-bold text-on-dark">
-                  Placeholder — campaign film coming soon
-                </span>
-              </div>
-              <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
-                Headline campaign video: “Four years of delivery” — Akintunde 2027.
-              </figcaption>
-            </figure>
+                  <span className="absolute top-3 left-3 rounded-sm bg-primary-deep/85 px-2.5 py-1 text-[11.5px] font-bold text-on-dark">
+                    Placeholder — campaign film coming soon
+                  </span>
+                </div>
+                <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
+                  Headline campaign video: “Four years of delivery” — Akintunde 2027.
+                </figcaption>
+              </figure>
+            )}
           </Reveal>
         </div>
       </section>
@@ -205,7 +237,7 @@ function Home() {
         <div className="wrap">
           <SectionHead eyebrow="Endorsements" title="Standing with Akintunde 2027" />
           <div className="grid gap-6 md:grid-cols-3">
-            {ENDORSEMENTS.map((e, i) => (
+            {endorsements.map((e, i) => (
               <Reveal
                 key={e.name}
                 delay={i * 90}

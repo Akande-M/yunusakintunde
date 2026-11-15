@@ -143,7 +143,7 @@ export function NewsCard({
   summary: string;
   image: string;
   alt: string;
-  slug?: string;
+  slug?: string | undefined;
 }) {
   return (
     <article className="group flex flex-col bg-card transition-colors hover:bg-primary-tint/40">
