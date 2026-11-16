@@ -8,6 +8,13 @@
       "when": 1794786583153,
       "tag": "0000_cms_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794801665091,
+      "tag": "0001_tighten_settings_and_media_reads",
+      "breakpoints": true
     }
   ]
 }
