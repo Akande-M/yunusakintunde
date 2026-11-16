@@ -140,7 +140,7 @@ function Home() {
                   <div className="font-serif text-[30px] font-semibold text-primary-deep sm:text-[34px]">
                     {s.n}
                   </div>
-                  <div className="mt-1 text-[12.5px] text-muted-foreground">{s.l}</div>
+                  <div className="mt-1 text-[12.5px] font-semibold text-muted-foreground">{s.l}</div>
                 </dd>
               </Reveal>
             ))}
