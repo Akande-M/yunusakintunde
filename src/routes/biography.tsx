@@ -84,7 +84,7 @@ function Biography() {
           {FACTS.map((f, i) => (
             <Reveal key={f.l} delay={i * 80} className="bg-card px-5 py-6">
               <div className="font-serif text-[24px] font-semibold text-primary-deep">{f.n}</div>
-              <div className="mt-1 text-[13px] text-muted-foreground">{f.l}</div>
+              <div className="mt-1 text-[13px] font-semibold text-muted-foreground">{f.l}</div>
             </Reveal>
           ))}
         </div>
