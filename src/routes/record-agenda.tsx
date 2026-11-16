@@ -103,7 +103,7 @@ function RecordAgenda() {
                     <div className="font-serif text-[22px] font-semibold text-primary-deep">
                       {s.n}
                     </div>
-                    <div className="mt-0.5 text-[11.5px] text-muted-foreground">{s.l}</div>
+                    <div className="mt-0.5 text-[11.5px] font-semibold text-muted-foreground">{s.l}</div>
                   </div>
                 ))}
               </div>
