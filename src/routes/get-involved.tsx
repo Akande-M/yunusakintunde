@@ -10,7 +10,7 @@ import { PageHeader, btn } from "@/components/site/ui";
 export const Route = createFileRoute("/get-involved")({
   head: () => ({
     meta: [
-      { title: "Get Involved — Join the Akintunde 2027 campaign | Oyo Central" },
+      { title: "Get Involved: Join the Akintunde 2027 campaign | Oyo Central" },
       {
         name: "description",
         content:
@@ -151,7 +151,7 @@ function GetInvolved() {
                 role="status"
                 className="border-l-2 border-primary bg-primary-tint px-5 py-6 text-sm"
               >
-                <p className="font-bold text-primary-deep">Thank you — you&apos;re signed up.</p>
+                <p className="font-bold text-primary-deep">Thank you, you&apos;re signed up.</p>
                 <p className="mt-1 text-muted-foreground">
                   The constituency office will be in touch. You can unsubscribe from updates at any
                   time.

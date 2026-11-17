@@ -1,10 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { NAV, SITE, img } from "@/lib/site-data";
+import { NAV, SITE } from "@/lib/site-data";
+import { useSiteImages } from "@/lib/use-settings";
 import { btn } from "./ui";
 import { ApcBadge } from "./ApcBadge";
 
 export function Header() {
+  const images = useSiteImages();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -18,7 +20,7 @@ export function Header() {
         <Link to="/" className="group flex min-w-0 items-center gap-3">
           <span className="size-11 shrink-0 overflow-hidden rounded-full border-2 border-accent transition-transform duration-300 group-hover:scale-105">
             <img
-              src={img.portraitWhite}
+              src={images.portraitMain}
               alt=""
               className="size-full object-cover object-[center_18%]"
             />

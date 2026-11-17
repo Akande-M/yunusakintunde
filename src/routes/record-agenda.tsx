@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { img, PROJECT_REGIONS, type Commitment } from "@/lib/site-data";
+import { PROJECT_REGIONS, type Commitment } from "@/lib/site-data";
+import { useSiteImages } from "@/lib/use-settings";
 import { getRecord } from "@/lib/cms";
 import { StatusStamp } from "@/components/site/StatusStamp";
 import { Chip, PageHeader, SectionHead, SmartImage } from "@/components/site/ui";
@@ -9,14 +10,14 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/record-agenda")({
   head: ({ loaderData }) => ({
     meta: [
-      { title: "Record & Agenda — Promises Kept, Plans Ahead | Akintunde 2027" },
+      { title: "Record & Agenda: Promises Kept, Plans Ahead | Akintunde 2027" },
       {
         name: "description",
-        content: `Every 2023 commitment tracked with a status stamp — ${
+        content: `Every 2023 commitment tracked with a status stamp. ${
           loaderData ? loaderData.kept.filter((p) => p.status === "delivered").length : 9
-        } of ${loaderData?.kept.length ?? 9} delivered — plus the 2027 agenda for Oyo Central.`,
+        } of ${loaderData?.kept.length ?? 9} delivered, plus the 2027 agenda for Oyo Central.`,
       },
-      { property: "og:title", content: "Promises Kept. Plans Ahead. — Senator Akintunde" },
+      { property: "og:title", content: "Promises Kept. Plans Ahead. | Senator Akintunde" },
       {
         property: "og:description",
         content:
@@ -46,6 +47,7 @@ function CommitmentRow({ item, index }: { item: Commitment; index: number }) {
 }
 
 function RecordAgenda() {
+  const images = useSiteImages();
   const { kept: PROMISES_KEPT, agenda: AGENDA_2027, projects: PROJECTS } = Route.useLoaderData();
   const [view, setView] = useState<"kept" | "next">("kept");
   const [region, setRegion] = useState<(typeof PROJECT_REGIONS)[number]>("All regions");
@@ -67,7 +69,7 @@ function RecordAgenda() {
       <PageHeader
         eyebrow="The accountability hub"
         title="Promises Kept. Plans Ahead."
-        lede="Every commitment made in 2023, tracked honestly — and the agenda for what a second term will deliver next."
+        lede="Every commitment made in 2023, tracked honestly, and the agenda for what a second term will deliver next."
       />
 
       <section className="py-12 sm:py-14">
@@ -75,22 +77,22 @@ function RecordAgenda() {
           <Reveal className="mb-10 grid items-center gap-8 lg:grid-cols-[.9fr_1.1fr]">
             <figure className="overflow-hidden rounded-lg border border-border bg-card">
               <SmartImage
-                src={img.portraitWhite}
+                src={images.portraitMain}
                 alt="Senator Yunus Abiodun Akintunde, PhD, in Oyo Central Senatorial District"
                 ratio="aspect-[4/5]"
                 imgClassName="object-[center_15%]"
                 priority
               />
               <figcaption className="border-t border-border px-4 py-3 text-[13px] text-muted-foreground">
-                Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
+                Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District
               </figcaption>
             </figure>
             <div>
               <p className="max-w-[62ch] text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
                 In 2023, Oyo Central was asked for a mandate on the strength of a promise. Today,
                 the record is measured in 38 delivered projects, 6 sponsored bills and{" "}
-                {counts.delivered} of {counts.total} commitments kept — with a clear plan to
-                continue the good work in a second term.
+                {counts.delivered} of {counts.total} commitments kept, with a clear plan to continue
+                the good work in a second term.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {[
@@ -103,7 +105,9 @@ function RecordAgenda() {
                     <div className="font-serif text-[22px] font-semibold text-primary-deep">
                       {s.n}
                     </div>
-                    <div className="mt-0.5 text-[11.5px] font-semibold text-muted-foreground">{s.l}</div>
+                    <div className="mt-0.5 text-[11.5px] font-semibold text-muted-foreground">
+                      {s.l}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -143,7 +147,7 @@ function RecordAgenda() {
               <div className="mb-9 grid gap-8 lg:grid-cols-2">
                 <p className="max-w-[62ch] text-[15.5px] text-muted-foreground">
                   In 2023, Oyo Central was asked for a mandate on the strength of {counts.total}{" "}
-                  specific commitments. Here is where each one stands today — updated as work
+                  specific commitments. Here is where each one stands today, updated as work
                   progresses, not only at election time.
                 </p>
                 <div className="flex flex-col gap-2.5 border border-border bg-card p-6">
@@ -172,7 +176,7 @@ function RecordAgenda() {
           ) : (
             <div key="next" className="rise-in">
               <p className="mb-7 max-w-[70ch] text-[15.5px] text-muted-foreground">
-                Built directly on what is working in term one — not a new list of unrelated
+                Built directly on what is working in term one. It is not a new list of unrelated
                 promises. Here is what a second term delivers for Oyo Central.
               </p>
               <ul className="border-t border-border">

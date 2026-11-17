@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { img } from "@/lib/site-data";
+import { useSiteImages } from "@/lib/use-settings";
 import { Eyebrow, SmartImage } from "@/components/site/ui";
 import { ApcBadge } from "@/components/site/ApcBadge";
 import { Reveal } from "@/components/site/Reveal";
@@ -7,17 +7,17 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/biography")({
   head: () => ({
     meta: [
-      { title: "Biography — Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
+      { title: "Biography | Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
       {
         name: "description",
         content:
           "From Pakoyi, Oyo town to the 10th National Assembly: the education, business and public-service record of Senator Yunus Abiodun Akintunde, PhD.",
       },
-      { property: "og:title", content: "Biography — Senator Yunus Abiodun Akintunde, PhD" },
+      { property: "og:title", content: "Biography | Senator Yunus Abiodun Akintunde, PhD" },
       {
         property: "og:description",
         content:
-          "Sitting Senator for Oyo Central since 2023, businessman, academic and philanthropist — now seeking a second term.",
+          "Sitting Senator for Oyo Central since 2023, businessman, academic and philanthropist. Now seeking a second term.",
       },
     ],
   }),
@@ -53,6 +53,7 @@ const FACTS = [
 ];
 
 function Biography() {
+  const images = useSiteImages();
   return (
     <>
       <section className="border-b border-border bg-paper-2 py-12 sm:py-14">
@@ -63,14 +64,14 @@ function Biography() {
               Senator Yunus Abiodun Akintunde, PhD
             </h1>
             <p className="mt-3.5 max-w-[62ch] text-[17px] text-muted-foreground">
-              Sitting Senator, Oyo Central Senatorial District, since 2023 — now seeking a second
+              Sitting Senator, Oyo Central Senatorial District, since 2023, and seeking a second
               term in 2027. Businessman, academic and philanthropist from Onikanko Compound, Pakoyi,
               Oyo town.
             </p>
             <ApcBadge className="mt-6" />
           </div>
           <SmartImage
-            src={img.portraitVictory}
+            src={images.bioTop}
             alt="Senator Yunus Abiodun Akintunde, PhD greeting supporters"
             ratio="aspect-[4/3]"
             priority
@@ -101,16 +102,16 @@ function Biography() {
             <p className="mt-4 text-[15.5px] text-muted-foreground">
               He holds an OND and a BSc in Physics (The Polytechnic, Ibadan and Lagos State
               University), an MSc in Public Administration and an MSc in Energy Studies (LASU), and
-              a Ph.D. in Energy and Environmental Studies from the University of Ibadan — the first
-              Nigerian to hold that doctorate.
+              a Ph.D. in Energy and Environmental Studies from the University of Ibadan. He is the
+              first Nigerian to hold that doctorate.
             </p>
 
             <h2 className="mt-9 text-[22px] font-semibold">Business & public service</h2>
             <p className="mt-4 text-[15.5px] text-muted-foreground">
-              MD/CEO of Trade Codes Limited, founded in 2002 — over 30 permanent jobs and more than
-              300 people empowered across infrastructure delivery, energy advisory and upskilling.
-              That operating experience shapes how the constituency office is run today: projects
-              scoped, costed, delivered and reported back.
+              MD/CEO of Trade Codes Limited, founded in 2002, which has created over 30 permanent
+              jobs and empowered more than 300 people across infrastructure delivery, energy
+              advisory and upskilling. That operating experience shapes how the constituency office
+              is run today: projects scoped, costed, delivered and reported back.
             </p>
             <p className="mt-4 text-[15.5px] text-muted-foreground">
               Since taking his seat in the 10th National Assembly he has sponsored or co-sponsored
@@ -119,7 +120,7 @@ function Biography() {
             </p>
             <figure className="mt-8">
               <SmartImage
-                src={img.portraitStanding}
+                src={images.bioSecond}
                 alt="Senator Yunus Abiodun Akintunde, PhD in a cap and polo shirt"
                 ratio="aspect-[4/5] sm:aspect-[4/3]"
                 imgClassName="object-[center_12%]"

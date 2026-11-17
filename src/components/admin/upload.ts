@@ -49,7 +49,7 @@ export async function uploadMedia(
   if (!isVideo && !isImage) throw new Error("Only photos and videos can be uploaded.");
   if (isVideo && file.size > MAX_VIDEO_MB * 1024 * 1024) {
     throw new Error(
-      `That video is ${(file.size / 1024 / 1024).toFixed(0)} MB. The limit is ${MAX_VIDEO_MB} MB — upload long videos to YouTube and paste the link instead.`,
+      `That video is ${(file.size / 1024 / 1024).toFixed(0)} MB. The limit is ${MAX_VIDEO_MB} MB. Upload long videos to YouTube and paste the link instead.`,
     );
   }
   const body = isImage ? await compressImage(file) : file;

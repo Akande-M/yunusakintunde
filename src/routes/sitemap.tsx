@@ -4,13 +4,13 @@ import { PageHeader } from "@/components/site/ui";
 export const Route = createFileRoute("/sitemap")({
   head: () => ({
     meta: [
-      { title: "Sitemap — Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
+      { title: "Sitemap | Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
       {
         name: "description",
         content:
           "Every page on the Akintunde 2027 website: record and agenda, biography, news, media and get involved.",
       },
-      { property: "og:title", content: "Sitemap — Akintunde 2027" },
+      { property: "og:title", content: "Sitemap | Akintunde 2027" },
       { property: "og:description", content: "All pages on the Akintunde 2027 website." },
     ],
   }),
@@ -44,7 +44,10 @@ function Sitemap() {
           <ul className="border-t border-border">
             {PAGES.map((p) => (
               <li key={p.to} className="border-b border-border py-5">
-                <Link to={p.to} className="font-sans text-[16px] font-bold text-primary underline-offset-4 hover:underline">
+                <Link
+                  to={p.to}
+                  className="font-sans text-[16px] font-bold text-primary underline-offset-4 hover:underline"
+                >
                   {p.label}
                 </Link>
                 <p className="mt-1 text-sm text-muted-foreground">{p.d}</p>

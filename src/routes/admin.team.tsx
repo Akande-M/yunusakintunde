@@ -226,7 +226,7 @@ function Team() {
             className={abtn.primary}
             onClick={() => {
               void navigator.clipboard.writeText(message);
-              toast.success("Copied — paste it into WhatsApp");
+              toast.success("Copied. Paste it into WhatsApp");
             }}
           >
             <Copy className="size-4" /> Copy message

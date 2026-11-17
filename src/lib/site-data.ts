@@ -29,7 +29,7 @@ export const SITE = {
   shortName: "Sen. Yunus Akintunde",
   role: "Senator · Oyo Central",
   tagline:
-    "Official website of Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District",
+    "Official website of Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District",
   email: "office@yunusakintunde.com",
   phone: "+234 (0) 800 000 0000",
   office: "Oyo town, Oyo West LGA, Oyo State",
@@ -105,8 +105,7 @@ export const PROMISES_KEPT: Commitment[] = [
 
 export const AGENDA_2027: Commitment[] = [
   {
-    title:
-      "Complete the Tech/ICT Hub network and open a second vocational centre in Ogbomoso",
+    title: "Complete the Tech/ICT Hub network and open a second vocational centre in Ogbomoso",
     detail: "Scaling the two flagship projects already proven in term one.",
     status: "upcoming",
     statusLabel: "2027 pledge",
@@ -275,11 +274,7 @@ export const NEWS_FILTERS = [
 ] as const;
 
 export type GalleryCategory =
-  | "In Office"
-  | "2027 Campaign Trail"
-  | "Projects"
-  | "Videos"
-  | "2023 Archive";
+  "In Office" | "2027 Campaign Trail" | "Projects" | "Videos" | "2023 Archive";
 
 export const GALLERY_FILTERS = [
   "All",
@@ -364,19 +359,18 @@ export const GALLERY: {
 export const ENDORSEMENTS = [
   {
     quote:
-      "A senator who delivers and reports back — that is the standard every representative should be held to.",
+      "A senator who delivers and reports back. That is the standard every representative should be held to.",
     name: "[Party Leader Name]",
     role: "APC, Oyo State Chapter",
   },
   {
     quote:
-      "Senator Akintunde has been accessible and effective — the skills centre in Oyo town is already changing lives.",
+      "Senator Akintunde has been accessible and effective. The skills centre in Oyo town is already changing lives.",
     name: "Alhaji [Community Leader Name]",
     role: "Baale, Oyo West LGA",
   },
   {
-    quote:
-      "He shows up. Four town halls in Ogbomoso alone, and he listens before he acts.",
+    quote: "He shows up. Four town halls in Ogbomoso alone, and he listens before he acts.",
     name: "[Constituent Name]",
     role: "Ogbomoso resident & small business owner",
   },

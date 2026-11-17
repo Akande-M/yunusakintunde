@@ -5,13 +5,13 @@ import { PageHeader } from "@/components/site/ui";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Akintunde 2027 campaign, Oyo Central" },
+      { title: "Privacy Policy | Akintunde 2027 campaign, Oyo Central" },
       {
         name: "description",
         content:
           "How the Akintunde 2027 campaign collects, uses and protects supporter data, and how to unsubscribe or request deletion.",
       },
-      { property: "og:title", content: "Privacy Policy — Akintunde 2027" },
+      { property: "og:title", content: "Privacy Policy | Akintunde 2027" },
       {
         property: "og:description",
         content: "How supporter data is collected, used, stored and deleted.",
@@ -36,7 +36,7 @@ const SECTIONS = [
   },
   {
     h: "Storage and retention",
-    p: "Supporter records are held securely by the campaign's email and CRM provider and retained until the end of the 2027 election cycle, or until you ask us to delete them — whichever comes first.",
+    p: "Supporter records are held securely by the campaign's email and CRM provider and retained until the end of the 2027 election cycle, or until you ask us to delete them, whichever comes first.",
   },
   {
     h: "Your rights",

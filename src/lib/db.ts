@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 /**
  * Loosely-typed handle on the same Supabase client.
  * The CMS tables are created by a migration, and Lovable regenerates
- * `integrations/supabase/types.ts` afterwards — this keeps the code compiling
+ * `integrations/supabase/types.ts` afterwards. This keeps the code compiling
  * before and after that regeneration.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

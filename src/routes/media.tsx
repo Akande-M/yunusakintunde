@@ -9,13 +9,13 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 export const Route = createFileRoute("/media")({
   head: () => ({
     meta: [
-      { title: "Media — Photos & video from Oyo Central | Akintunde 2027" },
+      { title: "Media: Photos & video from Oyo Central | Akintunde 2027" },
       {
         name: "description",
         content:
           "Photographs from the Senate chamber, delivered constituency projects, town halls and the 2027 campaign trail, plus an archived 2023 set.",
       },
-      { property: "og:title", content: "Media — Senator Yunus Abiodun Akintunde, PhD" },
+      { property: "og:title", content: "Media | Senator Yunus Abiodun Akintunde, PhD" },
       {
         property: "og:description",
         content: "Senate proceedings, delivered projects and the road to 2027 in pictures.",
@@ -75,7 +75,7 @@ function Media() {
       <PageHeader
         eyebrow="Photos & video"
         title="In office, on the campaign trail"
-        lede="Senate proceedings, constituency visits, delivered projects, and the road to 2027 — plus an archived record of 2023."
+        lede="Senate proceedings, constituency visits, delivered projects, and the road to 2027, plus an archived record of 2023."
       />
       <section className="py-12 sm:py-14">
         <div className="wrap">

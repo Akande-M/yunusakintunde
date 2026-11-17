@@ -509,7 +509,7 @@ export function Collection({
       toast.error(errMsg(error));
       return;
     }
-    toast.success("Saved — live on the site");
+    toast.success("Saved. It’s live on the site");
     setEditing(null);
     void load();
   }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Counts up to a numeric value when scrolled into view.
- * Accepts strings like "38" or "100%" — non-digits are preserved as suffix/prefix.
+ * Accepts strings like "38" or "100%"; non-digits are preserved as suffix/prefix.
  */
 export function CountUp({
   value,
@@ -23,8 +23,7 @@ export function CountUp({
     if (!el || !match) return;
 
     const reduced =
-      typeof matchMedia !== "undefined" &&
-      matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
       setN(target);
       return;

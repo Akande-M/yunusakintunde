@@ -1,8 +1,9 @@
+import type React from "react";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-sm text-sm font-bold transition-colors min-h-11 px-5 py-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "btn-fx inline-flex items-center justify-center gap-2 text-sm font-bold min-h-11 px-5 py-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 export const btn = {
   primary: `${BASE} bg-primary text-primary-foreground hover:bg-primary-hover`,
@@ -91,6 +92,7 @@ export function SmartImage({
   priority = false,
   overlay,
   imgClassName = "",
+  imgStyle,
 }: {
   src: string;
   alt: string;
@@ -99,6 +101,7 @@ export function SmartImage({
   priority?: boolean;
   overlay?: ReactNode;
   imgClassName?: string;
+  imgStyle?: React.CSSProperties;
 }) {
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -119,6 +122,7 @@ export function SmartImage({
         decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
+        style={imgStyle}
         className={`size-full object-cover transition-all duration-500 ${
           loaded ? "opacity-100" : "opacity-0"
         } ${imgClassName}`}

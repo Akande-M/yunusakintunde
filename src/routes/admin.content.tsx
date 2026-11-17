@@ -4,7 +4,8 @@ import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { youtubeId } from "@/lib/cms";
-import { mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
+import { IMAGE_SLOTS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
+import { FooterForm, HeroSlidesEditor, ImagesForm } from "@/components/admin/content-forms";
 import { uploadMedia } from "@/components/admin/upload";
 import {
   abtn,
@@ -25,11 +26,14 @@ export const Route = createFileRoute("/admin/content")({
 
 const TABS = [
   ["home", "Homepage"],
+  ["images", "Images"],
+  ["footer", "Footer"],
   ["contact", "Contact details"],
   ["socials", "Social links"],
   ["endorsements", "Endorsements"],
 ] as const;
 type Tab = (typeof TABS)[number][0];
+type SettingsKey = "home" | "contact" | "socials" | "footer" | "images";
 
 const ENDORSEMENT_FIELDS: FieldDef[] = [
   {
@@ -66,21 +70,29 @@ function ContentAdmin() {
       });
   }, []);
 
-  async function save(key: "home" | "contact" | "socials") {
+  async function save(key: SettingsKey) {
     if (!settings) return;
+    // Images: store only the ones changed from the original, so defaults stay in code.
+    const value =
+      key === "images"
+        ? Object.fromEntries(
+            IMAGE_SLOTS.filter((s) => settings.images[s.key] !== s.default).map((s) => [
+              s.key,
+              settings.images[s.key],
+            ]),
+          )
+        : settings[key];
     setSaving(true);
-    const { error } = await db
-      .from("site_settings")
-      .upsert({ key, value: settings[key] }, { onConflict: "key" });
+    const { error } = await db.from("site_settings").upsert({ key, value }, { onConflict: "key" });
     setSaving(false);
     if (error) {
       toast.error(errMsg(error));
       return;
     }
-    toast.success("Saved — live on the site");
+    toast.success("Saved. It’s live on the site");
   }
 
-  const SaveBtn = ({ k }: { k: "home" | "contact" | "socials" }) => (
+  const SaveBtn = ({ k }: { k: SettingsKey }) => (
     <div className="mt-2 flex justify-end">
       <button className={abtn.primary} disabled={saving} onClick={() => void save(k)}>
         {saving && <Loader2 className="size-4 animate-spin" />} Save changes
@@ -92,7 +104,7 @@ function ContentAdmin() {
     <>
       <PageTitle
         title="Site content"
-        sub="Homepage wording, contact details, social links and endorsements."
+        sub="Homepage carousel and wording, site images and logos, footer, contact details, social links and endorsements."
       />
       <div
         role="tablist"
@@ -131,6 +143,16 @@ function ContentAdmin() {
         <Spinner />
       ) : tab === "home" ? (
         <HomeForm settings={settings} setSettings={setSettings} footer={<SaveBtn k="home" />} />
+      ) : tab === "images" ? (
+        <>
+          <ImagesForm settings={settings} setSettings={setSettings} />
+          <SaveBtn k="images" />
+        </>
+      ) : tab === "footer" ? (
+        <>
+          <FooterForm settings={settings} setSettings={setSettings} />
+          <SaveBtn k="footer" />
+        </>
       ) : tab === "contact" ? (
         <Card>
           {(
@@ -220,7 +242,7 @@ function HomeForm({
     setUploading(true);
     try {
       set("campaignVideoUrl", await uploadMedia(file, "site"));
-      toast.success("Video uploaded — remember to save");
+      toast.success("Video uploaded. Remember to save");
     } catch (e) {
       toast.error(errMsg(e));
     }
@@ -234,6 +256,7 @@ function HomeForm({
 
   return (
     <div className="space-y-5">
+      <HeroSlidesEditor settings={settings} setSettings={setSettings} />
       <Card>
         <h2 className="mb-3 text-[15px] font-bold">Top of the homepage</h2>
         <Field label="Small line above the headline">

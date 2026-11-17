@@ -7,3 +7,8 @@ const rootApi = getRouteApi("__root__");
 export function useSiteSettings(): SiteSettings {
   return rootApi.useLoaderData() as SiteSettings;
 }
+
+/** Current URL for each replaceable site image (CMS override or built-in default). */
+export function useSiteImages() {
+  return useSiteSettings().images;
+}

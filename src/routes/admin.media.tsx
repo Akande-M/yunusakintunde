@@ -130,7 +130,7 @@ function MediaAdmin() {
       if (rows.length) {
         await insert(rows);
         toast.success(
-          `${rows.length} photo${rows.length > 1 ? "s" : ""} added — add captions with the pencil icon`,
+          `${rows.length} photo${rows.length > 1 ? "s" : ""} added. Add captions with the pencil icon`,
         );
       }
     } catch (e) {

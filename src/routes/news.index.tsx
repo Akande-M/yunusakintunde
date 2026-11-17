@@ -7,13 +7,13 @@ import { Chip, NewsCard, PageHeader } from "@/components/site/ui";
 export const Route = createFileRoute("/news/")({
   head: () => ({
     meta: [
-      { title: "News & Updates — Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
+      { title: "News & Updates | Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
       {
         name: "description",
         content:
           "Senate business, constituency work and 2027 campaign-trail activity from the office of Senator Yunus Abiodun Akintunde, PhD.",
       },
-      { property: "og:title", content: "News & Updates — Akintunde 2027" },
+      { property: "og:title", content: "News & Updates | Akintunde 2027" },
       {
         property: "og:description",
         content: "Senate floor, constituency and campaign updates from Oyo Central.",
@@ -34,7 +34,7 @@ function News() {
       <PageHeader
         eyebrow="News & campaign trail"
         title="News & Updates"
-        lede="Senate business, constituency work, and campaign-trail activity as 2027 approaches — all in one place."
+        lede="Senate business, constituency work, and campaign-trail activity as 2027 approaches, all in one place."
       />
       <section className="py-12 sm:py-14">
         <div className="wrap">

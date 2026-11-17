@@ -167,7 +167,7 @@ function NewsEditor() {
     }
     if (status === "published") {
       if (!p.summary.trim()) {
-        toast.error("Add a short summary — it shows on the news card.");
+        toast.error("Add a short summary. It shows on the news card.");
         return;
       }
       if (!p.hero_image_url) {
@@ -202,8 +202,8 @@ function NewsEditor() {
       status === "draft"
         ? "Saved as draft (not on the website)"
         : future
-          ? `Scheduled — goes live ${format(new Date(p.published_at), "d MMM, HH:mm")}`
-          : "Published — it's live now",
+          ? `Scheduled to go live ${format(new Date(p.published_at), "d MMM, HH:mm")}`
+          : "Published. It's live now",
     );
     if (!p.id) {
       void navigate({

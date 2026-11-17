@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { img } from "@/lib/site-data";
 import { getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
 import { useSiteSettings } from "@/lib/use-settings";
+import { AutoCarousel } from "@/components/site/AutoCarousel";
 import { Play } from "lucide-react";
 import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
@@ -11,13 +11,13 @@ import { ApcBadge } from "@/components/site/ApcBadge";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Senator Yunus Abiodun Akintunde, PhD — Oyo Central | Re-Election 2027" },
+      { title: "Senator Yunus Abiodun Akintunde, PhD | Oyo Central Re-Election 2027" },
       {
         name: "description",
         content:
           "Four years of delivery in Oyo Central: 38 projects, 6 bills, 9 of 9 promises kept. The record and the plan for a second term in 2027.",
       },
-      { property: "og:title", content: "Senator Yunus Abiodun Akintunde, PhD — Oyo Central" },
+      { property: "og:title", content: "Senator Yunus Abiodun Akintunde, PhD | Oyo Central" },
       {
         property: "og:description",
         content:
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const [news, endorsements] = await Promise.all([getNewsList(3), getEndorsements()]);
+    const [news, endorsements] = await Promise.all([getNewsList(9), getEndorsements()]);
     return { news, endorsements };
   },
   component: Home,
@@ -36,7 +36,7 @@ const VALUE_PROPS = [
   {
     tag: "Delivered",
     title: "A record you can check, ward by ward",
-    body: "38 named projects across the Ibadan, Oyo and Ogbomoso zones — completed work with dates and locations, not pledges.",
+    body: "38 named projects across the Ibadan, Oyo and Ogbomoso zones. Completed work with dates and locations, not pledges.",
   },
   {
     tag: "Active",
@@ -46,7 +46,7 @@ const VALUE_PROPS = [
   {
     tag: "Ahead",
     title: "A clear plan for term two",
-    body: "The 2027 Agenda builds directly on what is already working — see exactly what comes next for the district.",
+    body: "The 2027 Agenda builds directly on what is already working. See exactly what comes next for the district.",
   },
 ];
 
@@ -79,7 +79,7 @@ function CampaignVideo({ url, caption }: { url: string; caption: string }) {
 
 function Home() {
   const { news, endorsements } = Route.useLoaderData();
-  const { home } = useSiteSettings();
+  const { home, images } = useSiteSettings();
   const headlineStat = home.stats[0];
 
   return (
@@ -97,7 +97,7 @@ function Home() {
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
                 <Link to="/get-involved" className={btn.gold}>
-                  Stand With Senator Akintunde — 2027
+                  Stand With Senator Akintunde in 2027
                 </Link>
                 <Link to="/record-agenda" className={btn.outline}>
                   See My Full Record
@@ -107,13 +107,23 @@ function Home() {
             </div>
 
             <div className="relative rise-in sm:mb-8">
-              <SmartImage
-                src={img.portraitWhite}
-                alt="Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District"
-                ratio="aspect-[4/5]"
-                priority
-                className="rounded-lg"
-              />
+              <div className="relative overflow-hidden rounded-lg">
+                <AutoCarousel
+                  label="Photos of Senator Akintunde"
+                  dotsClassName="absolute right-0 bottom-4 left-0 mt-0"
+                >
+                  {home.heroSlides.map((slide, i) => (
+                    <SmartImage
+                      key={slide.url + i}
+                      src={slide.url}
+                      alt={slide.alt}
+                      ratio="aspect-[4/5]"
+                      priority={i === 0}
+                      imgStyle={{ objectPosition: slide.focus || "center 20%" }}
+                    />
+                  ))}
+                </AutoCarousel>
+              </div>
               <span className="absolute top-3 right-3 rounded-sm bg-accent px-3 py-1.5 text-xs font-extrabold text-accent-foreground shadow-lg sm:top-5 sm:-right-3 sm:rotate-3 sm:px-4 sm:py-2 sm:text-[13px]">
                 RE-ELECT 2027
               </span>
@@ -140,7 +150,9 @@ function Home() {
                   <div className="font-serif text-[30px] font-semibold text-primary-deep sm:text-[34px]">
                     {s.n}
                   </div>
-                  <div className="mt-1 text-[12.5px] font-semibold text-muted-foreground">{s.l}</div>
+                  <div className="mt-1 text-[12.5px] font-semibold text-muted-foreground">
+                    {s.l}
+                  </div>
                 </dd>
               </Reveal>
             ))}
@@ -181,13 +193,22 @@ function Home() {
               </Link>
             }
           />
-          <div className="hairline-grid grid md:grid-cols-3">
-            {news.map((n, i) => (
-              <Reveal key={n.title} delay={i * 90} className="flex">
-                <NewsCard {...n} />
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <AutoCarousel
+              label="Latest news and updates"
+              gapClassName="-ml-5"
+              slideClassName="basis-[88%] pl-5 sm:basis-1/2 lg:basis-1/3"
+            >
+              {news.map((n) => (
+                <div
+                  key={n.title}
+                  className="flex h-full border border-border bg-card [&>article]:w-full"
+                >
+                  <NewsCard {...n} />
+                </div>
+              ))}
+            </AutoCarousel>
+          </Reveal>
         </div>
       </section>
 
@@ -198,7 +219,7 @@ function Home() {
               “{home.quote}”
             </blockquote>
             <div className="mt-5 text-sm font-semibold text-on-dark-muted">
-              Senator Yunus Abiodun Akintunde, PhD — Oyo Central Senatorial District
+              Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District
             </div>
             <ApcBadge variant="dark" className="mt-5" />
           </Reveal>
@@ -210,7 +231,7 @@ function Home() {
               <figure className="group relative overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
                 <div className="relative aspect-video">
                   <img
-                    src={img.portraitFist}
+                    src={images.filmCover}
                     alt="Placeholder still from the forthcoming Akintunde 2027 campaign film"
                     loading="lazy"
                     className="size-full object-cover object-[center_25%] opacity-40 transition-transform duration-700 group-hover:scale-105"
@@ -221,11 +242,11 @@ function Home() {
                     </span>
                   </span>
                   <span className="absolute top-3 left-3 rounded-sm bg-primary-deep/85 px-2.5 py-1 text-[11.5px] font-bold text-on-dark">
-                    Placeholder — campaign film coming soon
+                    Campaign film coming soon
                   </span>
                 </div>
                 <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
-                  Headline campaign video: “Four years of delivery” — Akintunde 2027.
+                  Headline campaign video: “Four years of delivery”, Akintunde 2027.
                 </figcaption>
               </figure>
             )}

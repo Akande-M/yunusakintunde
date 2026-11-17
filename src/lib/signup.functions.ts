@@ -29,7 +29,7 @@ export type SignupInput = z.input<typeof signupSchema>;
  * Single write point for supporter sign-ups.
  * 1. Saves every sign-up to the `signups` table (visible in /admin → Sign-ups).
  * 2. Optionally forwards a copy to SIGNUP_WEBHOOK_URL (Mailchimp/Zapier/Sheets/CRM).
- * The visitor only sees success if at least one of the two actually stored it —
+ * The visitor only sees success if at least one of the two actually stored it;
  * nothing is silently dropped any more.
  */
 export const submitSignup = createServerFn({ method: "POST" })
@@ -74,7 +74,7 @@ export const submitSignup = createServerFn({ method: "POST" })
     }
 
     if (!saved) {
-      console.error("[signup] NOT STORED — payload:", payload);
+      console.error("[signup] NOT STORED, payload:", payload);
       throw new Error("We couldn't submit your details. Please try again in a moment.");
     }
     return { ok: true as const };

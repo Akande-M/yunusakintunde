@@ -13,7 +13,7 @@ export const Route = createFileRoute("/news/$slug")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.article.title} — Akintunde 2027` },
+          { title: `${loaderData.article.title} | Akintunde 2027` },
           {
             name: "description",
             content: loaderData.article.paragraphs[0]?.slice(0, 155) ?? "",
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/news/$slug")({
             content: loaderData.article.paragraphs[0]?.slice(0, 155) ?? "",
           },
         ]
-      : [{ title: "Story not found — Akintunde 2027" }, { name: "robots", content: "noindex" }],
+      : [{ title: "Story not found | Akintunde 2027" }, { name: "robots", content: "noindex" }],
   }),
   component: NewsArticle,
   notFoundComponent: ArticleNotFound,

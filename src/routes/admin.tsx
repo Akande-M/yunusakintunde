@@ -22,7 +22,7 @@ export const Route = createFileRoute("/admin")({
   // The session lives in the browser, so the admin renders client-side only.
   ssr: false,
   head: () => ({
-    meta: [{ title: "Admin — Akintunde 2027" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Admin | Akintunde 2027" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminRoot,
 });
