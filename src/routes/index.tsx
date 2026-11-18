@@ -97,7 +97,7 @@ function Home() {
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
                 <Link to="/get-involved" className={btn.gold}>
-                  Stand With Senator Akintunde in 2027
+                  Support Senator Akintunde in 2027
                 </Link>
                 <Link to="/record-agenda" className={btn.outline}>
                   See My Full Record
