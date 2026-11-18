@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_cards: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          extra_heading: string
+          extra_items: Json
+          heading: string
+          id: string
+          items: Json
+          published: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+          updated_by: string | null
+          zone: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          extra_heading?: string
+          extra_items?: Json
+          heading?: string
+          id?: string
+          items?: Json
+          published?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          zone?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          extra_heading?: string
+          extra_items?: Json
+          heading?: string
+          id?: string
+          items?: Json
+          published?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          zone?: string
+        }
+        Relationships: []
+      }
       commitments: {
         Row: {
           created_at: string

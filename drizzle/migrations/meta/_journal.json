@@ -15,6 +15,20 @@
       "when": 1794801665091,
       "tag": "0001_tighten_settings_and_media_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794986004809,
+      "tag": "0002_cms_images_footer_copy",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794986036503,
+      "tag": "0003_cms_achievements",
+      "breakpoints": true
     }
   ]
 }
