@@ -3,13 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Download, Facebook, Loader2, MessageCircle, Share2 } from "lucide-react";
 import { getOrigin } from "@/lib/origin.functions";
 import { useSiteImages } from "@/lib/use-settings";
-import { DEFAULT_SUPPORT_PHOTO_FOCUS_X, IMAGE_SLOTS } from "@/lib/cms-defaults";
 import { canvasToBlob, drawSupportCard } from "@/lib/support-card";
 import { btn, PageHeader } from "@/components/site/ui";
 
 /** Pre-rendered copy of the card: shown before the live one is drawn, and used for link previews. */
 const STATIC_CARD = "/support-card.jpg";
-const DEFAULT_SUPPORT_PHOTO = IMAGE_SLOTS.find((s) => s.key === "supportPhoto")!.default;
 const TITLE = "I Support Senator Akintunde for 2027";
 const SHARE_TEXT =
   "I SUPPORT Senator Yunus Abiodun Akintunde, PhD for 2027! Four years of delivery for Oyo Central. Show your support too:";
@@ -63,10 +61,8 @@ function Support() {
       if (!canvas) return;
       await drawSupportCard(canvas, {
         photoUrl: images.supportPhoto,
-        photoFocusX:
-          images.supportPhoto === DEFAULT_SUPPORT_PHOTO ? DEFAULT_SUPPORT_PHOTO_FOCUS_X : 0.5,
-        apcLogoUrl: images.apcLogo,
-        sealUrl: images.senateSeal,
+        apcLogoUrl: images.supportApc,
+        sealUrl: images.supportSeal,
         // Print the real domain on the card, never a local or preview address.
         siteHost: /^(localhost|127\.|\[::1\])/.test(window.location.host)
           ? ""
@@ -85,7 +81,7 @@ function Support() {
     return () => {
       alive = false;
     };
-  }, [images.supportPhoto, images.apcLogo, images.senateSeal]);
+  }, [images.supportPhoto, images.supportApc, images.supportSeal]);
 
   function download() {
     const file = fileRef.current;

@@ -8,8 +8,8 @@ export const CARD_W = 1080;
 export const CARD_H = 1350;
 
 /** Bundled copies so the card always has its logos, even if a CMS image fails to load. */
-const FALLBACK_APC = "/brand/apc-logo.png";
-const FALLBACK_SEAL = "/brand/senate-seal.png";
+const FALLBACK_APC = "/brand/apc-thumbprint.png";
+const FALLBACK_SEAL = "/brand/senate-logo.png";
 
 const C = {
   deep: "#123424",
@@ -23,8 +23,6 @@ const C = {
 
 export type CardInput = {
   photoUrl: string;
-  /** 0 = keep the left edge, 0.5 = centre, 1 = right edge (where the face is in a wide photo). */
-  photoFocusX?: number;
   apcLogoUrl: string;
   sealUrl: string;
   siteHost: string;
@@ -73,10 +71,11 @@ function drawCircleImage(
   cx: number,
   cy: number,
   r: number,
-  focusX = 0.5,
 ) {
+  // Portrait framing: fill the circle, zoom in a little, centre horizontally and keep
+  // the head in the upper part, so a head-and-shoulders photo reads well at phone size.
   const size = r * 2;
-  const scale = Math.max(size / img.width, size / img.height);
+  const scale = Math.max(size / img.width, size / img.height) * 1.18;
   const w = img.width * scale;
   const h = img.height * scale;
   ctx.save();
@@ -84,7 +83,7 @@ function drawCircleImage(
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  ctx.drawImage(img, cx - r - (w - size) * focusX, cy - r - (h - size) * 0.12, w, h);
+  ctx.drawImage(img, cx - w / 2, cy - r - (h - size) * 0.05, w, h);
   ctx.restore();
 }
 
@@ -93,12 +92,13 @@ function drawContain(
   img: HTMLImageElement,
   x: number,
   y: number,
-  box: number,
+  boxW: number,
+  boxH: number,
 ) {
-  const s = Math.min(box / img.width, box / img.height);
-  const w = img.width * s;
-  const h = img.height * s;
-  ctx.drawImage(img, x + (box - w) / 2, y + (box - h) / 2, w, h);
+  const k = Math.min(boxW / img.width, boxH / img.height);
+  const w = img.width * k;
+  const h = img.height * k;
+  ctx.drawImage(img, x + (boxW - w) / 2, y + (boxH - h) / 2, w, h);
 }
 
 export async function drawSupportCard(canvas: HTMLCanvasElement, input: CardInput) {
@@ -145,7 +145,7 @@ export async function drawSupportCard(canvas: HTMLCanvasElement, input: CardInpu
   ctx.arc(cx, cy, r + 8, 0, Math.PI * 2);
   ctx.fill();
   if (photo) {
-    drawCircleImage(ctx, photo, cx, cy, r, input.photoFocusX);
+    drawCircleImage(ctx, photo, cx, cy, r);
   } else {
     ctx.fillStyle = C.green;
     ctx.beginPath();
@@ -187,25 +187,33 @@ export async function drawSupportCard(canvas: HTMLCanvasElement, input: CardInpu
   ctx.font = '500 28px "Public Sans", Arial, sans-serif';
   ctx.fillText("All Progressives Congress (APC) · Nigerian Senate", cx, y, CARD_W - 120);
 
-  // Footer strip
-  const footY = CARD_H - 150;
-  ctx.fillStyle = C.green;
-  ctx.fillRect(0, footY, CARD_W, 150);
-  const logo = 100;
-  if (apc) drawContain(ctx, apc, 50, footY + 25, logo);
-  if (seal) drawContain(ctx, seal, CARD_W - 50 - logo, footY + 25, logo);
-  ctx.fillStyle = C.onDark;
+  // Footer strip: light, so the black thumbprint and the Senate logo both read clearly.
+  const footH = 170;
+  const footY = CARD_H - footH;
+  ctx.fillStyle = C.cream;
+  ctx.fillRect(0, footY, CARD_W, footH);
+  ctx.fillStyle = C.gold;
+  ctx.fillRect(0, footY, CARD_W, 8);
+  const apcW = 220;
+  const logoH = 110;
+  const sealW = 120;
+  const logoY = footY + 8 + (footH - 8 - logoH) / 2;
+  if (apc) drawContain(ctx, apc, 40, logoY, apcW, logoH);
+  if (seal) drawContain(ctx, seal, CARD_W - 40 - sealW, logoY, sealW, logoH);
+  const textMid = 40 + apcW + (CARD_W - 80 - apcW - sealW) / 2;
+  const textMax = CARD_W - 80 - apcW - sealW - 40;
+  ctx.fillStyle = C.deep;
   ctx.font = 'italic 600 30px "Newsreader", Georgia, serif';
-  ctx.fillText(
-    "Service to the People. Progress for Oyo Central.",
-    cx,
-    footY + 66,
-    CARD_W - 2 * (logo + 80),
-  );
+  const tagLines = wrap(ctx, "Service to the People. Progress for Oyo Central.", textMax);
+  let ty = footY + (input.siteHost ? 66 : 78) - (tagLines.length - 1) * 16;
+  for (const line of tagLines) {
+    ctx.fillText(line, textMid, ty, textMax);
+    ty += 36;
+  }
   if (input.siteHost) {
-    ctx.fillStyle = C.gold;
-    ctx.font = '700 26px "Public Sans", Arial, sans-serif';
-    ctx.fillText(input.siteHost, cx, footY + 110);
+    ctx.fillStyle = C.goldDeep;
+    ctx.font = '700 24px "Public Sans", Arial, sans-serif';
+    ctx.fillText(input.siteHost, textMid, ty + 6, textMax);
   }
 }
 

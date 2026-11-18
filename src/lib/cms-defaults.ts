@@ -67,7 +67,19 @@ export const IMAGE_SLOTS = [
     key: "supportPhoto",
     label: "Support card photo",
     where: "The shareable “I SUPPORT” card on the Support page (shown in a circle)",
-    default: "/hero/hero-fist.jpg",
+    default: "/brand/support-portrait.jpg",
+  },
+  {
+    key: "supportApc",
+    label: "Support card: APC logo & thumbprint",
+    where: "Bottom left of the shareable “I SUPPORT” card",
+    default: "/brand/apc-thumbprint.png",
+  },
+  {
+    key: "supportSeal",
+    label: "Support card: Senate logo",
+    where: "Bottom right of the shareable “I SUPPORT” card",
+    default: "/brand/senate-logo.png",
   },
   {
     key: "filmCover",
@@ -96,9 +108,6 @@ export const IMAGE_SLOTS = [
     default: thumbprint.url,
   },
 ] as const;
-
-/** The default support photo is wide with the face on the right; keep it in the circle. */
-export const DEFAULT_SUPPORT_PHOTO_FOCUS_X = 0.78;
 
 export type ImageKey = (typeof IMAGE_SLOTS)[number]["key"];
 export type ImageSettings = Record<ImageKey, string>;

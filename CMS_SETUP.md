@@ -82,8 +82,9 @@ tool's webhook URL. The form only tells a visitor "success" if at least one of t
   automatically. Add Oyo zone LGAs there.
 - **/support:** the shareable "I SUPPORT SENATOR AKINTUNDE FOR 2027" card. On phones,
   "Share image" sends the picture itself to WhatsApp/Status/Instagram/Facebook. On computers it
-  downloads, and link shares show the card as their preview. The photo is replaceable under
-  Site content → Images → "Support card photo".
+  downloads, and link shares show the card as their preview. The photo and both logos are
+  replaceable under Site content → Images ("Support card photo", "Support card: APC logo &
+  thumbprint", "Support card: Senate logo").
 - `public/support-card.jpg` is the pre-made preview image used by WhatsApp/Facebook link
   previews. If the support photo is changed, ask a developer to regenerate it.
 - Database: apply `supabase/migrations/20261118090000_cms_achievements.sql`
