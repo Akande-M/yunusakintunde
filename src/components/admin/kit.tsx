@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
-import { uploadMedia } from "@/components/admin/upload";
+import { canLoadImage, uploadMedia } from "@/components/admin/upload";
 import { normalizeItems, type AchievementItem } from "@/lib/achievements-data";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -191,7 +191,7 @@ export function ImageField({
   value,
   onChange,
   folder,
-  accept = "image/*",
+  accept = "image/*,.heic,.heif",
 }: {
   value: string | null | undefined;
   onChange: (url: string) => void;
@@ -199,15 +199,27 @@ export function ImageField({
   accept?: string;
 }) {
   const [busy, setBusy] = useState(false);
+  const [broken, setBroken] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   const isVideo = !!value && /\.(mp4|webm|mov)(\?|$)/i.test(value);
+
+  // Flag links that don't open as an image (e.g. Google Drive or WhatsApp links).
+  useEffect(() => {
+    let alive = true;
+    setBroken(false);
+    if (!value || isVideo) return;
+    void canLoadImage(value).then((ok) => alive && setBroken(!ok));
+    return () => {
+      alive = false;
+    };
+  }, [value, isVideo]);
 
   async function pick(file: File | undefined) {
     if (!file) return;
     setBusy(true);
     try {
       onChange(await uploadMedia(file, folder));
-      toast.success("Uploaded");
+      toast.success("Uploaded. Click Save to put it on the website.");
     } catch (e) {
       toast.error(errMsg(e));
     } finally {
@@ -219,7 +231,11 @@ export function ImageField({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
       <div className="relative grid aspect-[16/10] w-full shrink-0 place-items-center overflow-hidden rounded-sm border border-dashed border-border bg-paper sm:w-56">
-        {value ? (
+        {value && broken ? (
+          <span className="px-3 text-center text-[12px] font-semibold text-destructive">
+            Image not loading
+          </span>
+        ) : value ? (
           isVideo ? (
             <video src={value} className="size-full object-cover" muted preload="metadata" />
           ) : (
@@ -254,8 +270,14 @@ export function ImageField({
           className={inputCls}
           placeholder="…or paste an image link"
           value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value.trim())}
         />
+        {broken && (
+          <p role="alert" className="text-[12.5px] font-semibold text-destructive">
+            ⚠ This image doesn't load, so visitors won't see it. Upload the photo itself, or paste a
+            direct image link (ending in .jpg or .png).
+          </p>
+        )}
         <input
           ref={ref}
           type="file"
@@ -768,7 +790,7 @@ export function ItemsEditor({
                 {it.image ? "Replace photo" : "Add photo"}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.heic,.heif"
                   hidden
                   onChange={(e) => void upload(i, e.target.files?.[0])}
                 />

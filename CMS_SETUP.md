@@ -99,3 +99,14 @@ tool's webhook URL. The form only tells a visitor "success" if at least one of t
   Achievements without a photo show a matching icon.
 - Use only real photos of the actual projects. Don't use stock or internet images.
 - Database: apply `supabase/migrations/20261118120000_cms_achievements_page.sql`.
+
+## Update 6 (Nov 2026): images uploaded in the CMS always show
+
+- Uploads are converted to web-safe formats automatically (iPhone/Mac **HEIC** photos → JPEG),
+  and each upload is checked to load for visitors before it's accepted.
+- Pasted image links that don't load are flagged in red.
+- Site content page: a "Save all changes" bar appears whenever something isn't saved yet.
+  Uploading a photo is not enough. It goes live only after saving.
+- Admin dashboard → **Check all images** lists any image visitors can't see, with a Fix link.
+- Storage: the `media` bucket must be **public**
+  (`supabase/migrations/20261118140000_media_bucket_public.sql`).

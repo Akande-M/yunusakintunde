@@ -311,7 +311,7 @@ function NewsEditor() {
               <input
                 ref={photoInput}
                 type="file"
-                accept="image/*"
+                accept="image/*,.heic,.heif"
                 multiple
                 hidden
                 onChange={(e) => void addPhotos(e.target.files)}

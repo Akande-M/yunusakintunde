@@ -34,6 +34,7 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number][0];
 type SettingsKey = "home" | "contact" | "socials" | "footer" | "images";
+const SETTINGS_KEYS: SettingsKey[] = ["home", "images", "footer", "contact", "socials"];
 
 const ENDORSEMENT_FIELDS: FieldDef[] = [
   {
@@ -59,6 +60,8 @@ function ContentAdmin() {
   const [tab, setTab] = useState<Tab>("home");
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [saving, setSaving] = useState(false);
+  // Last-saved copy of each settings group, to show "unsaved changes" and never lose an upload.
+  const [saved, setSaved] = useState<Record<string, string>>({});
 
   useEffect(() => {
     void db
@@ -66,12 +69,34 @@ function ContentAdmin() {
       .select("key,value")
       .then(({ data, error }) => {
         if (error) toast.error(errMsg(error));
-        setSettings(mergeSettings(data as { key: string; value: unknown }[]));
+        const merged = mergeSettings(data as { key: string; value: unknown }[]);
+        setSettings(merged);
+        setSaved(Object.fromEntries(SETTINGS_KEYS.map((k) => [k, JSON.stringify(merged[k])])));
       });
   }, []);
 
-  async function save(key: SettingsKey) {
-    if (!settings) return;
+  const dirtyKeys = settings
+    ? SETTINGS_KEYS.filter((k) => JSON.stringify(settings[k]) !== saved[k])
+    : [];
+  const dirty = dirtyKeys.length > 0;
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  async function saveAll() {
+    for (const k of dirtyKeys) {
+      const ok = await save(k, true);
+      if (!ok) return;
+    }
+    toast.success("All changes saved. They’re live on the site");
+  }
+
+  async function save(key: SettingsKey, quiet = false): Promise<boolean> {
+    if (!settings) return false;
     // Images: store only the ones changed from the original, so defaults stay in code.
     const value =
       key === "images"
@@ -87,9 +112,11 @@ function ContentAdmin() {
     setSaving(false);
     if (error) {
       toast.error(errMsg(error));
-      return;
+      return false;
     }
-    toast.success("Saved. It’s live on the site");
+    setSaved((prev) => ({ ...prev, [key]: JSON.stringify(settings[key]) }));
+    if (!quiet) toast.success("Saved. It’s live on the site");
+    return true;
   }
 
   const SaveBtn = ({ k }: { k: SettingsKey }) => (
@@ -213,6 +240,16 @@ function ContentAdmin() {
           </p>
           <SaveBtn k="socials" />
         </Card>
+      )}
+      {dirty && (
+        <div className="sticky bottom-4 z-20 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-accent bg-card px-5 py-3 shadow-[0_12px_30px_-10px_rgba(18,52,36,.35)]">
+          <span className="text-[13.5px] font-semibold">
+            ⚠ Unsaved changes. Nothing changes on the website until you save.
+          </span>
+          <button className={abtn.gold} disabled={saving} onClick={() => void saveAll()}>
+            {saving && <Loader2 className="size-4 animate-spin" />} Save all changes
+          </button>
+        </div>
       )}
     </>
   );

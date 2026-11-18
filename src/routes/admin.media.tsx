@@ -286,7 +286,7 @@ function MediaAdmin() {
         <input
           ref={photoRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           multiple
           hidden
           onChange={(e) => void uploadPhotos(e.target.files)}

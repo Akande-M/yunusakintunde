@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { db } from "@/lib/db";
 import { abtn, Card, PageTitle, Spinner } from "@/components/admin/kit";
 import { useAdminAuth } from "@/components/admin/auth";
+import { ImageCheck } from "@/components/admin/ImageCheck";
 
 export const Route = createFileRoute("/admin/")({
   component: Dashboard,
@@ -123,6 +124,7 @@ function Dashboard() {
               </ul>
             )}
           </Card>
+          <ImageCheck />
         </>
       )}
     </>
