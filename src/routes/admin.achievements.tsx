@@ -1,5 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Badge, Collection, PageTitle, type FieldDef } from "@/components/admin/kit";
+import { useEffect, useState } from "react";
+import { ExternalLink, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { db } from "@/lib/db";
+import { mergeSettings, type AchievementsSettings } from "@/lib/cms-defaults";
+import { normalizeItems } from "@/lib/achievements-data";
+import {
+  abtn,
+  Badge,
+  Card,
+  Collection,
+  errMsg,
+  Field,
+  ImageField,
+  inputCls,
+  PageTitle,
+  Spinner,
+  type FieldDef,
+} from "@/components/admin/kit";
+import { LetsDoMore } from "@/components/site/Achievements";
 
 export const Route = createFileRoute("/admin/achievements")({
   component: AchievementsAdmin,
@@ -33,10 +52,9 @@ const FIELDS: FieldDef[] = [
   {
     name: "items",
     label: "Achievements",
-    type: "lines",
+    type: "items",
     required: true,
-    rows: 12,
-    hint: "One per line. Numbers like 714 or ₦50,000 are bolded automatically, and an icon is picked from the wording.",
+    hint: "Add a real photo of each project where you have one; without a photo the page shows a matching icon. Numbers like 714 or ₦50,000 are bolded automatically.",
   },
   {
     name: "extra_heading",
@@ -50,13 +68,115 @@ const FIELDS: FieldDef[] = [
 
 type Row = Record<string, unknown>;
 
+function PageSettings() {
+  const [value, setValue] = useState<AchievementsSettings | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void db
+      .from("site_settings")
+      .select("key,value")
+      .eq("key", "achievements")
+      .then(({ data, error }) => {
+        if (error) toast.error(errMsg(error));
+        setValue(mergeSettings((data as { key: string; value: unknown }[]) ?? []).achievements);
+      });
+  }, []);
+
+  if (!value) return <Spinner />;
+  const set = <K extends keyof AchievementsSettings>(k: K, v: AchievementsSettings[K]) =>
+    setValue({ ...value, [k]: v });
+
+  async function save() {
+    setSaving(true);
+    const { error } = await db
+      .from("site_settings")
+      .upsert({ key: "achievements", value }, { onConflict: "key" });
+    setSaving(false);
+    if (error) {
+      toast.error(errMsg(error));
+      return;
+    }
+    toast.success("Saved. It’s live on the site");
+  }
+
+  return (
+    <Card className="mb-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-[15px] font-bold">Page text & “Let’s do more” portrait</h2>
+        <a
+          href="/achievements"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-[13px] font-bold text-primary"
+        >
+          <ExternalLink className="size-4" /> View the page
+        </a>
+      </div>
+      <div className="grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div>
+          <Field label="Heading" hint="Used on the homepage section and the View all page.">
+            <input
+              className={inputCls}
+              value={value.pageTitle}
+              onChange={(e) => set("pageTitle", e.target.value)}
+            />
+          </Field>
+          <Field label="Introduction (View all page)">
+            <textarea
+              className={inputCls}
+              rows={3}
+              value={value.pageIntro}
+              onChange={(e) => set("pageIntro", e.target.value)}
+            />
+          </Field>
+          <Field
+            label="Tagline beside the portrait"
+            hint="Shown on every carousel card, like the flyer. Leave empty to hide it."
+          >
+            <input
+              className={inputCls}
+              value={value.tagline}
+              onChange={(e) => set("tagline", e.target.value)}
+            />
+          </Field>
+          <Field label="Senator's portrait">
+            <ImageField
+              value={value.portrait}
+              onChange={(url) => set("portrait", url)}
+              folder="site"
+            />
+          </Field>
+        </div>
+        <div>
+          <span className="mb-1.5 block text-[13px] font-bold">Preview</span>
+          <div className="rounded-lg bg-primary-deep p-4">
+            {value.portrait ? (
+              <LetsDoMore portrait={value.portrait} tagline={value.tagline} compact />
+            ) : (
+              <p className="text-[13px] text-on-dark-muted">Add a portrait to show this block.</p>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <button className={abtn.primary} disabled={saving} onClick={() => void save()}>
+          {saving && <Loader2 className="size-4 animate-spin" />} Save page settings
+        </button>
+      </div>
+    </Card>
+  );
+}
+
 function AchievementsAdmin() {
   return (
     <>
       <PageTitle
         title="Major achievements"
-        sub="The homepage carousel, one card per local government. Cards slide right to left on their own; use the arrows here to set their order."
+        sub="The homepage carousel and the View all page. One card per local government; use the arrows to set the order."
       />
+      <PageSettings />
+      <h2 className="mb-3 text-[15px] font-bold">Cards</h2>
       <Collection
         table="achievement_cards"
         noun="card"
@@ -65,18 +185,23 @@ function AchievementsAdmin() {
           title: "",
           zone: "Oyo",
           heading: "10 major achievements",
-          items: "",
+          items: [],
           extra_heading: "",
           extra_items: "",
           published: true,
         }}
         summary={(r: Row) => {
-          const n = Array.isArray(r["items"]) ? r["items"].length : 0;
+          const items = normalizeItems(r["items"]);
+          const photos = items.filter((it) => it.image).length;
           return {
             title: String(r["title"]),
-            subtitle: `${n} item${n === 1 ? "" : "s"} · ${String(r["heading"] ?? "")}`,
+            subtitle: `${items.length} item${items.length === 1 ? "" : "s"} · ${photos} with photos`,
             badge: (
-              <Badge tone={r["zone"] === "Senate" ? "gold" : "green"}>{String(r["zone"])}</Badge>
+              <Badge
+                tone={r["zone"] === "Senate" ? "gold" : photos < items.length ? "neutral" : "green"}
+              >
+                {String(r["zone"])}
+              </Badge>
             ),
           };
         }}

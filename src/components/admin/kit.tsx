@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { uploadMedia } from "@/components/admin/upload";
+import { normalizeItems, type AchievementItem } from "@/lib/achievements-data";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -296,6 +297,7 @@ export type FieldDef =
     }
   | { name: string; label: string; type: "toggle"; hint?: string }
   | { name: string; label: string; type: "lines"; hint?: string; rows?: number; required?: boolean }
+  | { name: string; label: string; type: "items"; hint?: string; required?: boolean }
   | {
       name: string;
       label: string;
@@ -363,6 +365,17 @@ export function FieldsForm({
                   </option>
                 ))}
               </select>
+            </Field>
+          );
+        }
+        if (f.type === "items") {
+          return (
+            <Field
+              key={f.name}
+              label={`${f.label}${f.required ? " *" : ""}`}
+              {...(f.hint ? { hint: f.hint } : {})}
+            >
+              <ItemsEditor value={normalizeItems(v)} onChange={(next) => set(f.name, next)} />
             </Field>
           );
         }
@@ -516,11 +529,13 @@ export function Collection({
     for (const f of fields) {
       const v = editing[f.name];
       payload[f.name] =
-        f.type === "lines"
-          ? (Array.isArray(v) ? v : String(v ?? "").split("\n"))
-              .map((l) => String(l).trim())
-              .filter(Boolean)
-          : (v ?? null);
+        f.type === "items"
+          ? normalizeItems(v).map((it) => ({ text: it.text.trim(), image: it.image.trim() }))
+          : f.type === "lines"
+            ? (Array.isArray(v) ? v : String(v ?? "").split("\n"))
+                .map((l) => String(l).trim())
+                .filter(Boolean)
+            : (v ?? null);
     }
     const { error } = editing["id"]
       ? await db
@@ -687,6 +702,125 @@ export function Collection({
       >
         {editing && <FieldsForm fields={fields} value={editing} onChange={setEditing} />}
       </EditDialog>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ list of {text, image} rows
+/** Each row: the achievement text plus an optional photo of that project. */
+export function ItemsEditor({
+  value,
+  onChange,
+}: {
+  value: AchievementItem[];
+  onChange: (v: AchievementItem[]) => void;
+}) {
+  const [busy, setBusy] = useState<number | null>(null);
+  const patch = (i: number, p: Partial<AchievementItem>) =>
+    onChange(value.map((it, j) => (j === i ? { ...it, ...p } : it)));
+  const move = (i: number, d: -1 | 1) => {
+    const j = i + d;
+    if (j < 0 || j >= value.length) return;
+    const next = [...value];
+    [next[i], next[j]] = [next[j]!, next[i]!];
+    onChange(next);
+  };
+  async function upload(i: number, file: File | undefined) {
+    if (!file) return;
+    setBusy(i);
+    try {
+      patch(i, { image: await uploadMedia(file, "projects") });
+    } catch (e) {
+      toast.error(errMsg(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+  return (
+    <div className="space-y-2.5">
+      {value.map((it, i) => (
+        <div key={i} className="flex gap-3 rounded-sm border border-border bg-paper/60 p-2.5">
+          <span className="mt-2 w-5 shrink-0 text-center text-[12.5px] font-bold text-accent-deep">
+            {i + 1}
+          </span>
+          <div className="relative size-16 shrink-0 overflow-hidden rounded-sm border border-dashed border-border bg-card">
+            {it.image ? (
+              <img src={it.image} alt="" className="size-full object-cover" />
+            ) : (
+              <ImagePlus className="absolute inset-0 m-auto size-5 text-muted-foreground" />
+            )}
+            {busy === i && (
+              <span className="absolute inset-0 grid place-items-center bg-card/80">
+                <Loader2 className="size-4 animate-spin text-primary" />
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <textarea
+              className={`${inputCls} py-2 text-[13.5px]`}
+              rows={2}
+              value={it.text}
+              placeholder="Describe the achievement…"
+              onChange={(e) => patch(i, { text: e.target.value })}
+            />
+            <div className="mt-1.5 flex flex-wrap gap-3 text-[12.5px] font-bold">
+              <label className="cursor-pointer text-primary hover:underline">
+                {it.image ? "Replace photo" : "Add photo"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => void upload(i, e.target.files?.[0])}
+                />
+              </label>
+              {it.image && (
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={() => patch(i, { image: "" })}
+                >
+                  Remove photo
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex shrink-0 flex-col gap-1">
+            <button
+              type="button"
+              className={abtn.icon}
+              aria-label="Move up"
+              disabled={i === 0}
+              onClick={() => move(i, -1)}
+            >
+              <ArrowUp className="size-4" />
+            </button>
+            <button
+              type="button"
+              className={abtn.icon}
+              aria-label="Move down"
+              disabled={i === value.length - 1}
+              onClick={() => move(i, 1)}
+            >
+              <ArrowDown className="size-4" />
+            </button>
+            <button
+              type="button"
+              className={abtn.icon}
+              aria-label="Remove"
+              onClick={() => onChange(value.filter((_, j) => j !== i))}
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        className={abtn.outline}
+        onClick={() => onChange([...value, { text: "", image: "" }])}
+      >
+        <Plus className="size-4" /> Add achievement
+      </button>
     </div>
   );
 }

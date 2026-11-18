@@ -112,7 +112,16 @@ export const IMAGE_SLOTS = [
 export type ImageKey = (typeof IMAGE_SLOTS)[number]["key"];
 export type ImageSettings = Record<ImageKey, string>;
 
+/** Text and portrait for the achievements carousel + the /achievements page. */
+export type AchievementsSettings = {
+  pageTitle: string;
+  pageIntro: string;
+  tagline: string; // the flyer's "LET'S DO MORE"
+  portrait: string;
+};
+
 export type SiteSettings = {
+  achievements: AchievementsSettings;
   contact: ContactSettings;
   socials: SocialSettings;
   home: HomeSettings;
@@ -176,6 +185,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     showEmblems: true,
   },
   images: DEFAULT_IMAGES,
+  achievements: {
+    pageTitle: "10 major achievements in every local government",
+    pageIntro:
+      "Every project delivered across Oyo Central, local government by local government, plus the Senator's work on the floor of the Senate.",
+    tagline: "Let's do more",
+    portrait: "/brand/support-portrait.jpg",
+  },
 };
 
 export function mergeSettings(
@@ -188,7 +204,8 @@ export function mergeSettings(
       row.key === "socials" ||
       row.key === "home" ||
       row.key === "footer" ||
-      row.key === "images"
+      row.key === "images" ||
+      row.key === "achievements"
     ) {
       // Empty strings mean "use the default" so a cleared field never blanks the site.
       const clean = Object.fromEntries(

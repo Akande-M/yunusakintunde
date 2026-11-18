@@ -20,7 +20,10 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import type { AchievementCard } from "@/lib/achievements-data";
+import { useSiteSettings } from "@/lib/use-settings";
+import { btn } from "@/components/site/ui";
 import { AutoCarousel } from "@/components/site/AutoCarousel";
 import { Eyebrow } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
@@ -50,12 +53,12 @@ const ICON_RULES: [RegExp, Icon][] = [
   [/youth|empower|training|beneficiar/i, Users],
 ];
 
-function iconFor(text: string): Icon {
+export function iconFor(text: string): Icon {
   return ICON_RULES.find(([re]) => re.test(text))?.[1] ?? CheckCircle2;
 }
 
 /** Bolds the figures (714, ₦50,000, 8km…) so the scale reads at a glance. Years and bill numbers stay plain. */
-function Emphasised({ text }: { text: string }) {
+export function Emphasised({ text }: { text: string }) {
   const parts = text.split(/(₦[\d,]+|\b\d[\d,]*(?:km)?\b)/g);
   return (
     <>
@@ -75,7 +78,62 @@ function Emphasised({ text }: { text: string }) {
   );
 }
 
+/** The flyer's "LET'S DO MORE" sign-off: the Senator's portrait with the stacked tagline and a red swoosh. */
+export function LetsDoMore({
+  portrait,
+  tagline,
+  compact = false,
+}: {
+  portrait: string;
+  tagline: string;
+  compact?: boolean;
+}) {
+  const words = tagline.toUpperCase().split(/\s+/).filter(Boolean);
+  return (
+    <div className="flex items-center gap-4 rounded-lg bg-paper p-3 pr-4 text-left">
+      <span
+        className={`shrink-0 overflow-hidden rounded-full border-4 border-accent bg-paper ${compact ? "size-20" : "size-24"}`}
+      >
+        <img
+          src={portrait}
+          alt="Senator Yunus Abiodun Akintunde, PhD"
+          className="size-full object-cover object-[50%_18%]"
+          loading="lazy"
+        />
+      </span>
+      {words.length > 0 && (
+        <span className="relative inline-block pb-2">
+          <span
+            className={`block font-sans leading-[0.92] font-black tracking-tight text-[#8f1d24] italic ${compact ? "text-[22px]" : "text-[26px]"}`}
+          >
+            {words.map((w, i) => (
+              <span key={i} className="block">
+                {w}
+              </span>
+            ))}
+          </span>
+          <svg
+            aria-hidden
+            viewBox="0 0 120 14"
+            className="absolute -bottom-0.5 left-0 h-3 w-[110%]"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M2 11 C 40 3, 80 2, 118 4"
+              fill="none"
+              stroke="#d3262f"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+      )}
+    </div>
+  );
+}
+
 function LgaCard({ card }: { card: AchievementCard }) {
+  const { achievements: page } = useSiteSettings();
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(false);
 
@@ -115,27 +173,30 @@ function LgaCard({ card }: { card: AchievementCard }) {
             {card.heading.replace(/^\s*\d+\s*/, "").toLowerCase()}
           </p>
         </div>
-        {card.extraItems.length > 0 && (
-          <div className="border-t border-on-dark-line pt-4">
-            <div className="mb-2 text-[11.5px] font-bold tracking-[0.08em] text-accent uppercase">
-              {card.extraHeading || "Also"}
+        <div className="space-y-5">
+          {card.extraItems.length > 0 && (
+            <div className="border-t border-on-dark-line pt-4">
+              <div className="mb-2 text-[11.5px] font-bold tracking-[0.08em] text-accent uppercase">
+                {card.extraHeading || "Also"}
+              </div>
+              <ul className="space-y-1.5 text-[13px] text-on-dark">
+                {card.extraItems.map((x, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span aria-hidden className="text-accent">
+                      ◆
+                    </span>
+                    {x}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-1.5 text-[13px] text-on-dark">
-              {card.extraItems.map((x, i) => (
-                <li key={i} className="flex gap-2">
-                  <span aria-hidden className="text-accent">
-                    ◆
-                  </span>
-                  {x}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          )}
+          {page.portrait && <LetsDoMore portrait={page.portrait} tagline={page.tagline} compact />}
+        </div>
       </header>
       <ol className="grid content-start gap-x-6 gap-y-1 p-5 sm:p-7 md:grid-cols-2">
         {card.items.map((item, i) => {
-          const Ico = iconFor(item);
+          const Ico = iconFor(item.text);
           return (
             <li
               key={i}
@@ -149,7 +210,7 @@ function LgaCard({ card }: { card: AchievementCard }) {
               </span>
               <Ico className="mt-0.5 size-5 shrink-0 text-accent-deep" aria-hidden />
               <span className="text-[14px] leading-snug text-foreground">
-                <Emphasised text={item} />
+                <Emphasised text={item.text} />
               </span>
             </li>
           );
@@ -160,23 +221,29 @@ function LgaCard({ card }: { card: AchievementCard }) {
 }
 
 export function AchievementsSection({ cards }: { cards: AchievementCard[] }) {
+  const pageTitle = useSiteSettings().achievements.pageTitle;
   if (cards.length === 0) return null;
   const lgas = cards.filter((c) => c.zone.toLowerCase() !== "senate").length;
   return (
     <section className="bg-paper-2 py-16 sm:py-20" aria-labelledby="achievements-title">
       <div className="wrap">
-        <Reveal className="mb-8 max-w-[62ch]">
-          <Eyebrow>Major achievements</Eyebrow>
-          <h2
-            id="achievements-title"
-            className="mt-3 font-serif text-[30px] leading-tight font-semibold text-primary-deep sm:text-[38px]"
-          >
-            10 major achievements in every local government
-          </h2>
-          <p className="mt-3 text-[15.5px] text-muted-foreground">
-            Project by project, across {lgas} local governments in Oyo Central, plus the Senator's
-            work on the floor of the Senate.
-          </p>
+        <Reveal className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-[62ch]">
+            <Eyebrow>Major achievements</Eyebrow>
+            <h2
+              id="achievements-title"
+              className="mt-3 font-serif text-[30px] leading-tight font-semibold text-primary-deep sm:text-[38px]"
+            >
+              {pageTitle}
+            </h2>
+            <p className="mt-3 text-[15.5px] text-muted-foreground">
+              Project by project, across {lgas} local governments in Oyo Central, plus the Senator's
+              work on the floor of the Senate.
+            </p>
+          </div>
+          <Link to="/achievements" className={`${btn.outline} shrink-0 self-start sm:self-auto`}>
+            View all achievements →
+          </Link>
         </Reveal>
         <AutoCarousel label="Major achievements by local government" interval={9000} arrows>
           {cards.map((c) => (

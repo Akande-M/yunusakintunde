@@ -3,16 +3,21 @@
  * Used as the fallback when the database is unreachable and as the seed for the
  * `achievement_cards` table. Editors maintain the live copy in /admin/achievements.
  */
+/** One achievement. `image` is an optional photo of that project (uploaded in the CMS). */
+export type AchievementItem = { text: string; image: string };
+
 export type AchievementCard = {
   title: string; // e.g. "Akinyele Local Government"
   zone: string; // e.g. "Ibadan"
   heading: string; // heading for the main list
-  items: string[];
+  items: AchievementItem[];
   extraHeading: string; // optional second list, e.g. "Schools renovated" or "Motions"
   extraItems: string[];
 };
 
-export const ACHIEVEMENTS: AchievementCard[] = [
+type RawCard = Omit<AchievementCard, "items"> & { items: string[] };
+
+const RAW: RawCard[] = [
   {
     title: "Ogo Oluwa Local Government",
     zone: "Ogbomoso",
@@ -184,3 +189,23 @@ export const ACHIEVEMENTS: AchievementCard[] = [
     ],
   },
 ];
+
+/** Accepts the stored shape (plain strings from the first version, or {text, image}). */
+export function normalizeItems(v: unknown): AchievementItem[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((x): AchievementItem =>
+      typeof x === "string"
+        ? { text: x, image: "" }
+        : {
+            text: String((x as AchievementItem)?.text ?? ""),
+            image: String((x as AchievementItem)?.image ?? ""),
+          },
+    )
+    .filter((x) => x.text.trim());
+}
+
+export const ACHIEVEMENTS: AchievementCard[] = RAW.map((c) => ({
+  ...c,
+  items: normalizeItems(c.items),
+}));

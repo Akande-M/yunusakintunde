@@ -12,7 +12,7 @@ import {
   type Project,
 } from "@/lib/site-data";
 import { STATIC_ARTICLES } from "@/lib/static-articles";
-import { ACHIEVEMENTS, type AchievementCard } from "@/lib/achievements-data";
+import { ACHIEVEMENTS, normalizeItems, type AchievementCard } from "@/lib/achievements-data";
 import { DEFAULT_SETTINGS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
 
 /*
@@ -336,7 +336,7 @@ export function getAchievements(): Promise<AchievementCard[]> {
         title: r.title,
         zone: r.zone,
         heading: r.heading,
-        items: strList(r.items),
+        items: normalizeItems(r.items),
         extraHeading: r.extra_heading,
         extraItems: strList(r.extra_items),
       })),

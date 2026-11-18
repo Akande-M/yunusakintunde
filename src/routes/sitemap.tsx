@@ -27,6 +27,11 @@ const PAGES = [
   { to: "/biography", label: "Biography", d: "Education, business and public-service timeline." },
   { to: "/news", label: "News", d: "Senate floor, constituency and campaign-trail updates." },
   { to: "/media", label: "Media", d: "Photos and video from office and the campaign trail." },
+  {
+    to: "/achievements",
+    label: "Major Achievements",
+    d: "Every project delivered, local government by local government.",
+  },
   { to: "/support", label: "Support", d: "Share the “I support Senator Akintunde for 2027” card." },
   { to: "/get-involved", label: "Get Involved", d: "Volunteer, sign up, or contact the office." },
   { to: "/privacy", label: "Privacy Policy", d: "How supporter data is handled." },

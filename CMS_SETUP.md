@@ -89,3 +89,13 @@ tool's webhook URL. The form only tells a visitor "success" if at least one of t
   previews. If the support photo is changed, ask a developer to regenerate it.
 - Database: apply `supabase/migrations/20261118090000_cms_achievements.sql`
   (and `20261117090000_cms_images_footer_copy.sql` if not applied yet).
+
+## Update 5 (Nov 2026): View all achievements + photos
+
+- **/achievements** shows every card at a glance: totals strip (LGAs, projects, streetlights,
+  patients, added up from the wording), zone filter, and a photo tile for every achievement.
+- **Admin → Achievements:** page heading/intro, the "Let's do more" tagline and the Senator's
+  portrait (shown on every carousel card), and an **Add photo** button on every achievement.
+  Achievements without a photo show a matching icon.
+- Use only real photos of the actual projects. Don't use stock or internet images.
+- Database: apply `supabase/migrations/20261118120000_cms_achievements_page.sql`.
