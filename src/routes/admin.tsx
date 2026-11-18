@@ -9,6 +9,7 @@ import {
   Loader2,
   LogOut,
   PenSquare,
+  Trophy,
   Users,
   UserPlus,
 } from "lucide-react";
@@ -207,6 +208,7 @@ const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/news", label: "News", icon: PenSquare },
   { to: "/admin/media", label: "Media gallery", icon: Images },
+  { to: "/admin/achievements", label: "Achievements", icon: Trophy },
   { to: "/admin/record", label: "Record & Agenda", icon: ListChecks },
   { to: "/admin/content", label: "Site content", icon: FileText },
   { to: "/admin/signups", label: "Sign-ups", icon: UserPlus },

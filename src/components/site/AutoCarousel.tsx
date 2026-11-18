@@ -1,4 +1,5 @@
 import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Children, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
@@ -14,6 +15,7 @@ export function AutoCarousel({
   label,
   dots = true,
   dotsClassName = "",
+  arrows = false,
 }: {
   children: ReactNode;
   interval?: number;
@@ -22,6 +24,7 @@ export function AutoCarousel({
   label: string;
   dots?: boolean;
   dotsClassName?: string;
+  arrows?: boolean;
 }) {
   const slides = Children.toArray(children);
   const [viewportRef, api] = useEmblaCarousel({
@@ -88,7 +91,17 @@ export function AutoCarousel({
         </div>
       </div>
       {dots && snaps.length > 1 && (
-        <div className={`mt-4 flex justify-center gap-2 ${dotsClassName}`}>
+        <div className={`mt-4 flex items-center justify-center gap-2 ${dotsClassName}`}>
+          {arrows && (
+            <button
+              type="button"
+              aria-label="Previous"
+              onClick={() => api?.scrollPrev()}
+              className="mr-2 grid size-9 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary-deep hover:border-primary"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+          )}
           {snaps.map((_, i) => (
             <button
               key={i}
@@ -101,6 +114,16 @@ export function AutoCarousel({
               }`}
             />
           ))}
+          {arrows && (
+            <button
+              type="button"
+              aria-label="Next"
+              onClick={() => api?.scrollNext()}
+              className="ml-2 grid size-9 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary-deep hover:border-primary"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          )}
         </div>
       )}
     </div>

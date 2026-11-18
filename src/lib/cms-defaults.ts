@@ -64,6 +64,12 @@ export const IMAGE_SLOTS = [
     default: img.portraitStanding,
   },
   {
+    key: "supportPhoto",
+    label: "Support card photo",
+    where: "The shareable “I SUPPORT” card on the Support page (shown in a circle)",
+    default: "/hero/hero-fist.jpg",
+  },
+  {
     key: "filmCover",
     label: "Campaign film cover",
     where: "Homepage green band, until a film is added",
@@ -90,6 +96,9 @@ export const IMAGE_SLOTS = [
     default: thumbprint.url,
   },
 ] as const;
+
+/** The default support photo is wide with the face on the right; keep it in the circle. */
+export const DEFAULT_SUPPORT_PHOTO_FOCUS_X = 0.78;
 
 export type ImageKey = (typeof IMAGE_SLOTS)[number]["key"];
 export type ImageSettings = Record<ImageKey, string>;

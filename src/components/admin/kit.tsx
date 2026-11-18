@@ -295,6 +295,7 @@ export type FieldDef =
       hint?: string;
     }
   | { name: string; label: string; type: "toggle"; hint?: string }
+  | { name: string; label: string; type: "lines"; hint?: string; rows?: number; required?: boolean }
   | {
       name: string;
       label: string;
@@ -362,6 +363,25 @@ export function FieldsForm({
                   </option>
                 ))}
               </select>
+            </Field>
+          );
+        }
+        if (f.type === "lines") {
+          const text = Array.isArray(v) ? v.join("\n") : String(v ?? "");
+          const count = text.split("\n").filter((l) => l.trim()).length;
+          return (
+            <Field
+              key={f.name}
+              label={`${f.label}${f.required ? " *" : ""} (${count})`}
+              hint={f.hint ?? "One item per line."}
+              warn={placeholderWarning(text)}
+            >
+              <textarea
+                className={inputCls}
+                rows={f.rows ?? 8}
+                value={text}
+                onChange={(e) => set(f.name, e.target.value)}
+              />
             </Field>
           );
         }
@@ -493,7 +513,15 @@ export function Collection({
     }
     setSaving(true);
     const payload: Row = {};
-    for (const f of fields) payload[f.name] = editing[f.name] ?? null;
+    for (const f of fields) {
+      const v = editing[f.name];
+      payload[f.name] =
+        f.type === "lines"
+          ? (Array.isArray(v) ? v : String(v ?? "").split("\n"))
+              .map((l) => String(l).trim())
+              .filter(Boolean)
+          : (v ?? null);
+    }
     const { error } = editing["id"]
       ? await db
           .from(table)

@@ -12,6 +12,7 @@ import {
   type Project,
 } from "@/lib/site-data";
 import { STATIC_ARTICLES } from "@/lib/static-articles";
+import { ACHIEVEMENTS, type AchievementCard } from "@/lib/achievements-data";
 import { DEFAULT_SETTINGS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
 
 /*
@@ -305,5 +306,40 @@ export function getSettings(): Promise<SiteSettings> {
         must<{ key: string; value: unknown }[]>(await db.from("site_settings").select("key,value")),
       ),
     () => structuredClone(DEFAULT_SETTINGS),
+  );
+}
+
+// ---------------------------------------------------------------- achievements
+type AchievementRow = {
+  title: string;
+  zone: string;
+  heading: string;
+  items: unknown;
+  extra_heading: string;
+  extra_items: unknown;
+};
+
+const strList = (v: unknown) => (Array.isArray(v) ? v.map(String).filter((s) => s.trim()) : []);
+
+export function getAchievements(): Promise<AchievementCard[]> {
+  return safe(
+    "achievements",
+    async () =>
+      must<AchievementRow[]>(
+        await db
+          .from("achievement_cards")
+          .select("title,zone,heading,items,extra_heading,extra_items")
+          .eq("published", true)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+      ).map((r) => ({
+        title: r.title,
+        zone: r.zone,
+        heading: r.heading,
+        items: strList(r.items),
+        extraHeading: r.extra_heading,
+        extraItems: strList(r.extra_items),
+      })),
+    () => ACHIEVEMENTS,
   );
 }

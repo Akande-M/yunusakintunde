@@ -73,3 +73,18 @@ tool's webhook URL. The form only tells a visitor "success" if at least one of t
   regenerates `integrations/supabase/types.ts`.
 - Not yet in the CMS (still in code): the Biography page and the three "evidence" cards on Record &
   Agenda. The site header name and role also still come from `src/lib/site-data.ts`.
+
+## Update 3 (Nov 2026): Major achievements + Support page
+
+- **Homepage → Major achievements:** one card per local government (7 at launch) plus a
+  Legislative Duties card, sliding right to left on their own. Editors manage them under
+  **Admin → Achievements**: one achievement per line; figures are bolded and icons picked
+  automatically. Add Oyo zone LGAs there.
+- **/support:** the shareable "I SUPPORT SENATOR AKINTUNDE FOR 2027" card. On phones,
+  "Share image" sends the picture itself to WhatsApp/Status/Instagram/Facebook. On computers it
+  downloads, and link shares show the card as their preview. The photo is replaceable under
+  Site content → Images → "Support card photo".
+- `public/support-card.jpg` is the pre-made preview image used by WhatsApp/Facebook link
+  previews. If the support photo is changed, ask a developer to regenerate it.
+- Database: apply `supabase/migrations/20261118090000_cms_achievements.sql`
+  (and `20261117090000_cms_images_footer_copy.sql` if not applied yet).

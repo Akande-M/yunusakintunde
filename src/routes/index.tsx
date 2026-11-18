@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
+import { getAchievements, getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
+import { AchievementsSection } from "@/components/site/Achievements";
 import { useSiteSettings } from "@/lib/use-settings";
 import { AutoCarousel } from "@/components/site/AutoCarousel";
 import { Play } from "lucide-react";
@@ -26,8 +27,12 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const [news, endorsements] = await Promise.all([getNewsList(9), getEndorsements()]);
-    return { news, endorsements };
+    const [news, endorsements, achievements] = await Promise.all([
+      getNewsList(9),
+      getEndorsements(),
+      getAchievements(),
+    ]);
+    return { news, endorsements, achievements };
   },
   component: Home,
 });
@@ -78,7 +83,7 @@ function CampaignVideo({ url, caption }: { url: string; caption: string }) {
 }
 
 function Home() {
-  const { news, endorsements } = Route.useLoaderData();
+  const { news, endorsements, achievements } = Route.useLoaderData();
   const { home, images } = useSiteSettings();
   const headlineStat = home.stats[0];
 
@@ -96,7 +101,7 @@ function Home() {
                 {home.heroBody}
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
-                <Link to="/get-involved" className={btn.gold}>
+                <Link to="/support" className={btn.gold}>
                   Support Senator Akintunde in 2027
                 </Link>
                 <Link to="/record-agenda" className={btn.outline}>
@@ -159,6 +164,8 @@ function Home() {
           </dl>
         </div>
       </section>
+
+      <AchievementsSection cards={achievements} />
 
       <section className="py-16 sm:py-19">
         <div className="wrap">

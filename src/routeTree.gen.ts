@@ -18,7 +18,9 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecordAgendaRouteImport } from './routes/record-agenda'
 import { Route as SitemapRouteImport } from './routes/sitemap'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAchievementsRouteImport } from './routes/admin.achievements'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminRecordRouteImport } from './routes/admin.record'
@@ -75,9 +77,19 @@ const SitemapRoute = SitemapRouteImport.update({
   path: '/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAchievementsRoute = AdminAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminContentRoute = AdminContentRouteImport.update({
@@ -141,6 +153,8 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/support': typeof SupportRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
@@ -161,6 +175,8 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/support': typeof SupportRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
@@ -184,6 +200,8 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/record-agenda': typeof RecordAgendaRoute
   '/sitemap': typeof SitemapRoute
+  '/support': typeof SupportRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
@@ -208,6 +226,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/support'
+    | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
@@ -228,6 +248,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/support'
+    | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
@@ -250,6 +272,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/record-agenda'
     | '/sitemap'
+    | '/support'
+    | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
@@ -273,6 +297,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RecordAgendaRoute: typeof RecordAgendaRoute
   SitemapRoute: typeof SitemapRoute
+  SupportRoute: typeof SupportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -340,11 +365,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/achievements': {
+      id: '/admin/achievements'
+      path: '/achievements'
+      fullPath: '/admin/achievements'
+      preLoaderRoute: typeof AdminAchievementsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/content': {
@@ -421,6 +460,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAchievementsRoute: typeof AdminAchievementsRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminRecordRoute: typeof AdminRecordRoute
@@ -433,6 +473,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAchievementsRoute: AdminAchievementsRoute,
   AdminContentRoute: AdminContentRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminRecordRoute: AdminRecordRoute,
@@ -468,6 +509,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RecordAgendaRoute: RecordAgendaRoute,
   SitemapRoute: SitemapRoute,
+  SupportRoute: SupportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
