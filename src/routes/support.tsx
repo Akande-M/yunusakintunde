@@ -63,10 +63,8 @@ function Support() {
         photoUrl: images.supportPhoto,
         apcLogoUrl: images.supportApc,
         sealUrl: images.supportSeal,
-        // Print the real domain on the card, never a local or preview address.
-        siteHost: /^(localhost|127\.|\[::1\])/.test(window.location.host)
-          ? ""
-          : window.location.host,
+        // The campaign's public web address, printed on every shared card.
+        siteHost: "yunusakintunde.com",
       });
       const blob = await canvasToBlob(canvas);
       if (!alive || !blob) return;
