@@ -264,24 +264,30 @@ function Home() {
       <section className="py-16 sm:py-19">
         <div className="wrap">
           <SectionHead eyebrow="Endorsements" title="Standing with Akintunde 2027" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {endorsements.map((e, i) => (
-              <Reveal
-                key={e.name}
-                delay={i * 90}
-                as="article"
-                className="border-l-2 border-accent bg-card py-6 pr-6 pl-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_26px_rgba(18,52,36,.1)]"
-              >
-                <blockquote className="font-serif text-[17px] leading-relaxed text-foreground italic">
-                  “{e.quote}”
-                </blockquote>
-                <div className="mt-4">
-                  <span className="block text-sm font-bold text-primary-deep">{e.name}</span>
-                  <span className="block text-[13px] text-muted-foreground">{e.role}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <AutoCarousel
+              label="Endorsements for Senator Akintunde"
+              interval={5000}
+              gapClassName="-ml-5"
+              slideClassName="basis-full pl-5 sm:basis-1/2"
+              arrows
+            >
+              {endorsements.map((e) => (
+                <article
+                  key={e.name + e.role}
+                  className="flex h-full flex-col border-l-2 border-accent bg-card py-6 pr-6 pl-6 transition-shadow duration-300 hover:shadow-[0_10px_26px_rgba(18,52,36,.1)]"
+                >
+                  <blockquote className="font-serif text-[17px] leading-relaxed text-foreground italic">
+                    “{e.quote.replace(/^“|”$/g, "")}”
+                  </blockquote>
+                  <div className="mt-auto pt-4">
+                    <span className="block text-sm font-bold text-primary-deep">{e.name}</span>
+                    <span className="block text-[13px] text-muted-foreground">{e.role}</span>
+                  </div>
+                </article>
+              ))}
+            </AutoCarousel>
+          </Reveal>
         </div>
       </section>
 
