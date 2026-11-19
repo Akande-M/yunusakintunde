@@ -53,7 +53,7 @@ export function Header() {
           </span>
           <span className="hidden sm:block">
             <Link to="/get-involved" className={btn.gold}>
-              Get Involved
+              Get Intouch
             </Link>
           </span>
           <button
