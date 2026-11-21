@@ -110,3 +110,33 @@ tool's webhook URL. The form only tells a visitor "success" if at least one of t
 - Admin dashboard → **Check all images** lists any image visitors can't see, with a Fix link.
 - Storage: the `media` bucket must be **public**
   (`supabase/migrations/20261118140000_media_bucket_public.sql`).
+
+## Update 7 (Nov 2026): moved off Lovable hosting + contact lists
+
+**Sign-ups → Email list / Phone list:** one sheet each (duplicates removed, newest details
+kept, numbers also given in +234 WhatsApp format). Export to **Excel** or **PDF**, or **Copy all**
+(emails comma-separated for BCC, numbers one per line). The interest filter and search apply.
+
+**Hosting:** the site now builds with standard tooling and deploys to **Vercel** (see README).
+The database, logins and uploaded photos stay on **Lovable Cloud**.
+
+### Go-live order (important)
+1. In the Lovable chat, apply these migrations **in this order** *before* switching to Vercel
+   (the new sign-up form relies on step c):
+   a. `20261118120000_cms_achievements_page.sql` (skip if already applied)
+   b. `20261118140000_media_bucket_public.sql` (harmless if storage is already public)
+   c. `20261121090000_no_service_role.sql`
+   d. `20261121100000_self_hosted_image_urls.sql`
+2. Lovable → Cloud → Users → Auth settings: keep **sign-ups enabled**; add your Vercel URL and
+   `https://yunusakintunde.com/**` to the allowed redirect URLs.
+3. Deploy to Vercel (README). The build downloads the 20 built-in images automatically;
+   run `npm run images` once locally and commit `public/site-images/` to remove the last
+   dependency on Lovable hosting.
+4. Point `yunusakintunde.com` at Vercel (Vercel → Domains shows the DNS records).
+5. In Lovable → Project settings → GitHub: **disconnect** the repo, so Lovable's builder no longer
+   edits this code. Keep the Lovable project itself: it hosts the database.
+
+### Team changes
+Adding staff no longer creates passwords. **Team → Invite**: the person creates their own
+account at `/admin` ("Invited? Create your account"), confirms their email, and is given the
+role automatically. Password resets are emailed ("Forgot password?" / key icon on Team).
