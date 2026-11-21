@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { createClientOnlyFn } from "@tanstack/react-start";
 
 /*
  * Turns sign-ups into two clean contact lists, one person per row:
@@ -89,7 +90,7 @@ export function phoneList(rows: SignupLike[]): PhoneRow[] {
 
 const stamp = () => format(new Date(), "yyyy-MM-dd");
 
-export async function exportEmailsXlsx(rows: EmailRow[]) {
+export const exportEmailsXlsx = createClientOnlyFn(async (rows: EmailRow[]) => {
   const { default: writeXlsxFile } = await import("write-excel-file");
   await writeXlsxFile(rows, {
     schema: [
@@ -102,9 +103,9 @@ export async function exportEmailsXlsx(rows: EmailRow[]) {
     sheet: "Email list",
     fileName: `akintunde-2027-email-list-${stamp()}.xlsx`,
   });
-}
+});
 
-export async function exportPhonesXlsx(rows: PhoneRow[]) {
+export const exportPhonesXlsx = createClientOnlyFn(async (rows: PhoneRow[]) => {
   const { default: writeXlsxFile } = await import("write-excel-file");
   // Numbers are written as text so Excel keeps the leading 0 and the +.
   await writeXlsxFile(rows, {
@@ -124,9 +125,9 @@ export async function exportPhonesXlsx(rows: PhoneRow[]) {
     sheet: "Phone list",
     fileName: `akintunde-2027-phone-list-${stamp()}.xlsx`,
   });
-}
+});
 
-async function pdf(title: string, head: string[], body: string[][], fileName: string) {
+const pdf = createClientOnlyFn(async (title: string, head: string[], body: string[][], fileName: string) => {
   const [{ jsPDF }, { default: autoTable }] = await Promise.all([
     import("jspdf"),
     import("jspdf-autotable"),
@@ -163,7 +164,7 @@ async function pdf(title: string, head: string[], body: string[][], fileName: st
     },
   });
   doc.save(fileName);
-}
+});
 
 export function exportEmailsPdf(rows: EmailRow[]) {
   return pdf(

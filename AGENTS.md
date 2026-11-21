@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Default production builds to Nitro's `cloudflare-pages` preset so Lovable receives `dist/`; use `vercel` when `VERCEL=1` and honor explicit `NITRO_PRESET` overrides to preserve other hosting targets.
+- Wrap browser-only contact export library imports in `createClientOnlyFn` so PDF and spreadsheet downloads stay out of the Worker SSR import graph.
