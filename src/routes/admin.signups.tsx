@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "@/components/admin/kit";
 import { useAdminAuth } from "@/components/admin/auth";
+import { ContactListView } from "@/components/admin/ContactListView";
 
 export const Route = createFileRoute("/admin/signups")({
   component: Signups,
@@ -58,6 +59,7 @@ function Signups() {
   const [q, setQ] = useState("");
   const [intent, setIntent] = useState("all");
   const [show, setShow] = useState<"open" | "all">("open");
+  const [view, setView] = useState<"people" | "emails" | "phones">("people");
 
   const load = useCallback(async () => {
     const { data, error } = await db
@@ -82,6 +84,18 @@ function Signups() {
           )),
     );
   }, [rows, q, intent, show]);
+
+  const filteredForLists = useMemo(() => {
+    const needle = q.toLowerCase();
+    return (rows ?? []).filter(
+      (r) =>
+        (intent === "all" || r.intent === intent) &&
+        (!needle ||
+          [r.full_name, r.email, r.phone, r.lga_ward].some((x) =>
+            x.toLowerCase().includes(needle),
+          )),
+    );
+  }, [rows, q, intent]);
 
   async function setHandled(r: Signup, handled: boolean) {
     setRows((prev) => prev?.map((x) => (x.id === r.id ? { ...x, handled } : x)) ?? null);
@@ -150,12 +164,38 @@ function Signups() {
         title="Sign-ups"
         sub="Everyone who filled in the Get Involved form. Tick “Followed up” once someone has contacted them."
         action={
-          <button className={abtn.outline} onClick={exportCsv} disabled={!shown.length}>
-            <Download className="size-4" /> Export {shown.length} to Excel (CSV)
-          </button>
+          view === "people" ? (
+            <button className={abtn.outline} onClick={exportCsv} disabled={!shown.length}>
+              <Download className="size-4" /> Export {shown.length} to Excel (CSV)
+            </button>
+          ) : undefined
         }
       />
-      <div className="mb-4 grid gap-2 sm:grid-cols-[1fr_220px_170px]">
+      <div
+        role="tablist"
+        className="mb-4 inline-flex flex-wrap gap-1 rounded-sm border border-border bg-card p-1"
+      >
+        {(
+          [
+            ["people", "Sign-ups"],
+            ["emails", "Email list"],
+            ["phones", "Phone list"],
+          ] as const
+        ).map(([k, label]) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={view === k}
+            onClick={() => setView(k)}
+            className={`min-h-9 rounded-sm px-4 text-[13px] font-bold ${view === k ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div
+        className={`mb-4 grid gap-2 ${view === "people" ? "sm:grid-cols-[1fr_220px_170px]" : "sm:grid-cols-[1fr_220px]"}`}
+      >
         <input
           className={inputCls}
           placeholder="Search name, phone, email, ward…"
@@ -168,16 +208,22 @@ function Signups() {
             <option key={i}>{i}</option>
           ))}
         </select>
-        <select
-          className={inputCls}
-          value={show}
-          onChange={(e) => setShow(e.target.value as typeof show)}
-        >
-          <option value="open">Not yet followed up</option>
-          <option value="all">Everyone</option>
-        </select>
+        {view === "people" && (
+          <select
+            className={inputCls}
+            value={show}
+            onChange={(e) => setShow(e.target.value as typeof show)}
+          >
+            <option value="open">Not yet followed up</option>
+            <option value="all">Everyone</option>
+          </select>
+        )}
       </div>
       {!rows ? (
+        <Spinner />
+      ) : view !== "people" ? (
+        <ContactListView kind={view} rows={filteredForLists} />
+      ) : !rows ? (
         <Spinner />
       ) : shown.length === 0 ? (
         <p className="text-sm text-muted-foreground">No sign-ups match.</p>

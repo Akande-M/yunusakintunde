@@ -1,3 +1,5 @@
+import { siteUrl } from "@/lib/asset-url";
+
 /**
  * "10 Major Achievements" per LGA, transcribed from the campaign flyers (Nov 2026).
  * Used as the fallback when the database is unreachable and as the seed for the
@@ -199,7 +201,7 @@ export function normalizeItems(v: unknown): AchievementItem[] {
         ? { text: x, image: "" }
         : {
             text: String((x as AchievementItem)?.text ?? ""),
-            image: String((x as AchievementItem)?.image ?? ""),
+            image: siteUrl(String((x as AchievementItem)?.image ?? "")),
           },
     )
     .filter((x) => x.text.trim());

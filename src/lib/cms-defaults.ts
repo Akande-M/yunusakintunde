@@ -1,4 +1,5 @@
 import { SITE, img } from "@/lib/site-data";
+import { siteUrl } from "@/lib/asset-url";
 import apcMark from "@/assets/apc-mark.png.asset.json";
 import senateSeal from "@/assets/senate-seal.png.asset.json";
 import oyoArms from "@/assets/oyo-arms.png.asset.json";
@@ -216,7 +217,13 @@ export function mergeSettings(
       Object.assign(out[row.key], clean);
     }
   }
-  out.home.heroSlides = (out.home.heroSlides ?? []).filter((s) => s?.url);
+  out.home.heroSlides = (out.home.heroSlides ?? [])
+    .filter((s) => s?.url)
+    .map((s) => ({ ...s, url: siteUrl(s.url) }));
+  for (const k of Object.keys(out.images) as (keyof ImageSettings)[])
+    out.images[k] = siteUrl(out.images[k]);
+  out.achievements.portrait = siteUrl(out.achievements.portrait);
+  out.home.campaignVideoUrl = siteUrl(out.home.campaignVideoUrl);
   if (out.home.heroSlides.length === 0) out.home.heroSlides = DEFAULT_SETTINGS.home.heroSlides;
   if (!Array.isArray(out.home.stats) || out.home.stats.length === 0)
     out.home.stats = DEFAULT_SETTINGS.home.stats;

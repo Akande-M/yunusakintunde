@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/asset-url";
 import {
   AGENDA_2027,
   ENDORSEMENTS,
@@ -127,7 +128,7 @@ export function getNewsList(limit?: number): Promise<NewsCardData[]> {
         category: r.category,
         title: r.title,
         summary: r.summary,
-        image: r.hero_image_url || PLACEHOLDER_IMG,
+        image: siteUrl(r.hero_image_url) || PLACEHOLDER_IMG,
         alt: r.hero_alt,
         slug: r.body.trim() ? r.slug : undefined,
       }));
@@ -155,10 +156,12 @@ export function getArticle(slug: string): Promise<ArticleData | null> {
         title: r.title,
         date: longDate(r.published_at),
         category: r.category,
-        hero: r.hero_image_url || PLACEHOLDER_IMG,
+        hero: siteUrl(r.hero_image_url) || PLACEHOLDER_IMG,
         heroAlt: r.hero_alt,
         paragraphs: toParagraphs(r.body),
-        photos: Array.isArray(r.photos) ? r.photos.filter((p) => p?.url) : [],
+        photos: Array.isArray(r.photos)
+          ? r.photos.filter((p) => p?.url).map((p) => ({ ...p, url: siteUrl(p.url) }))
+          : [],
       };
     },
     fallback,
@@ -192,13 +195,13 @@ export function getGallery(): Promise<GalleryView[]> {
       return rows.map((r) => ({
         id: r.id,
         kind: r.kind,
-        url: r.url,
+        url: siteUrl(r.url),
         thumb:
           r.kind === "youtube"
-            ? r.thumbnail_url || youtubeThumb(r.url) || PLACEHOLDER_IMG
+            ? siteUrl(r.thumbnail_url) || youtubeThumb(r.url) || PLACEHOLDER_IMG
             : r.kind === "video"
-              ? r.thumbnail_url || ""
-              : r.url,
+              ? siteUrl(r.thumbnail_url) || ""
+              : siteUrl(r.url),
         alt: r.alt,
         caption: r.caption,
         category: r.category,
@@ -271,7 +274,7 @@ export function getRecord(): Promise<RecordData> {
           place: r.place,
           region: r.region,
           completed: r.completed_label,
-          image: r.image_url || PLACEHOLDER_IMG,
+          image: siteUrl(r.image_url) || PLACEHOLDER_IMG,
           alt: r.alt,
           ...(r.night ? { night: true } : {}),
         })),

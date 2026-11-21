@@ -33,7 +33,11 @@ function AdminRoot() {
   return (
     <AdminAuthProvider>
       <div className="min-h-screen bg-paper">
-        {pathname.startsWith("/admin/setup") ? <Outlet /> : <Gate />}
+        {pathname.startsWith("/admin/setup") || pathname.startsWith("/admin/reset") ? (
+          <Outlet />
+        ) : (
+          <Gate />
+        )}
       </div>
     </AdminAuthProvider>
   );
@@ -74,7 +78,8 @@ function Gate() {
         <h1 className="text-lg font-semibold">No admin access</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           You're signed in as {auth.session.user.email}, but this account hasn't been added to the
-          website team. Ask an admin to add you.
+          website team. Ask an admin to invite this exact email address, then sign out and sign in
+          again.
         </p>
         <button className={`${abtn.outline} mt-5 w-full`} onClick={() => void auth.signOut()}>
           Sign out
@@ -86,25 +91,102 @@ function Gate() {
 }
 
 function Login() {
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  function switchTo(m: typeof mode) {
+    setMode(m);
+    setError("");
+    setNotice("");
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    setNotice("");
+    const addr = email.trim().toLowerCase();
+    if (mode === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email: addr, password });
+      if (error) {
+        setError(
+          /confirm/i.test(error.message)
+            ? "Please confirm your email first. Open the link we emailed you, then sign in."
+            : /invalid/i.test(error.message)
+              ? "Wrong email or password."
+              : error.message,
+        );
+      }
+    } else if (mode === "signup") {
+      if (password.length < 10) {
+        setBusy(false);
+        setError("Use at least 10 characters for your password.");
+        return;
+      }
+      const { data, error } = await supabase.auth.signUp({
+        email: addr,
+        password,
+        options: {
+          data: { full_name: fullName.trim() },
+          emailRedirectTo: `${window.location.origin}/admin`,
+        },
+      });
+      if (error) setError(error.message);
+      else if (!data.session)
+        setNotice(
+          "Account created. We've emailed you a confirmation link: open it, then come back here and sign in.",
+        );
+    } else {
+      const { error } = await supabase.auth.resetPasswordForEmail(addr, {
+        redirectTo: `${window.location.origin}/admin/reset`,
+      });
+      if (error) setError(error.message);
+      else
+        setNotice(
+          "If that email has an account, a password reset link is on its way. Check your inbox.",
+        );
+    }
     setBusy(false);
-    if (error)
-      setError(/invalid/i.test(error.message) ? "Wrong email or password." : error.message);
   }
+
+  const title =
+    mode === "signin"
+      ? "Sign in"
+      : mode === "signup"
+        ? "Create your staff account"
+        : "Reset your password";
 
   return (
     <Centered>
-      <h1 className="mb-4 text-lg font-semibold">Sign in</h1>
-      <form onSubmit={submit}>
+      <h1 className="mb-1 text-lg font-semibold">{title}</h1>
+      {mode === "signup" && (
+        <p className="mb-4 text-[12.5px] text-muted-foreground">
+          Only for people an admin has invited. Use the exact email address the invite was sent to.
+        </p>
+      )}
+      {mode === "forgot" && (
+        <p className="mb-4 text-[12.5px] text-muted-foreground">
+          We'll email you a link to choose a new password.
+        </p>
+      )}
+      <form onSubmit={submit} className={mode === "signin" ? "mt-3" : ""}>
+        {mode === "signup" && (
+          <label className="mb-3 block">
+            <span className="mb-1.5 block text-[13px] font-bold">Full name</span>
+            <input
+              className={inputCls}
+              autoComplete="name"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+          </label>
+        )}
         <label className="mb-3 block">
           <span className="mb-1.5 block text-[13px] font-bold">Email</span>
           <input
@@ -116,29 +198,67 @@ function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="mb-4 block">
-          <span className="mb-1.5 block text-[13px] font-bold">Password</span>
-          <input
-            className={inputCls}
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+        {mode !== "forgot" && (
+          <label className="mb-4 block">
+            <span className="mb-1.5 block text-[13px] font-bold">
+              {mode === "signup" ? "Choose a password (10+ characters)" : "Password"}
+            </span>
+            <input
+              className={inputCls}
+              type="password"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+        )}
         {error && (
           <p role="alert" className="mb-3 text-[13px] font-semibold text-destructive">
             {error}
           </p>
         )}
+        {notice && (
+          <p
+            role="status"
+            className="mb-3 rounded-sm bg-primary-tint px-3 py-2 text-[13px] font-semibold text-primary"
+          >
+            {notice}
+          </p>
+        )}
         <button type="submit" className={`${abtn.primary} w-full`} disabled={busy}>
-          {busy && <Loader2 className="size-4 animate-spin" />} Sign in
+          {busy && <Loader2 className="size-4 animate-spin" />}{" "}
+          {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
         </button>
       </form>
-      <p className="mt-4 text-[12.5px] text-muted-foreground">
-        Forgot your password? Ask a website admin to reset it for you.
-      </p>
+      <div className="mt-4 flex flex-wrap justify-between gap-2 text-[12.5px] font-semibold">
+        {mode !== "signin" ? (
+          <button
+            type="button"
+            className="text-primary hover:underline"
+            onClick={() => switchTo("signin")}
+          >
+            ← Back to sign in
+          </button>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="text-primary hover:underline"
+              onClick={() => switchTo("forgot")}
+            >
+              Forgot password?
+            </button>
+            <button
+              type="button"
+              className="text-primary hover:underline"
+              onClick={() => switchTo("signup")}
+            >
+              Invited? Create your account
+            </button>
+          </>
+        )}
+      </div>
     </Centered>
   );
 }

@@ -25,6 +25,7 @@ import { Route as AdminAchievementsRouteImport } from './routes/admin.achievemen
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminRecordRouteImport } from './routes/admin.record'
+import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as AdminSignupsRouteImport } from './routes/admin.signups'
 import { Route as AdminTeamRouteImport } from './routes/admin.team'
@@ -113,6 +114,11 @@ const AdminRecordRoute = AdminRecordRouteImport.update({
   path: '/record',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminResetRoute = AdminResetRouteImport.update({
+  id: '/reset',
+  path: '/reset',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSetupRoute = AdminSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
+  '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/signups': typeof AdminSignupsRoute
   '/admin/team': typeof AdminTeamRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
+  '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/signups': typeof AdminSignupsRoute
   '/admin/team': typeof AdminTeamRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/record': typeof AdminRecordRoute
+  '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
   '/admin/signups': typeof AdminSignupsRoute
   '/admin/team': typeof AdminTeamRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
+    | '/admin/reset'
     | '/admin/setup'
     | '/admin/signups'
     | '/admin/team'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
+    | '/admin/reset'
     | '/admin/setup'
     | '/admin/signups'
     | '/admin/team'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/media'
     | '/admin/record'
+    | '/admin/reset'
     | '/admin/setup'
     | '/admin/signups'
     | '/admin/team'
@@ -427,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRecordRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reset': {
+      id: '/admin/reset'
+      path: '/reset'
+      fullPath: '/admin/reset'
+      preLoaderRoute: typeof AdminResetRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/setup': {
       id: '/admin/setup'
       path: '/setup'
@@ -484,6 +503,7 @@ interface AdminRouteChildren {
   AdminContentRoute: typeof AdminContentRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminRecordRoute: typeof AdminRecordRoute
+  AdminResetRoute: typeof AdminResetRoute
   AdminSetupRoute: typeof AdminSetupRoute
   AdminSignupsRoute: typeof AdminSignupsRoute
   AdminTeamRoute: typeof AdminTeamRoute
@@ -497,6 +517,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminContentRoute: AdminContentRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminRecordRoute: AdminRecordRoute,
+  AdminResetRoute: AdminResetRoute,
   AdminSetupRoute: AdminSetupRoute,
   AdminSignupsRoute: AdminSignupsRoute,
   AdminTeamRoute: AdminTeamRoute,

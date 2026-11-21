@@ -40,17 +40,17 @@ export const submitSignup = createServerFn({ method: "POST" })
 
     let saved = false;
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabaseAdmin as any).from("signups").insert({
-        full_name: data.fullName,
-        email: data.email.toLowerCase(),
-        phone: data.phone,
-        lga_ward: data.lgaWard,
-        intent: data.intent,
-        message: data.message || null,
-        consent: data.consent,
-        source: payload.source,
+      // Saved through a validating database function, so no admin key is needed on the server.
+      const { db } = await import("@/lib/db");
+      const { error } = await db.rpc("submit_signup", {
+        p_full_name: data.fullName,
+        p_email: data.email,
+        p_phone: data.phone,
+        p_lga_ward: data.lgaWard,
+        p_intent: data.intent,
+        p_message: data.message || null,
+        p_consent: data.consent,
+        p_source: payload.source,
       });
       if (error) throw error;
       saved = true;

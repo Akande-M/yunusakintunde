@@ -2,10 +2,11 @@
   "version": 1,
   "asset_id": "59db3515-0d66-4451-bb55-6c1eeb679b58",
   "project_id": "b6e3bf96-cf07-45af-adbb-49ee60e48a3b",
-  "url": "/__l5e/assets-v1/59db3515-0d66-4451-bb55-6c1eeb679b58/apc-only.png",
+  "url": "/site-images/apc-only.png",
   "r2_key": "a/v1/b6e3bf96-cf07-45af-adbb-49ee60e48a3b/59db3515-0d66-4451-bb55-6c1eeb679b58/apc-only.png",
   "original_filename": "apc-only.png",
   "size": 81236,
   "content_type": "image/png",
-  "created_at": "2026-09-03T08:05:10Z"
+  "created_at": "2026-09-03T08:05:10Z",
+  "lovable_url": "/__l5e/assets-v1/59db3515-0d66-4451-bb55-6c1eeb679b58/apc-only.png"
 }

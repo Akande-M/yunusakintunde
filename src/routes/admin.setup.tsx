@@ -1,11 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
-import { setupFirstAdmin } from "@/lib/admin.functions";
 import { abtn, errMsg, inputCls } from "@/components/admin/kit";
 import { useAdminAuth } from "@/components/admin/auth";
 
@@ -17,7 +15,6 @@ export const Route = createFileRoute("/admin/setup")({
 function Setup() {
   const navigate = useNavigate();
   const auth = useAdminAuth();
-  const run = useServerFn(setupFirstAdmin);
   const [done, setDone] = useState<boolean | null>(null);
   const [form, setForm] = useState({
     code: "",
@@ -40,17 +37,34 @@ function Setup() {
     }
     setBusy(true);
     try {
-      await run({
-        data: {
-          code: form.code,
-          fullName: form.fullName,
-          email: form.email,
+      const email = form.email.trim().toLowerCase();
+      // Sign in if this account already exists; otherwise create it.
+      const signedIn = await supabase.auth.signInWithPassword({ email, password: form.password });
+      if (signedIn.error) {
+        if (/confirm/i.test(signedIn.error.message)) {
+          throw new Error(
+            "Confirm your email first (check your inbox), then submit this form again.",
+          );
+        }
+        const created = await supabase.auth.signUp({
+          email,
           password: form.password,
-        },
-      });
-      const { error } = await supabase.auth.signInWithPassword({
-        email: form.email.trim(),
-        password: form.password,
+          options: {
+            data: { full_name: form.fullName },
+            emailRedirectTo: `${window.location.origin}/admin/setup`,
+          },
+        });
+        if (created.error) throw created.error;
+        if (!created.data.session) {
+          toast.success(
+            "Account created. Confirm your email (check your inbox), then submit this form again.",
+          );
+          return;
+        }
+      }
+      const { error } = await db.rpc("claim_first_admin", {
+        p_code: form.code,
+        p_full_name: form.fullName,
       });
       if (error) throw error;
       await auth.refresh();

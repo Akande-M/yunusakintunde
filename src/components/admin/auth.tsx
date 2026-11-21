@@ -29,11 +29,14 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       setFullName("");
       return;
     }
-    const { data } = await db
-      .from("user_roles")
-      .select("role,full_name")
-      .eq("user_id", s.user.id)
-      .maybeSingle();
+    const fetchRole = () =>
+      db.from("user_roles").select("role,full_name").eq("user_id", s.user.id).maybeSingle();
+    let { data } = await fetchRole();
+    if (!data) {
+      // Invited staff: grant the invited role on first sign-in (email must be confirmed).
+      const accepted = await db.rpc("accept_staff_invite");
+      if (!accepted.error && accepted.data) ({ data } = await fetchRole());
+    }
     setRole((data?.role as StaffRole | undefined) ?? null);
     setFullName(
       (data?.full_name as string | undefined) ||
