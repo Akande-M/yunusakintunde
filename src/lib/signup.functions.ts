@@ -16,6 +16,7 @@ export const signupSchema = z.object({
     "Volunteer",
     "Report a constituency issue",
     "Host a town hall in my ward",
+    "Share project testimonial",
   ]),
   message: z.string().trim().max(1000).optional(),
   consent: z.literal(true, {

@@ -29,6 +29,7 @@ import {
   Spinner,
   type FieldDef,
 } from "@/components/admin/kit";
+import { siteUrl } from "@/lib/asset-url";
 
 export const Route = createFileRoute("/admin/media")({
   component: MediaAdmin,
@@ -74,9 +75,9 @@ const FIELDS: FieldDef[] = [
 ];
 
 function thumbOf(i: Item) {
-  if (i.kind === "youtube") return i.thumbnail_url || youtubeThumb(i.url) || "";
-  if (i.kind === "video") return i.thumbnail_url || "";
-  return i.url;
+  if (i.kind === "youtube") return siteUrl(i.thumbnail_url) || youtubeThumb(i.url) || "";
+  if (i.kind === "video") return siteUrl(i.thumbnail_url) || "";
+  return siteUrl(i.url);
 }
 
 function MediaAdmin() {
@@ -335,7 +336,7 @@ function MediaAdmin() {
                     <img src={t} alt="" className="size-full object-cover" loading="lazy" />
                   ) : (
                     <video
-                      src={`${it.url}#t=0.5`}
+                      src={`${siteUrl(it.url)}#t=0.5`}
                       muted
                       preload="metadata"
                       className="size-full object-cover"

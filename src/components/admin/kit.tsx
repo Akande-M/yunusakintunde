@@ -27,6 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { siteUrl } from "@/lib/asset-url";
 
 // ------------------------------------------------------------------ styling
 const BTN =
@@ -208,7 +209,7 @@ export function ImageField({
     let alive = true;
     setBroken(false);
     if (!value || isVideo) return;
-    void canLoadImage(value).then((ok) => alive && setBroken(!ok));
+    void canLoadImage(siteUrl(value)).then((ok) => alive && setBroken(!ok));
     return () => {
       alive = false;
     };
@@ -237,9 +238,14 @@ export function ImageField({
           </span>
         ) : value ? (
           isVideo ? (
-            <video src={value} className="size-full object-cover" muted preload="metadata" />
+            <video
+              src={siteUrl(value)}
+              className="size-full object-cover"
+              muted
+              preload="metadata"
+            />
           ) : (
-            <img src={value} alt="" className="size-full object-cover" />
+            <img src={siteUrl(value)} alt="" className="size-full object-cover" />
           )
         ) : (
           <ImagePlus className="size-7 text-muted-foreground" />
@@ -653,7 +659,9 @@ export function Collection({
               </span>
               {s.image !== undefined && (
                 <span className="size-12 shrink-0 overflow-hidden rounded-sm bg-paper">
-                  {s.image && <img src={s.image} alt="" className="size-full object-cover" />}
+                  {s.image && (
+                    <img src={siteUrl(s.image)} alt="" className="size-full object-cover" />
+                  )}
                 </span>
               )}
               <div className="min-w-0 flex-1">
@@ -767,7 +775,7 @@ export function ItemsEditor({
           </span>
           <div className="relative size-16 shrink-0 overflow-hidden rounded-sm border border-dashed border-border bg-card">
             {it.image ? (
-              <img src={it.image} alt="" className="size-full object-cover" />
+              <img src={siteUrl(it.image)} alt="" className="size-full object-cover" />
             ) : (
               <ImagePlus className="absolute inset-0 m-auto size-5 text-muted-foreground" />
             )}

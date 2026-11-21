@@ -50,6 +50,7 @@ function Team() {
   const [form, setForm] = useState({ fullName: "", email: "", role: "editor" as Role });
   const [saving, setSaving] = useState(false);
   const [sent, setSent] = useState<{ name: string; email: string } | null>(null);
+  const [needsUpdate, setNeedsUpdate] = useState(false);
 
   const load = useCallback(async () => {
     const [m, i] = await Promise.all([
@@ -60,9 +61,25 @@ function Team() {
         .is("accepted_at", null)
         .order("created_at"),
     ]);
-    if (m.error) toast.error(errMsg(m.error));
-    setTeam((m.data as Member[]) ?? []);
-    setInvites((i.data as Invite[]) ?? []);
+    if (m.error) {
+      // Database update not applied yet: still show the team from the roles table.
+      setNeedsUpdate(true);
+      const fallback = await db
+        .from("user_roles")
+        .select("user_id,email,full_name,role,created_at")
+        .order("created_at");
+      if (fallback.error) toast.error(errMsg(fallback.error));
+      setTeam(
+        ((fallback.data ?? []) as Omit<Member, "last_sign_in_at">[]).map((r) => ({
+          ...r,
+          last_sign_in_at: null,
+        })),
+      );
+    } else {
+      setNeedsUpdate(false);
+      setTeam((m.data as Member[]) ?? []);
+    }
+    setInvites(i.error ? [] : ((i.data as Invite[]) ?? []));
   }, []);
   useEffect(() => void load(), [load]);
 
@@ -118,6 +135,15 @@ function Team() {
           </button>
         }
       />
+      {needsUpdate && (
+        <Card className="mb-4 border-accent bg-accent-tint">
+          <p className="text-[13.5px] font-semibold">
+            ⚠ The website database needs one update before invites, role changes and the public
+            sign-up form work on this server. Apply <code>supabase/APPLY_IN_LOVABLE.sql</code> in
+            the Lovable chat (see CMS_SETUP.md).
+          </p>
+        </Card>
+      )}
       {!team ? (
         <Spinner />
       ) : (

@@ -37,6 +37,7 @@ const INTENTS = [
   "Volunteer",
   "Report a constituency issue",
   "Host a town hall in my ward",
+  "Share project testimonial",
 ];
 
 /** Nigerian numbers → international format for WhatsApp links (080… → 23480…). */

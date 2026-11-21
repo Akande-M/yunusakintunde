@@ -7,6 +7,7 @@ import {
   type SiteSettings,
 } from "@/lib/cms-defaults";
 import { abtn, Card, Field, ImageField, inputCls } from "@/components/admin/kit";
+import { siteUrl } from "@/lib/asset-url";
 
 type Props = { settings: SiteSettings; setSettings: (s: SiteSettings) => void };
 
@@ -41,7 +42,7 @@ export function HeroSlidesEditor({ settings, setSettings }: Props) {
             <div className="aspect-[4/5] w-[120px] overflow-hidden rounded-sm bg-paper">
               {s.url && (
                 <img
-                  src={s.url}
+                  src={siteUrl(s.url)}
                   alt=""
                   className="size-full object-cover"
                   style={{ objectPosition: s.focus }}

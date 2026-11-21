@@ -140,3 +140,10 @@ The database, logins and uploaded photos stay on **Lovable Cloud**.
 Adding staff no longer creates passwords. **Team → Invite**: the person creates their own
 account at `/admin` ("Invited? Create your account"), confirms their email, and is given the
 role automatically. Password resets are emailed ("Forgot password?" / key icon on Team).
+
+## Update 8 (Nov 2026): database catch-up for Vercel
+If the Team page says "Could not find the function public.list_staff", or the Get Involved form
+fails on Vercel, the database update hasn't been applied yet. Open the Lovable project chat and send:
+*"Run the SQL in supabase/APPLY_IN_LOVABLE.sql on the Cloud database exactly as written, as one migration."*
+(If Lovable is disconnected from GitHub, paste the file's contents into the chat instead.)
+New sign-up option: "Share project testimonial".

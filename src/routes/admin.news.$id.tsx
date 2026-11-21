@@ -25,6 +25,7 @@ import {
   inputCls,
   Spinner,
 } from "@/components/admin/kit";
+import { siteUrl } from "@/lib/asset-url";
 
 export const Route = createFileRoute("/admin/news/$id")({
   component: NewsEditor,
@@ -325,7 +326,11 @@ function NewsEditor() {
             <ul className="space-y-3">
               {post.photos.map((ph, i) => (
                 <li key={ph.url + i} className="flex gap-3 rounded-sm border border-border p-3">
-                  <img src={ph.url} alt="" className="size-20 shrink-0 rounded-sm object-cover" />
+                  <img
+                    src={siteUrl(ph.url)}
+                    alt=""
+                    className="size-20 shrink-0 rounded-sm object-cover"
+                  />
                   <div className="min-w-0 flex-1 space-y-2">
                     <input
                       className={inputCls}
