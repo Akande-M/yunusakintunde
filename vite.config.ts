@@ -2,7 +2,8 @@
  * Standard TanStack Start build (no Lovable tooling).
  *
  *  - `npm run dev`    → local dev server on http://localhost:8080
- *  - `npm run build`  → production build for Vercel (default)
+ *  - `npm run build`  → production build for Lovable in dist/
+ *    Vercel builds automatically use its preset; NITRO_PRESET can override the target.
  *    Other hosts: NITRO_PRESET=node-server npm run build  (then `node .output/server/index.mjs`)
  */
 import { resolve } from "node:path";
@@ -55,7 +56,15 @@ export default defineConfig(({ command, mode }) => {
           client: { files: ["**/server/**"], specifiers: ["server-only"] },
         },
       }),
-      ...(command === "build" ? [nitro({ preset: process.env["NITRO_PRESET"] || "vercel" })] : []),
+      ...(command === "build"
+        ? [
+            nitro({
+              preset:
+                process.env["NITRO_PRESET"] ||
+                (process.env["VERCEL"] === "1" ? "vercel" : "cloudflare-pages"),
+            }),
+          ]
+        : []),
       viteReact(),
     ],
   };
