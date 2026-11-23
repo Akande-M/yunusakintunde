@@ -9,5 +9,5 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Default production builds to Nitro's `cloudflare-pages` preset so Lovable receives `dist/`; use `vercel` when `VERCEL=1` and honor explicit `NITRO_PRESET` overrides to preserve other hosting targets.
+- Default production builds to Nitro's `cloudflare-pages` preset with a flat `dist/_worker.js` entry file (not a directory) so Lovable can serve the SSR app; use `vercel` when `VERCEL=1` and honor explicit `NITRO_PRESET` overrides to preserve other hosting targets.
 - Wrap browser-only contact export library imports in `createClientOnlyFn` so PDF and spreadsheet downloads stay out of the Worker SSR import graph.

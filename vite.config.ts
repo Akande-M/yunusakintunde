@@ -20,6 +20,9 @@ export default defineConfig(({ command, mode }) => {
   const define = Object.fromEntries(
     Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
   );
+  const preset =
+    process.env["NITRO_PRESET"] ||
+    (process.env["VERCEL"] === "1" ? "vercel" : "cloudflare-pages");
 
   return {
     define,
@@ -59,9 +62,15 @@ export default defineConfig(({ command, mode }) => {
       ...(command === "build"
         ? [
             nitro({
-              preset:
-                process.env["NITRO_PRESET"] ||
-                (process.env["VERCEL"] === "1" ? "vercel" : "cloudflare-pages"),
+              preset,
+              // Lovable serves a Pages worker file, not Nitro's default
+              // _worker.js directory containing index.js.
+              ...(preset === "cloudflare-pages"
+                ? {
+                    output: { serverDir: "{{ output.dir }}" },
+                    rollupConfig: { output: { entryFileNames: "_worker.js" } },
+                  }
+                : {}),
             }),
           ]
         : []),
