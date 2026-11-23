@@ -67,8 +67,13 @@ export default defineConfig(({ command, mode }) => {
               // _worker.js directory containing index.js.
               ...(preset === "cloudflare-pages"
                 ? {
+                    // The publisher loads the entry alone: keep every server
+                    // dependency in it rather than emitting sibling _libs chunks.
+                    inlineDynamicImports: true,
                     output: { serverDir: "{{ output.dir }}" },
-                    rollupConfig: { output: { entryFileNames: "_worker.js" } },
+                    rollupConfig: {
+                      output: { entryFileNames: "_worker.js", inlineDynamicImports: true },
+                    },
                   }
                 : {}),
             }),
