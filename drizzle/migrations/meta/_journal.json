@@ -50,6 +50,13 @@
       "when": 1795437259806,
       "tag": "0006_header_and_menu_icons",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795473908584,
+      "tag": "0007_recognition_and_page_text",
+      "breakpoints": true
     }
   ]
 }
