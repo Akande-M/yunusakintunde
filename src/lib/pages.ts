@@ -22,6 +22,7 @@ export type PageSection =
     }
   | { type: "cards"; heading: string; intro: string; items: CardItem[] }
   | { type: "gallery"; heading: string; images: GalleryImage[] }
+  | { type: "list"; heading: string; intro: string; items: string[] }
   | { type: "projects"; heading: string; intro: string } // Admin → Record & Agenda → Projects
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards
   | { type: "topic"; heading: string; intro: string; topic: Topic }; // Admin → Achievements, filtered
@@ -41,6 +42,7 @@ export const SECTION_LABELS: Record<PageSection["type"], string> = {
   text: "Text (with optional photo)",
   cards: "Cards with photos",
   gallery: "Photo gallery",
+  list: "Numbered list",
   projects: "Projects list (from Record & Agenda → Projects)",
   legislative: "Bills & motions (from Achievements → Legislative Duties)",
   topic: "Achievements by topic (from Achievements)",
@@ -69,6 +71,8 @@ export function blankSection(type: PageSection["type"]): PageSection {
       return { type, heading: "", intro: "", items: [] };
     case "gallery":
       return { type, heading: "", images: [] };
+    case "list":
+      return { type, heading: "", intro: "", items: [] };
     case "topic":
       return { type, heading: "", intro: "", topic: "outreach" };
     default:
@@ -97,6 +101,8 @@ export function normalizeSections(v: unknown): PageSection[] {
       base.images = (Array.isArray(base.images) ? base.images : [])
         .map((i) => ({ url: siteUrl(str(i?.url)), caption: str(i?.caption) }))
         .filter((i) => i.url);
+    if (base.type === "list")
+      base.items = (Array.isArray(base.items) ? base.items : []).map(str).filter((t) => t.trim());
     out.push(base);
   }
   return out;

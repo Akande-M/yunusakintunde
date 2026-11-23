@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { mergeSettings, type AchievementsSettings } from "@/lib/cms-defaults";
@@ -171,6 +171,12 @@ function PageSettings() {
 function AchievementsAdmin() {
   return (
     <>
+      <Link
+        to="/admin/pages"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-primary"
+      >
+        <ArrowLeft className="size-4" /> All pages
+      </Link>
       <PageTitle
         title="Major achievements"
         sub="The homepage carousel and the View all page. One card per local government; use the arrows to set the order."

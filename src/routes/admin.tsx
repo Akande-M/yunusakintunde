@@ -9,11 +9,9 @@ import {
   Loader2,
   LogOut,
   PenSquare,
-  Trophy,
   Users,
   UserPlus,
   Files,
-  ListTree,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -331,8 +329,6 @@ const NAV = [
   { to: "/admin/news", label: "News", icon: PenSquare },
   { to: "/admin/media", label: "Media gallery", icon: Images },
   { to: "/admin/pages", label: "Pages", icon: Files },
-  { to: "/admin/menu", label: "Menu", icon: ListTree },
-  { to: "/admin/achievements", label: "Achievements", icon: Trophy },
   { to: "/admin/record", label: "Record & Agenda", icon: ListChecks },
   { to: "/admin/content", label: "Site content", icon: FileText },
   { to: "/admin/signups", label: "Sign-ups", icon: UserPlus },
@@ -343,6 +339,9 @@ function Shell() {
   const linkCls =
     "flex shrink-0 items-center gap-2.5 rounded-sm px-3 py-2 text-[13.5px] font-semibold text-on-dark-muted hover:bg-on-dark-line hover:text-on-dark";
   const active = { className: "bg-on-dark-line !text-on-dark" };
+  const path = useRouterState({ select: (st) => st.location.pathname });
+  // Biography and Achievements are edited from Pages, so Pages stays highlighted there.
+  const underPages = /^\/admin\/(biography|achievements)/.test(path);
 
   return (
     <div className="lg:grid lg:min-h-screen lg:grid-cols-[230px_minmax(0,1fr)]">
@@ -364,7 +363,11 @@ function Shell() {
             <Link
               key={n.to}
               to={n.to}
-              className={linkCls}
+              className={
+                n.to === "/admin/pages" && underPages
+                  ? `${linkCls} bg-on-dark-line !text-on-dark`
+                  : linkCls
+              }
               activeOptions={{ exact: "exact" in n ? n.exact : false }}
               activeProps={active}
             >

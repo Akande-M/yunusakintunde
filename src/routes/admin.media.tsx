@@ -30,6 +30,7 @@ import {
   type FieldDef,
 } from "@/components/admin/kit";
 import { siteUrl } from "@/lib/asset-url";
+import { PageHeadingCard } from "@/components/admin/PageHeadingCard";
 
 export const Route = createFileRoute("/admin/media")({
   component: MediaAdmin,
@@ -252,6 +253,7 @@ function MediaAdmin() {
         title="Media gallery"
         sub={`Photos and videos on the Media page. New items appear first. Videos: paste a YouTube link (best for anything long), or upload a short clip up to ${MAX_VIDEO_MB} MB.`}
       />
+      <PageHeadingCard page="media" label="Media Gallery" />
       <div className="mb-5 flex flex-col gap-3 rounded-sm border border-border bg-card p-4 sm:flex-row sm:items-end">
         <label className="block sm:w-56">
           <span className="mb-1.5 block text-[13px] font-bold">New photos go into</span>

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GALLERY_FILTERS } from "@/lib/site-data";
 import { getGallery, youtubeId, type GalleryView } from "@/lib/cms";
+import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -63,6 +64,7 @@ function Viewer({ item }: { item: GalleryView }) {
 }
 
 function Media() {
+  const heading = useSiteSettings().page_headers.media;
   const gallery = Route.useLoaderData();
   const [filter, setFilter] = useState<(typeof GALLERY_FILTERS)[number]>("All");
   const [open, setOpen] = useState<GalleryView | null>(null);
@@ -72,11 +74,7 @@ function Media() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Photos & video"
-        title="In office, on the campaign trail"
-        lede="Senate proceedings, constituency visits, delivered projects, and the road to 2027, plus an archived record of 2023."
-      />
+      <PageHeader {...heading} />
       <section className="py-12 sm:py-14">
         <div className="wrap">
           <div className="mb-7 flex flex-wrap gap-2.5">

@@ -127,44 +127,46 @@ export const exportPhonesXlsx = createClientOnlyFn(async (rows: PhoneRow[]) => {
   });
 });
 
-const pdf = createClientOnlyFn(async (title: string, head: string[], body: string[][], fileName: string) => {
-  const [{ jsPDF }, { default: autoTable }] = await Promise.all([
-    import("jspdf"),
-    import("jspdf-autotable"),
-  ]);
-  const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.setTextColor(18, 52, 36);
-  doc.text(title, 40, 44);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(90, 100, 95);
-  doc.text(
-    `Senator Yunus Abiodun Akintunde, PhD · Akintunde 2027 · ${body.length} contacts · exported ${format(new Date(), "d MMM yyyy, HH:mm")}`,
-    40,
-    62,
-  );
-  autoTable(doc, {
-    startY: 76,
-    head: [["#", ...head]],
-    body: body.map((r, i) => [String(i + 1), ...r]),
-    styles: { fontSize: 9, cellPadding: 4 },
-    headStyles: { fillColor: [18, 52, 36], textColor: 255 },
-    alternateRowStyles: { fillColor: [247, 245, 239] },
-    margin: { left: 40, right: 40 },
-    didDrawPage: () => {
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(
-        "Confidential: supporter contact details. Do not share outside the campaign.",
-        40,
-        doc.internal.pageSize.getHeight() - 20,
-      );
-    },
-  });
-  doc.save(fileName);
-});
+const pdf = createClientOnlyFn(
+  async (title: string, head: string[], body: string[][], fileName: string) => {
+    const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+      import("jspdf"),
+      import("jspdf-autotable"),
+    ]);
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(18, 52, 36);
+    doc.text(title, 40, 44);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(90, 100, 95);
+    doc.text(
+      `Senator Yunus Abiodun Akintunde, PhD · Akintunde 2027 · ${body.length} contacts · exported ${format(new Date(), "d MMM yyyy, HH:mm")}`,
+      40,
+      62,
+    );
+    autoTable(doc, {
+      startY: 76,
+      head: [["#", ...head]],
+      body: body.map((r, i) => [String(i + 1), ...r]),
+      styles: { fontSize: 9, cellPadding: 4 },
+      headStyles: { fillColor: [18, 52, 36], textColor: 255 },
+      alternateRowStyles: { fillColor: [247, 245, 239] },
+      margin: { left: 40, right: 40 },
+      didDrawPage: () => {
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+          "Confidential: supporter contact details. Do not share outside the campaign.",
+          40,
+          doc.internal.pageSize.getHeight() - 20,
+        );
+      },
+    });
+    doc.save(fileName);
+  },
+);
 
 export function exportEmailsPdf(rows: EmailRow[]) {
   return pdf(

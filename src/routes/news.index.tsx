@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { NEWS_FILTERS } from "@/lib/site-data";
 import { getNewsList } from "@/lib/cms";
+import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, NewsCard, PageHeader } from "@/components/site/ui";
 
 export const Route = createFileRoute("/news/")({
@@ -25,17 +26,14 @@ export const Route = createFileRoute("/news/")({
 });
 
 function News() {
+  const heading = useSiteSettings().page_headers.news;
   const news = Route.useLoaderData();
   const [filter, setFilter] = useState<(typeof NEWS_FILTERS)[number]>("All");
   const items = news.filter((n) => filter === "All" || n.category === filter);
 
   return (
     <>
-      <PageHeader
-        eyebrow="News & campaign trail"
-        title="News & Updates"
-        lede="Senate business, constituency work, and campaign-trail activity as 2027 approaches, all in one place."
-      />
+      <PageHeader {...heading} />
       <section className="py-12 sm:py-14">
         <div className="wrap">
           <div className="mb-7 flex flex-wrap gap-2.5">

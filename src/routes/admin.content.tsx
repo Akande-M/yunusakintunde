@@ -26,6 +26,8 @@ import {
 } from "@/components/admin/kit";
 
 export const Route = createFileRoute("/admin/content")({
+  validateSearch: (s: Record<string, unknown>): { tab?: string } =>
+    typeof s["tab"] === "string" ? { tab: s["tab"] } : {},
   component: ContentAdmin,
 });
 
@@ -63,7 +65,10 @@ const ENDORSEMENT_FIELDS: FieldDef[] = [
 ];
 
 function ContentAdmin() {
-  const [tab, setTab] = useState<Tab>("home");
+  const { tab: initialTab } = Route.useSearch();
+  const [tab, setTab] = useState<Tab>(() =>
+    TABS.some(([k]) => k === initialTab) ? (initialTab as Tab) : "home",
+  );
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [saving, setSaving] = useState(false);
   // Last-saved copy of each settings group, to show "unsaved changes" and never lose an upload.

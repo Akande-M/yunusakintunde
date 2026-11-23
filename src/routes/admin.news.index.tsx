@@ -13,6 +13,7 @@ import {
   PageTitle,
   Spinner,
 } from "@/components/admin/kit";
+import { PageHeadingCard } from "@/components/admin/PageHeadingCard";
 
 export const Route = createFileRoute("/admin/news/")({
   component: NewsList,
@@ -75,6 +76,7 @@ function NewsList() {
           </Link>
         }
       />
+      <PageHeadingCard page="news" label="News & Updates" />
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <input
           className={inputCls}

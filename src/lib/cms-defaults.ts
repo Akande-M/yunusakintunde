@@ -57,6 +57,23 @@ export type HeaderSettings = {
   ctaHref: string;
 };
 
+/** The Biography page text (photos are in Images: bioTop and bioSecond). */
+export type BiographySettings = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  showApcBadge: boolean;
+  facts: { n: string; l: string }[];
+  sections: { heading: string; body: string }[];
+  photoCaption: string;
+  timelineHeading: string;
+  timeline: { year: string; title: string; note: string; current: boolean }[];
+};
+
+export type PageHeading = { eyebrow: string; title: string; lede: string };
+/** Headings at the top of built-in list pages. */
+export type PageHeadings = { news: PageHeading; media: PageHeading };
+
 /** Every replaceable image on the site, with where it appears (shown in the admin). */
 export const IMAGE_SLOTS = [
   {
@@ -141,6 +158,8 @@ export type SiteSettings = {
   home: HomeSettings;
   footer: FooterSettings;
   header: HeaderSettings;
+  biography: BiographySettings;
+  page_headers: PageHeadings;
   images: ImageSettings;
 };
 
@@ -210,6 +229,75 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     ctaLabel: "Get in touch",
     ctaHref: "/get-involved",
   },
+  biography: {
+    eyebrow: "Biography",
+    title: "Senator Yunus Abiodun Akintunde, PhD",
+    intro:
+      "Sitting Senator, Oyo Central Senatorial District, since 2023, and seeking a second term in 2027. Businessman, academic and philanthropist from Onikanko Compound, Pakoyi, Oyo town.",
+    showApcBadge: true,
+    facts: [
+      { n: "1962", l: "Born in Pakoyi, Oyo town" },
+      { n: "Ph.D.", l: "Energy & Environmental Studies, UI" },
+      { n: "2002", l: "Founded Trade Codes Limited" },
+      { n: "APC", l: "All Progressives Congress candidate" },
+    ],
+    sections: [
+      {
+        heading: "Early life & education",
+        body: "Born 6 March 1962 in Onikanko Compound, Pakoyi, Oyo town. Educated at Ansar-ud-deen Model Primary School, Balogun Oyo, and Oranyan Grammar School, Oyo.\n\nHe holds an OND and a BSc in Physics (The Polytechnic, Ibadan and Lagos State University), an MSc in Public Administration and an MSc in Energy Studies (LASU), and a Ph.D. in Energy and Environmental Studies from the University of Ibadan. He is the first Nigerian to hold that doctorate.",
+      },
+      {
+        heading: "Business & public service",
+        body: "MD/CEO of Trade Codes Limited, founded in 2002, which has created over 30 permanent jobs and empowered more than 300 people across infrastructure delivery, energy advisory and upskilling. That operating experience shapes how the constituency office is run today: projects scoped, costed, delivered and reported back.\n\nSince taking his seat in the 10th National Assembly he has sponsored or co-sponsored six bills, held 14 town halls, and facilitated 38 community projects across the district.",
+      },
+    ],
+    photoCaption: "Senator Yunus Abiodun Akintunde, PhD, Oyo Central.",
+    timelineHeading: "Timeline of public service",
+    timeline: [
+      {
+        year: "1999 – 2003",
+        title: "Commissioner, Oyo State Civil Service Commission",
+        note: "",
+        current: false,
+      },
+      {
+        year: "2011 – 2012",
+        title: "Commissioner for Works & Transport, Oyo State",
+        note: "",
+        current: false,
+      },
+      {
+        year: "2014 – 2015",
+        title: "Executive Assistant to the Governor of Oyo State",
+        note: "",
+        current: false,
+      },
+      {
+        year: "2015 – 2023",
+        title: "Private sector & community development",
+        note: "Trade Codes Limited, energy advisory and grassroots empowerment work.",
+        current: false,
+      },
+      {
+        year: "2023 – Present",
+        title: "Senator, Oyo Central Senatorial District",
+        note: "10th National Assembly. Seeking re-election in 2027.",
+        current: true,
+      },
+    ],
+  },
+  page_headers: {
+    news: {
+      eyebrow: "News & campaign trail",
+      title: "News & Updates",
+      lede: "Senate business, constituency work, and campaign-trail activity as 2027 approaches, all in one place.",
+    },
+    media: {
+      eyebrow: "Photos & video",
+      title: "In office, on the campaign trail",
+      lede: "Senate proceedings, constituency visits, delivered projects, and the road to 2027, plus an archived record of 2023.",
+    },
+  },
   images: DEFAULT_IMAGES,
   achievements: {
     pageTitle: "10 major achievements in every local government",
@@ -231,6 +319,7 @@ export function mergeSettings(
       row.key === "home" ||
       row.key === "footer" ||
       row.key === "header" ||
+      row.key === "biography" ||
       row.key === "images" ||
       row.key === "achievements"
     ) {
@@ -242,6 +331,16 @@ export function mergeSettings(
       );
       Object.assign(out[row.key], clean);
     }
+  }
+  // Page headings: merge field by field so a cleared field falls back to the default.
+  const ph = rows?.find((r) => r.key === "page_headers")?.value as
+    Partial<Record<keyof PageHeadings, Partial<PageHeading>>> | undefined;
+  for (const k of ["news", "media"] as const) {
+    const v = ph?.[k] ?? {};
+    out.page_headers[k] = {
+      ...DEFAULT_SETTINGS.page_headers[k],
+      ...Object.fromEntries(Object.entries(v).filter(([, x]) => typeof x === "string" && x.trim())),
+    };
   }
   out.home.heroSlides = (out.home.heroSlides ?? [])
     .filter((s) => s?.url)

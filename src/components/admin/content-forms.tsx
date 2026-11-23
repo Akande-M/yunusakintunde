@@ -317,12 +317,11 @@ export function HeaderForm({ settings, setSettings }: Props) {
           />
         </Field>
         <p className="text-[12.5px] text-muted-foreground">
-          The logo photo is “Main portrait” under “Images”. The menu links and their icons are
-          edited in{" "}
-          <a href="/admin/menu" className="font-bold text-primary underline">
-            Menu
+          The logo photo is “Main portrait” under “Images”. A page's place in the menu is set in{" "}
+          <a href="/admin/pages" className="font-bold text-primary underline">
+            Pages
           </a>
-          .
+          , on each page. Menu icons are chosen automatically from the link text.
         </p>
       </Card>
     </div>

@@ -190,3 +190,23 @@ picked automatically. The site works either way.
 - **Admin → Menu**: each link has an **Icon** choice ("Automatic" picks one from the wording).
 - The active menu link is bold with a thick gold underline.
 - Footer copyright: `{year}` is replaced with the current year (stray braces like `{2026}` are removed).
+
+## Update 11 (Nov 2026): Recognition page, everything under Pages
+**Apply the database update first.** In the Lovable chat, send: *"Run the SQL in
+supabase/migrations/20261124090000_recognition_and_page_text.sql on the Cloud database exactly as
+written, as one migration."* It fills in and publishes the Recognition page (only if it is still the
+untouched draft) and lets the website read the Biography and page-heading text.
+**Delete `src/routes/admin.menu.tsx`** in GitHub: the Menu screen has been removed.
+
+- **Recognition** (About → Recognition): introduction, the honours text, a numbered list of public
+  service roles and a photo gallery of 14 pictures with captions. Edit any of it in Pages →
+  Recognition. Photos open large when clicked.
+- **New section type, "Numbered list"**: one item per line, numbered automatically.
+- **Pages** now lists every page. Main pages (Home, Header & top menu bar, Biography,
+  Achievements, News & Updates, Media Gallery) open their own editors. **Achievements** and the
+  new **Biography** editor live here, not in the sidebar.
+- **Biography editor**: introduction, APC badge on/off, key facts, story, both photos, timeline.
+- **News and Media**: the heading at the top of each page is editable ("Page heading" panel).
+- **Menu screen removed.** Each page in Pages has a **Top menu** box: not in the menu, on the main
+  bar, or under a group, plus the menu text and its position. Deleting a page also removes its
+  menu link. Menu icons are picked automatically from the link text.

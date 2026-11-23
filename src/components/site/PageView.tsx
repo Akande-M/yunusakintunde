@@ -4,6 +4,7 @@ import type { Project } from "@/lib/site-data";
 import { toParagraphs } from "@/lib/cms";
 import { TOPIC_RULES, type PageSection, type SitePage } from "@/lib/pages";
 import { Emphasised, iconFor } from "./Achievements";
+import { PhotoGallery } from "./PhotoGallery";
 import { ProjectsList } from "./ProjectsList";
 import { Reveal } from "./Reveal";
 import { btn, Eyebrow, SectionHead } from "./ui";
@@ -142,20 +143,29 @@ function Section({ s, data, index }: { s: PageSection; data: PageData; index: nu
         <section className={`py-12 sm:py-14 ${tone}`}>
           <div className="wrap">
             {s.heading && <SectionHead title={s.heading} />}
-            <ul className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-              {s.images.map((g, i) => (
-                <li key={i}>
-                  <figure>
-                    <Photo src={g.url} alt={g.caption || s.heading || "Photo"} />
-                    {g.caption && (
-                      <figcaption className="mt-1.5 text-[13px] text-muted-foreground">
-                        {g.caption}
-                      </figcaption>
-                    )}
-                  </figure>
-                </li>
+            <PhotoGallery images={s.images} label={s.heading || "Photo"} />
+          </div>
+        </section>
+      );
+    case "list":
+      if (!s.items.length) return null;
+      return (
+        <section className={`py-12 sm:py-14 ${tone}`}>
+          <div className="wrap max-w-[900px]">
+            {s.heading && <SectionHead title={s.heading} />}
+            {s.intro && <p className="-mt-3 mb-8 max-w-[70ch] text-muted-foreground">{s.intro}</p>}
+            <ol className="space-y-3">
+              {s.items.map((t, i) => (
+                <Reveal key={i} as="li" delay={Math.min(i, 8) * 50}>
+                  <div className="flex items-start gap-4 rounded-lg border border-border bg-card px-5 py-4">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary font-serif text-[16px] font-semibold text-primary-foreground">
+                      {i + 1}
+                    </span>
+                    <span className="pt-1.5 text-[15.5px] font-semibold text-foreground">{t}</span>
+                  </div>
+                </Reveal>
               ))}
-            </ul>
+            </ol>
           </div>
         </section>
       );

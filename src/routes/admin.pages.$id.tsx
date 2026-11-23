@@ -15,6 +15,18 @@ import {
   type Topic,
 } from "@/lib/pages";
 import {
+  applyPlacement,
+  AT_END,
+  currentPlacement,
+  groupOptions,
+  loadMenuRows,
+  NOT_IN_MENU,
+  siblingsOf,
+  TOP_LEVEL,
+  type MenuRow,
+  type Placement,
+} from "@/components/admin/menu-placement";
+import {
   needsAchievements,
   needsProjects,
   PageView,
@@ -335,6 +347,34 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
           </button>
         </>
       );
+    case "list":
+      return (
+        <>
+          <Field label="Heading">
+            <input
+              className={inputCls}
+              value={s.heading}
+              onChange={(e) => onChange({ ...s, heading: e.target.value })}
+            />
+          </Field>
+          <Field label="Short intro (optional)">
+            <textarea
+              rows={2}
+              className={inputCls}
+              value={s.intro}
+              onChange={(e) => onChange({ ...s, intro: e.target.value })}
+            />
+          </Field>
+          <Field label="Items" hint="One item per line. They are numbered automatically.">
+            <textarea
+              rows={Math.max(5, s.items.length + 1)}
+              className={inputCls}
+              value={s.items.join("\n")}
+              onChange={(e) => onChange({ ...s, items: e.target.value.split("\n") })}
+            />
+          </Field>
+        </>
+      );
     default: {
       const where =
         s.type === "projects"
@@ -394,7 +434,12 @@ function PageEditor() {
   const [dirty, setDirty] = useState(false);
   const [adding, setAdding] = useState<PageSection["type"]>("text");
   const [preview, setPreview] = useState<PageData | null>(null);
-  const [inMenu, setInMenu] = useState<boolean | null>(null);
+  const [menuRows, setMenuRows] = useState<MenuRow[] | null>(null);
+  const [placement, setPlacement] = useState<Placement>({
+    parent: NOT_IN_MENU,
+    label: "",
+    before: AT_END,
+  });
 
   useEffect(() => {
     if (isNew) return;
@@ -412,13 +457,16 @@ function PageEditor() {
         const d = data as Page & { hero_image: string | null; sections: unknown };
         setPage({ ...d, hero_image: d.hero_image ?? "", sections: normalizeSections(d.sections) });
         setSavedSlug(d.slug);
-        void db
-          .from("menu_items")
-          .select("id", { count: "exact", head: true })
-          .eq("page_slug", d.slug)
-          .then(({ count }) => setInMenu((count ?? 0) > 0));
+        void loadMenuRows().then((rows) => {
+          setMenuRows(rows);
+          if (rows) setPlacement(currentPlacement(rows, d.slug, d.title));
+        });
       });
   }, [id, isNew, navigate]);
+
+  useEffect(() => {
+    if (isNew) void loadMenuRows().then(setMenuRows);
+  }, [isNew]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -484,7 +532,9 @@ function PageEditor() {
       hero_image: page.hero_image || null,
       hero_alt: page.hero_alt.trim(),
       seo_description: page.seo_description.trim(),
-      sections: page.sections,
+      sections: page.sections.map((x) =>
+        x.type === "list" ? { ...x, items: x.items.map((t) => t.trim()).filter(Boolean) } : x,
+      ),
       status,
     };
     const res = page.id
@@ -495,10 +545,20 @@ function PageEditor() {
       toast.error(errMsg(res.error));
       return;
     }
-    // Keep menu links pointing at this page when its web address changes.
-    if (savedSlug && savedSlug !== slug) {
-      const m = await db.from("menu_items").update({ page_slug: slug }).eq("page_slug", savedSlug);
-      if (m.error) toast.error(`Saved, but the menu link wasn't updated: ${errMsg(m.error)}`);
+    // Put the page in the top menu where the editor chose (and follow a changed web address).
+    if (menuRows) {
+      const err = await applyPlacement(
+        menuRows,
+        { ...placement, label: placement.label.trim() || payload.title },
+        slug,
+        savedSlug,
+      );
+      if (err) toast.error(`Saved, but the menu wasn't updated: ${err}`);
+      const fresh = await loadMenuRows();
+      if (fresh) {
+        setMenuRows(fresh);
+        setPlacement(currentPlacement(fresh, slug, payload.title));
+      }
     }
     setSaving(false);
     setDirty(false);
@@ -510,7 +570,6 @@ function PageEditor() {
     );
     const newId = (res.data as { id: string }).id;
     if (isNew) {
-      setInMenu(false);
       void navigate({ to: "/admin/pages/$id", params: { id: newId }, replace: true });
     }
     setPage({ ...page, id: newId, slug, status });
@@ -555,16 +614,6 @@ function PageEditor() {
           </button>
         </div>
       </div>
-
-      {inMenu === false && page.id && (
-        <p className="mb-4 rounded-sm border border-accent/50 bg-accent-tint px-4 py-3 text-[13.5px]">
-          This page isn't in the top menu yet. Visitors can still open <strong>/{savedSlug}</strong>{" "}
-          once it's published.{" "}
-          <Link to="/admin/menu" className="font-bold text-primary underline">
-            Add it to the menu
-          </Link>
-        </p>
-      )}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-5">
@@ -665,6 +714,16 @@ function PageEditor() {
         </div>
 
         <div className="space-y-5">
+          <MenuPlacementCard
+            rows={menuRows}
+            slug={savedSlug}
+            title={page.title}
+            value={placement}
+            onChange={(v) => {
+              setDirty(true);
+              setPlacement(v);
+            }}
+          />
           <Card>
             <Field label="Web address" hint={`yunusakintunde.com/${page.slug || "…"}`}>
               <input
@@ -710,6 +769,80 @@ function PageEditor() {
         </div>
       )}
     </>
+  );
+}
+
+function MenuPlacementCard({
+  rows,
+  slug,
+  title,
+  value,
+  onChange,
+}: {
+  rows: MenuRow[] | null;
+  slug: string | null;
+  title: string;
+  value: Placement;
+  onChange: (v: Placement) => void;
+}) {
+  if (!rows) return null;
+  const groups = groupOptions(rows);
+  const sibs = value.parent === NOT_IN_MENU ? [] : siblingsOf(rows, value.parent, slug);
+  return (
+    <Card>
+      <h3 className="mb-1 text-[14px] font-bold">Top menu</h3>
+      <p className="mb-4 text-[12.5px] text-muted-foreground">
+        Saved with the page. A draft's menu link shows “coming soon” until you publish.
+      </p>
+      <Field label="Show in the top menu">
+        <select
+          className={inputCls}
+          value={value.parent}
+          onChange={(e) =>
+            onChange({
+              ...value,
+              parent: e.target.value,
+              before: AT_END,
+              label: value.label || title,
+            })
+          }
+        >
+          <option value={NOT_IN_MENU}>Not in the menu</option>
+          <option value={TOP_LEVEL}>On the main bar (top level)</option>
+          {groups.map((g) => (
+            <option key={g.id} value={g.id}>
+              Under {g.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+      {value.parent !== NOT_IN_MENU && (
+        <>
+          <Field label="Menu text" hint="Leave empty to use the page title.">
+            <input
+              className={inputCls}
+              value={value.label}
+              placeholder={title}
+              onChange={(e) => onChange({ ...value, label: e.target.value })}
+            />
+          </Field>
+          <Field label="Position">
+            <select
+              className={inputCls}
+              value={value.before}
+              onChange={(e) => onChange({ ...value, before: e.target.value })}
+            >
+              {sibs.map((r) => (
+                <option key={r.id} value={r.id}>
+                  Before “{r.label}”
+                </option>
+              ))}
+              <option value={AT_END}>At the end</option>
+            </select>
+          </Field>
+        </>
+      )}
+    </Card>
   );
 }
 
