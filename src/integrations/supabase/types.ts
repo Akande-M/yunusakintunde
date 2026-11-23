@@ -202,6 +202,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           href: string | null
+          icon: string | null
           id: string
           label: string
           page_slug: string | null
@@ -215,6 +216,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           href?: string | null
+          icon?: string | null
           id?: string
           label: string
           page_slug?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           href?: string | null
+          icon?: string | null
           id?: string
           label?: string
           page_slug?: string | null

@@ -43,6 +43,13 @@
       "when": 1795434564313,
       "tag": "0005_cms_pages_and_menu",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795437259806,
+      "tag": "0006_header_and_menu_icons",
+      "breakpoints": true
     }
   ]
 }
