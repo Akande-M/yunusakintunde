@@ -197,6 +197,56 @@ export type Database = {
         }
         Relationships: []
       }
+      menu_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          href: string | null
+          id: string
+          label: string
+          page_slug: string | null
+          parent_id: string | null
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          href?: string | null
+          id?: string
+          label: string
+          page_slug?: string | null
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          href?: string | null
+          id?: string
+          label?: string
+          page_slug?: string | null
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news_posts: {
         Row: {
           body: string
@@ -347,6 +397,57 @@ export type Database = {
           message?: string | null
           phone?: string
           source?: string
+        }
+        Relationships: []
+      }
+      site_pages: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          eyebrow: string
+          hero_alt: string
+          hero_image: string | null
+          id: string
+          intro: string
+          sections: Json
+          seo_description: string
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          eyebrow?: string
+          hero_alt?: string
+          hero_image?: string | null
+          id?: string
+          intro?: string
+          sections?: Json
+          seo_description?: string
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          eyebrow?: string
+          hero_alt?: string
+          hero_image?: string | null
+          id?: string
+          intro?: string
+          sections?: Json
+          seo_description?: string
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
