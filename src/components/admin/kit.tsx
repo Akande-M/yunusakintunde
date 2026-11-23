@@ -196,7 +196,7 @@ export function ImageField({
 }: {
   value: string | null | undefined;
   onChange: (url: string) => void;
-  folder: "news" | "gallery" | "projects" | "site";
+  folder: "news" | "gallery" | "projects" | "site" | "pages";
   accept?: string;
 }) {
   const [busy, setBusy] = useState(false);
@@ -330,7 +330,7 @@ export type FieldDef =
       name: string;
       label: string;
       type: "image";
-      folder: "news" | "gallery" | "projects" | "site";
+      folder: "news" | "gallery" | "projects" | "site" | "pages";
       hint?: string;
     };
 

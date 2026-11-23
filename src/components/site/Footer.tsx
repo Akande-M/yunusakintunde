@@ -3,7 +3,7 @@ import { SITE } from "@/lib/site-data";
 import { useSiteSettings } from "@/lib/use-settings";
 
 const explore = [
-  { to: "/record-agenda", label: "Record & Agenda" },
+  { to: "/achievements", label: "Achievements" },
   { to: "/biography", label: "Biography" },
   { to: "/news", label: "News" },
   { to: "/media", label: "Media" },
@@ -121,7 +121,7 @@ export function Footer() {
       </div>
 
       <div className="wrap mt-10 flex flex-wrap justify-between gap-2.5 border-t border-on-dark-line pt-5 text-[12.5px] text-on-dark-dim">
-        <span>{footer.copyright.replace("{year}", String(year))}</span>
+        <span>{footer.copyright.replace(/\{+\s*year\s*\}+/gi, String(year))}</span>
         <span className="flex gap-3">
           <Link to="/privacy" className="hover:text-primary-foreground">
             Privacy Policy

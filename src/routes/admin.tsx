@@ -12,6 +12,8 @@ import {
   Trophy,
   Users,
   UserPlus,
+  Files,
+  ListTree,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -328,6 +330,8 @@ const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/news", label: "News", icon: PenSquare },
   { to: "/admin/media", label: "Media gallery", icon: Images },
+  { to: "/admin/pages", label: "Pages", icon: Files },
+  { to: "/admin/menu", label: "Menu", icon: ListTree },
   { to: "/admin/achievements", label: "Achievements", icon: Trophy },
   { to: "/admin/record", label: "Record & Agenda", icon: ListChecks },
   { to: "/admin/content", label: "Site content", icon: FileText },

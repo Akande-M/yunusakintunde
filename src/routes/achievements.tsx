@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { getAchievements } from "@/lib/cms";
+import { getAchievements, getRecord } from "@/lib/cms";
+import { PromiseTracker } from "@/components/site/PromiseTracker";
 import type { AchievementCard } from "@/lib/achievements-data";
 import { useSiteSettings } from "@/lib/use-settings";
 import { btn, Chip, PageHeader } from "@/components/site/ui";
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/achievements")({
       {
         name: "description",
         content:
-          "Every project Senator Yunus Abiodun Akintunde, PhD has delivered across Oyo Central, local government by local government, plus his sponsored bills and motions.",
+          "Every project Senator Yunus Abiodun Akintunde, PhD has delivered across Oyo Central, local government by local government, plus his sponsored bills and motions, every 2023 promise tracked and the 2027 agenda.",
       },
       {
         property: "og:title",
@@ -22,7 +23,10 @@ export const Route = createFileRoute("/achievements")({
       },
     ],
   }),
-  loader: () => getAchievements(),
+  loader: async () => {
+    const [cards, record] = await Promise.all([getAchievements(), getRecord()]);
+    return { cards, record };
+  },
   component: AchievementsPage,
 });
 
@@ -45,7 +49,7 @@ function sumOf(cards: AchievementCard[], re: RegExp) {
 }
 
 function AchievementsPage() {
-  const cards = Route.useLoaderData();
+  const { cards, record } = Route.useLoaderData();
   const { achievements: page } = useSiteSettings();
   const zones = useMemo(() => ["All", ...Array.from(new Set(cards.map((c) => c.zone)))], [cards]);
   const [zone, setZone] = useState("All");
@@ -186,6 +190,8 @@ function AchievementsPage() {
           </div>
         </div>
       </section>
+
+      <PromiseTracker kept={record.kept} agenda={record.agenda} />
 
       <section className="bg-primary-deep py-14 text-on-dark">
         <div className="wrap flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">

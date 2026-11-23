@@ -15,6 +15,7 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { getMenu } from "@/lib/pages";
 import { getSettings } from "@/lib/cms";
 
 function NotFoundComponent() {
@@ -79,7 +80,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // Editable site settings (contact, socials, homepage copy). See /admin/content.
-  loader: () => getSettings(),
+  loader: async () => {
+    const [settings, menu] = await Promise.all([getSettings(), getMenu()]);
+    return { ...settings, menu };
+  },
   staleTime: 60_000,
   head: () => ({
     meta: [

@@ -104,7 +104,7 @@ function Home() {
                 <Link to="/support" className={btn.gold}>
                   Support Senator Akintunde in 2027
                 </Link>
-                <Link to="/record-agenda" className={btn.outline}>
+                <Link to="/achievements" className={btn.outline}>
                   See My Full Record
                 </Link>
               </div>

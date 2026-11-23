@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BiographyRouteImport } from './routes/biography'
@@ -24,6 +25,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAchievementsRouteImport } from './routes/admin.achievements'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
+import { Route as AdminMenuRouteImport } from './routes/admin.menu'
 import { Route as AdminRecordRouteImport } from './routes/admin.record'
 import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
@@ -33,10 +35,17 @@ import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as AdminNewsIndexRouteImport } from './routes/admin.news.index'
 import { Route as AdminNewsIdRouteImport } from './routes/admin.news.$id'
+import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
+import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlugRoute = SlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AchievementsRoute = AchievementsRouteImport.update({
@@ -109,6 +118,11 @@ const AdminMediaRoute = AdminMediaRouteImport.update({
   path: '/media',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMenuRoute = AdminMenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRecordRoute = AdminRecordRouteImport.update({
   id: '/record',
   path: '/record',
@@ -154,9 +168,20 @@ const AdminNewsIdRoute = AdminNewsIdRouteImport.update({
   path: '/news/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagesIndexRoute = AdminPagesIndexRouteImport.update({
+  id: '/pages/',
+  path: '/pages/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagesIdRoute = AdminPagesIdRouteImport.update({
+  id: '/pages/$id',
+  path: '/pages/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/achievements': typeof AchievementsRoute
   '/admin': typeof AdminRouteWithChildren
   '/biography': typeof BiographyRoute
@@ -170,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/menu': typeof AdminMenuRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -179,10 +205,13 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/news/': typeof NewsIndexRoute
   '/admin/news/$id': typeof AdminNewsIdRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/news/': typeof AdminNewsIndexRoute
+  '/admin/pages/': typeof AdminPagesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/achievements': typeof AchievementsRoute
   '/biography': typeof BiographyRoute
   '/get-involved': typeof GetInvolvedRoute
@@ -194,6 +223,7 @@ export interface FileRoutesByTo {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/menu': typeof AdminMenuRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -203,11 +233,14 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/news': typeof NewsIndexRoute
   '/admin/news/$id': typeof AdminNewsIdRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/news': typeof AdminNewsIndexRoute
+  '/admin/pages': typeof AdminPagesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/achievements': typeof AchievementsRoute
   '/admin': typeof AdminRouteWithChildren
   '/biography': typeof BiographyRoute
@@ -221,6 +254,7 @@ export interface FileRoutesById {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/menu': typeof AdminMenuRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -230,12 +264,15 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/news/': typeof NewsIndexRoute
   '/admin/news/$id': typeof AdminNewsIdRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/news/': typeof AdminNewsIndexRoute
+  '/admin/pages/': typeof AdminPagesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$slug'
     | '/achievements'
     | '/admin'
     | '/biography'
@@ -249,6 +286,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/menu'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -258,10 +296,13 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/news/'
     | '/admin/news/$id'
+    | '/admin/pages/$id'
     | '/admin/news/'
+    | '/admin/pages/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$slug'
     | '/achievements'
     | '/biography'
     | '/get-involved'
@@ -273,6 +314,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/menu'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -282,10 +324,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/news'
     | '/admin/news/$id'
+    | '/admin/pages/$id'
     | '/admin/news'
+    | '/admin/pages'
   id:
     | '__root__'
     | '/'
+    | '/$slug'
     | '/achievements'
     | '/admin'
     | '/biography'
@@ -299,6 +344,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/menu'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -308,11 +354,14 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/news/'
     | '/admin/news/$id'
+    | '/admin/pages/$id'
     | '/admin/news/'
+    | '/admin/pages/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SlugRoute: typeof SlugRoute
   AchievementsRoute: typeof AchievementsRoute
   AdminRoute: typeof AdminRouteWithChildren
   BiographyRoute: typeof BiographyRoute
@@ -332,6 +381,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$slug': {
+      id: '/$slug'
+      path: '/$slug'
+      fullPath: '/$slug'
+      preLoaderRoute: typeof SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/achievements': {
@@ -432,6 +488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMediaRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/menu': {
+      id: '/admin/menu'
+      path: '/menu'
+      fullPath: '/admin/menu'
+      preLoaderRoute: typeof AdminMenuRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/record': {
       id: '/admin/record'
       path: '/record'
@@ -495,6 +558,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewsIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pages/': {
+      id: '/admin/pages/'
+      path: '/pages'
+      fullPath: '/admin/pages/'
+      preLoaderRoute: typeof AdminPagesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pages/$id': {
+      id: '/admin/pages/$id'
+      path: '/pages/$id'
+      fullPath: '/admin/pages/$id'
+      preLoaderRoute: typeof AdminPagesIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -502,6 +579,7 @@ interface AdminRouteChildren {
   AdminAchievementsRoute: typeof AdminAchievementsRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminMenuRoute: typeof AdminMenuRoute
   AdminRecordRoute: typeof AdminRecordRoute
   AdminResetRoute: typeof AdminResetRoute
   AdminSetupRoute: typeof AdminSetupRoute
@@ -509,13 +587,16 @@ interface AdminRouteChildren {
   AdminTeamRoute: typeof AdminTeamRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminNewsIdRoute: typeof AdminNewsIdRoute
+  AdminPagesIdRoute: typeof AdminPagesIdRoute
   AdminNewsIndexRoute: typeof AdminNewsIndexRoute
+  AdminPagesIndexRoute: typeof AdminPagesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAchievementsRoute: AdminAchievementsRoute,
   AdminContentRoute: AdminContentRoute,
   AdminMediaRoute: AdminMediaRoute,
+  AdminMenuRoute: AdminMenuRoute,
   AdminRecordRoute: AdminRecordRoute,
   AdminResetRoute: AdminResetRoute,
   AdminSetupRoute: AdminSetupRoute,
@@ -523,7 +604,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTeamRoute: AdminTeamRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminNewsIdRoute: AdminNewsIdRoute,
+  AdminPagesIdRoute: AdminPagesIdRoute,
   AdminNewsIndexRoute: AdminNewsIndexRoute,
+  AdminPagesIndexRoute: AdminPagesIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -542,6 +625,7 @@ const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SlugRoute: SlugRoute,
   AchievementsRoute: AchievementsRoute,
   AdminRoute: AdminRouteWithChildren,
   BiographyRoute: BiographyRoute,

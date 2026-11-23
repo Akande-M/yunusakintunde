@@ -147,3 +147,28 @@ fails on Vercel, the database update hasn't been applied yet. Open the Lovable p
 *"Run the SQL in supabase/APPLY_IN_LOVABLE.sql on the Cloud database exactly as written, as one migration."*
 (If Lovable is disconnected from GitHub, paste the file's contents into the chat instead.)
 New sign-up option: "Share project testimonial".
+
+## Update 9 (Nov 2026): new menu, Pages and Menu editors
+**Apply the database update first.** In the Lovable project chat, send:
+*"Run the SQL in supabase/migrations/20261123090000_cms_pages_and_menu.sql on the Cloud database
+exactly as written, as one migration."* Until it runs, the site shows a basic built-in menu
+(Home, About, News & Media) and the Pages and Menu screens show a warning.
+
+What's new:
+- **Top menu**: Home · About · Legislative Work · Political & Party Leadership · News & Media, then
+  the Get in touch button. Items with sub-links open on hover (and on click or keyboard). On phones,
+  they open as an accordion. The APC Candidate badge is no longer in the header.
+- **Admin → Pages**: the pages under the menu (Bills & Motions, Committees & Oversight, Outreach,
+  Infrastructure Projects, Skills, Jobs & Empowerment, Recognition, Campaigns & Mobilisation,
+  Constituency Engagements, Stakeholder Engagements, and any new ones). Each page has a title, a
+  main photo, an intro and a list of sections:
+  - Text (with an optional photo), Cards with photos, Photo gallery: typed in on the page.
+  - Projects list, Bills & motions, Achievements by topic: pulled from Record & Agenda → Projects
+    and Achievements, so you edit that content once and it updates everywhere.
+  Use **Preview** to see unsaved changes. **Publish** puts it live. A **draft** is never shown to
+  visitors. Its menu link opens a "Coming soon" page until you publish it.
+- **Admin → Menu**: rename, reorder, show or hide, move under another item, or add links (to a
+  page, a built-in page or any web address) up to three levels deep.
+- The old **Record & Agenda** page is split: the promise tracker and 2027 agenda are now at the
+  bottom of **Achievements**, and the projects list is on **Infrastructure Projects**.
+  `/record-agenda` redirects to Achievements. (The admin screen is still called Record & Agenda.)

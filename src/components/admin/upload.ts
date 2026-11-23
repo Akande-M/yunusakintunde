@@ -102,7 +102,7 @@ function safeName(name: string) {
 
 export async function uploadMedia(
   file: File,
-  folder: "news" | "gallery" | "projects" | "site",
+  folder: "news" | "gallery" | "projects" | "site" | "pages",
 ): Promise<string> {
   const isVideo = file.type.startsWith("video/");
   const isImage = file.type.startsWith("image/") || isHeic(file);

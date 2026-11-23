@@ -40,7 +40,7 @@ export const SITE = {
 
 export const NAV = [
   { to: "/", label: "Home" },
-  { to: "/record-agenda", label: "Record & Agenda" },
+  { to: "/achievements", label: "Achievements" },
   { to: "/biography", label: "Biography" },
   { to: "/news", label: "News" },
   { to: "/media", label: "Media" },
