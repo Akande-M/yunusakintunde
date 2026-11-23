@@ -224,3 +224,107 @@ export function FooterForm({ settings, setSettings }: Props) {
     </Card>
   );
 }
+
+// ------------------------------------------------------------------ header (top navigation bar)
+export function HeaderForm({ settings, setSettings }: Props) {
+  const h = settings.header;
+  const set = <K extends keyof typeof h>(k: K, v: (typeof h)[K]) =>
+    setSettings({ ...settings, header: { ...h, [k]: v } });
+  const toggle = (
+    k: "showTopBar" | "showPhone" | "showEmail" | "showSocials",
+    title: string,
+    sub: string,
+  ) => (
+    <label className="mb-4 flex cursor-pointer items-start gap-3">
+      <input
+        type="checkbox"
+        className="mt-1 size-4"
+        checked={h[k]}
+        onChange={(e) => set(k, e.target.checked)}
+      />
+      <span>
+        <span className="block text-[13px] font-bold">{title}</span>
+        <span className="block text-[12px] text-muted-foreground">{sub}</span>
+      </span>
+    </label>
+  );
+  const phoneIsPlaceholder = /000 0000|\[[^\]]*\]/.test(settings.contact.phone);
+  return (
+    <div className="grid gap-5 lg:grid-cols-2">
+      <Card>
+        <h3 className="mb-4 font-serif text-[18px] font-semibold">Top bar (green strip)</h3>
+        {toggle(
+          "showTopBar",
+          "Show the top bar",
+          "The thin strip above the menu with phone, email and social icons.",
+        )}
+        {toggle(
+          "showPhone",
+          "Show the phone number",
+          phoneIsPlaceholder
+            ? "The phone number under “Contact details” is still a placeholder, so it stays hidden until you change it."
+            : `Shows ${settings.contact.phone || "the phone number"} (edit it under “Contact details”).`,
+        )}
+        {toggle(
+          "showEmail",
+          "Show the email address",
+          `Shows ${settings.contact.email || "the email"} (edit it under “Contact details”).`,
+        )}
+        {toggle(
+          "showSocials",
+          "Show the social icons",
+          "Facebook, X, YouTube and Instagram, in that order. Add the links under “Social links”; an icon becomes clickable once its link is added.",
+        )}
+        <Field label="Text before the social icons">
+          <input
+            className={inputCls}
+            value={h.followLabel}
+            onChange={(e) => set("followLabel", e.target.value)}
+          />
+        </Field>
+      </Card>
+      <Card>
+        <h3 className="mb-4 font-serif text-[18px] font-semibold">Main bar</h3>
+        <Field label="Name beside the logo">
+          <input
+            className={inputCls}
+            value={h.siteName}
+            onChange={(e) => set("siteName", e.target.value)}
+          />
+        </Field>
+        <Field label="Small line under the name">
+          <input
+            className={inputCls}
+            value={h.siteTagline}
+            onChange={(e) => set("siteTagline", e.target.value)}
+          />
+        </Field>
+        <Field label="Button text">
+          <input
+            className={inputCls}
+            value={h.ctaLabel}
+            onChange={(e) => set("ctaLabel", e.target.value)}
+          />
+        </Field>
+        <Field
+          label="Button link"
+          hint="A page on this site, e.g. /get-involved or /support, or a full https:// address."
+        >
+          <input
+            className={inputCls}
+            value={h.ctaHref}
+            onChange={(e) => set("ctaHref", e.target.value.trim())}
+          />
+        </Field>
+        <p className="text-[12.5px] text-muted-foreground">
+          The logo photo is “Main portrait” under “Images”. The menu links and their icons are
+          edited in{" "}
+          <a href="/admin/menu" className="font-bold text-primary underline">
+            Menu
+          </a>
+          .
+        </p>
+      </Card>
+    </div>
+  );
+}

@@ -5,7 +5,12 @@ import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { youtubeId } from "@/lib/cms";
 import { IMAGE_SLOTS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
-import { FooterForm, HeroSlidesEditor, ImagesForm } from "@/components/admin/content-forms";
+import {
+  FooterForm,
+  HeaderForm,
+  HeroSlidesEditor,
+  ImagesForm,
+} from "@/components/admin/content-forms";
 import { uploadMedia } from "@/components/admin/upload";
 import {
   abtn,
@@ -25,6 +30,7 @@ export const Route = createFileRoute("/admin/content")({
 });
 
 const TABS = [
+  ["header", "Header"],
   ["home", "Homepage"],
   ["images", "Images"],
   ["footer", "Footer"],
@@ -33,8 +39,8 @@ const TABS = [
   ["endorsements", "Endorsements"],
 ] as const;
 type Tab = (typeof TABS)[number][0];
-type SettingsKey = "home" | "contact" | "socials" | "footer" | "images";
-const SETTINGS_KEYS: SettingsKey[] = ["home", "images", "footer", "contact", "socials"];
+type SettingsKey = "header" | "home" | "contact" | "socials" | "footer" | "images";
+const SETTINGS_KEYS: SettingsKey[] = ["header", "home", "images", "footer", "contact", "socials"];
 
 const ENDORSEMENT_FIELDS: FieldDef[] = [
   {
@@ -131,7 +137,7 @@ function ContentAdmin() {
     <>
       <PageTitle
         title="Site content"
-        sub="Homepage carousel and wording, site images and logos, footer, contact details, social links and endorsements."
+        sub="Header bar, homepage carousel and wording, site images and logos, footer, contact details, social links and endorsements."
       />
       <div
         role="tablist"
@@ -168,6 +174,11 @@ function ContentAdmin() {
         />
       ) : !settings ? (
         <Spinner />
+      ) : tab === "header" ? (
+        <>
+          <HeaderForm settings={settings} setSettings={setSettings} />
+          <SaveBtn k="header" />
+        </>
       ) : tab === "home" ? (
         <HomeForm settings={settings} setSettings={setSettings} footer={<SaveBtn k="home" />} />
       ) : tab === "images" ? (
@@ -236,7 +247,8 @@ function ContentAdmin() {
             </Field>
           ))}
           <p className="mb-2 text-[12.5px] text-muted-foreground">
-            Only filled-in links appear in the website footer.
+            Filled-in links appear in the footer and make the matching icon in the header top bar
+            clickable (Facebook, X, YouTube, Instagram).
           </p>
           <SaveBtn k="socials" />
         </Card>

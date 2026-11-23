@@ -44,6 +44,19 @@ export type FooterSettings = {
   showEmblems: boolean;
 };
 
+/** The two-tier top navigation bar. Menu links themselves are edited in Admin → Menu. */
+export type HeaderSettings = {
+  showTopBar: boolean; // the thin bar with phone, email and social icons
+  showPhone: boolean;
+  showEmail: boolean;
+  showSocials: boolean;
+  followLabel: string;
+  siteName: string;
+  siteTagline: string;
+  ctaLabel: string;
+  ctaHref: string;
+};
+
 /** Every replaceable image on the site, with where it appears (shown in the admin). */
 export const IMAGE_SLOTS = [
   {
@@ -127,6 +140,7 @@ export type SiteSettings = {
   socials: SocialSettings;
   home: HomeSettings;
   footer: FooterSettings;
+  header: HeaderSettings;
   images: ImageSettings;
 };
 
@@ -185,6 +199,17 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       "© {year} Senator Yunus Abiodun Akintunde, PhD · Oyo Central Senatorial District. All Rights Reserved",
     showEmblems: true,
   },
+  header: {
+    showTopBar: true,
+    showPhone: true,
+    showEmail: true,
+    showSocials: true,
+    followLabel: "Follow us",
+    siteName: SITE.shortName,
+    siteTagline: SITE.role,
+    ctaLabel: "Get in touch",
+    ctaHref: "/get-involved",
+  },
   images: DEFAULT_IMAGES,
   achievements: {
     pageTitle: "10 major achievements in every local government",
@@ -205,6 +230,7 @@ export function mergeSettings(
       row.key === "socials" ||
       row.key === "home" ||
       row.key === "footer" ||
+      row.key === "header" ||
       row.key === "images" ||
       row.key === "achievements"
     ) {

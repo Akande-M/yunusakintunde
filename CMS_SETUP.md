@@ -172,3 +172,21 @@ What's new:
 - The old **Record & Agenda** page is split: the promise tracker and 2027 agenda are now at the
   bottom of **Achievements**, and the projects list is on **Infrastructure Projects**.
   `/record-agenda` redirects to Achievements. (The admin screen is still called Record & Agenda.)
+
+## Update 10 (Nov 2026): new header design
+**Apply the database update first.** In the Lovable chat, send: *"Run the SQL in
+supabase/migrations/20261123130000_header_and_menu_icons.sql on the Cloud database exactly as
+written, as one migration."* Until it runs, the header uses its default wording and the icons are
+picked automatically. The site works either way.
+
+- Two-tier header: a green top bar (phone, email, "Follow us" with Facebook, X, YouTube and
+  Instagram icons) above the dark green main bar (logo, menu, "Get in touch" button).
+- **Admin → Site content → Header**: show or hide the top bar, phone, email and social icons; the
+  "Follow us" text, the name beside the logo, and the button text and link.
+- Social icons become clickable once their links are added under **Social links**.
+- The phone number stays hidden while the Contact details phone is still a placeholder.
+- Menu groups open a full-width panel listing their links with icons. Constituency Interventions
+  & Development Projects opens its own drop-down beneath it.
+- **Admin → Menu**: each link has an **Icon** choice ("Automatic" picks one from the wording).
+- The active menu link is bold with a thick gold underline.
+- Footer copyright: `{year}` is replaced with the current year (stray braces like `{2026}` are removed).

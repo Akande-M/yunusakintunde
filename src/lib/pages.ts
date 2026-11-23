@@ -143,7 +143,12 @@ export async function getPage(slug: string): Promise<SitePage | null> {
 }
 
 // ---------------------------------------------------------------- menu
-export type MenuNode = { label: string; href: string | null; children: MenuNode[] };
+export type MenuNode = {
+  label: string;
+  href: string | null;
+  icon?: string | null; // a key of NAV_ICONS; empty = picked from the wording
+  children: MenuNode[];
+};
 
 /** Used only if the database can't be reached: the built-in pages that always exist. */
 export const FALLBACK_MENU: MenuNode[] = [
@@ -173,6 +178,7 @@ type MenuRow = {
   href: string | null;
   page_slug: string | null;
   sort_order: number;
+  icon?: string | null;
 };
 
 /**
@@ -193,7 +199,7 @@ export function buildMenu(rows: MenuRow[]): MenuNode[] {
         const href = r.page_slug ? `/${r.page_slug}` : r.href?.trim() || null;
         const children = depth < 3 ? build(r.id, depth + 1) : [];
         if (!href && children.length === 0) return null;
-        return { label: r.label, href, children };
+        return { label: r.label, href, icon: r.icon ?? null, children };
       })
       .filter((n): n is MenuNode => n !== null);
   return build(null, 1);
@@ -201,10 +207,12 @@ export function buildMenu(rows: MenuRow[]): MenuNode[] {
 
 export async function getMenu(): Promise<MenuNode[]> {
   try {
-    const items = await db
-      .from("menu_items")
-      .select("id,parent_id,label,href,page_slug,sort_order")
-      .eq("visible", true);
+    const cols = "id,parent_id,label,href,page_slug,sort_order";
+    const withIcon = await db.from("menu_items").select(`${cols},icon`).eq("visible", true);
+    // Before the icon column exists (migration 20261123130000), load without it.
+    const items = withIcon.error
+      ? await db.from("menu_items").select(cols).eq("visible", true)
+      : withIcon;
     if (items.error) throw items.error;
     const menu = buildMenu((items.data ?? []) as MenuRow[]);
     return menu.length ? menu : FALLBACK_MENU;

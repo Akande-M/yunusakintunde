@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, Eye, EyeOff, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { BUILT_IN_LINKS } from "@/lib/pages";
+import { NAV_ICONS, navIcon } from "@/lib/nav-icons";
 import {
   abtn,
   Badge,
@@ -28,8 +29,14 @@ type Item = {
   page_slug: string | null;
   visible: boolean;
   sort_order: number;
+  icon?: string | null;
 };
 type PageRef = { slug: string; title: string; status: "draft" | "published" };
+function DraftIcon({ label, icon }: { label: string; icon: string }) {
+  const Ico = navIcon(label, icon);
+  return <Ico className="size-5" />;
+}
+
 type LinkKind = "page" | "builtin" | "url" | "none";
 type Draft = {
   id?: string;
@@ -39,6 +46,7 @@ type Draft = {
   page_slug: string;
   href: string;
   visible: boolean;
+  icon: string;
 };
 
 const MAX_DEPTH = 3;
@@ -55,13 +63,22 @@ function MenuEditor() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [missing, setMissing] = useState(false);
+  const [noIcons, setNoIcons] = useState(false);
 
   const load = useCallback(async () => {
+    const loadMenu = async () => {
+      const cols = "id,parent_id,label,href,page_slug,visible,sort_order";
+      const withIcon = await db.from("menu_items").select(`${cols},icon`).order("sort_order");
+      if (!withIcon.error) {
+        setNoIcons(false);
+        return withIcon;
+      }
+      // The icon column arrives with migration 20261123130000.
+      setNoIcons(true);
+      return db.from("menu_items").select(cols).order("sort_order");
+    };
     const [m, p] = await Promise.all([
-      db
-        .from("menu_items")
-        .select("id,parent_id,label,href,page_slug,visible,sort_order")
-        .order("sort_order"),
+      loadMenu(),
       db.from("site_pages").select("slug,title,status").order("title"),
     ]);
     if (m.error) {
@@ -142,6 +159,7 @@ function MenuEditor() {
       page_slug: pages[0]?.slug ?? "",
       href: "",
       visible: true,
+      icon: "",
     });
   }
   function startEdit(i: Item) {
@@ -153,6 +171,7 @@ function MenuEditor() {
       page_slug: i.page_slug ?? "",
       href: i.href ?? "",
       visible: i.visible,
+      icon: i.icon ?? "",
     });
   }
 
@@ -176,6 +195,7 @@ function MenuEditor() {
       page_slug: draft.kind === "page" ? draft.page_slug : null,
       href: draft.kind === "builtin" || draft.kind === "url" ? draft.href.trim() : null,
       visible: draft.visible,
+      ...(noIcons ? {} : { icon: draft.icon || null }),
     };
     setSaving(true);
     const existing = items?.find((i) => i.id === draft.id);
@@ -260,6 +280,11 @@ function MenuEditor() {
                 {depth > 1 && (
                   <span aria-hidden className="text-muted-foreground">
                     └
+                  </span>
+                )}
+                {depth > 1 && (
+                  <span className="grid size-8 shrink-0 place-items-center rounded-md bg-primary-tint text-primary">
+                    <DraftIcon label={i.label} icon={i.icon ?? ""} />
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
@@ -466,6 +491,33 @@ function MenuEditor() {
                 />
               </Field>
             )}
+            <Field
+              label="Icon"
+              hint={
+                noIcons
+                  ? "Icons can be chosen once the latest database update is applied. Until then each link gets one from its wording."
+                  : "Shown beside the link in the drop-down. “Automatic” picks one from the menu text."
+              }
+            >
+              <div className="flex items-center gap-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary-tint text-primary">
+                  <DraftIcon label={draft.label} icon={draft.icon} />
+                </span>
+                <select
+                  className={inputCls}
+                  disabled={noIcons}
+                  value={draft.icon}
+                  onChange={(e) => setDraft({ ...draft, icon: e.target.value })}
+                >
+                  <option value="">Automatic</option>
+                  {Object.entries(NAV_ICONS).map(([k, v]) => (
+                    <option key={k} value={k}>
+                      {v.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </Field>
             <label className="flex items-center gap-2 text-sm font-semibold">
               <input
                 type="checkbox"
