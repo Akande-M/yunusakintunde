@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { getAchievements, getRecord } from "@/lib/cms";
+import { ShapedImage } from "@/components/site/ShapedImage";
 import { PromiseTracker } from "@/components/site/PromiseTracker";
 import type { AchievementCard } from "@/lib/achievements-data";
 import { useSiteSettings } from "@/lib/use-settings";
@@ -142,16 +143,11 @@ function AchievementsPage() {
                     return (
                       <Reveal key={i} as="li" delay={Math.min(i, 7) * 50} className="flex">
                         <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
-                          <div className="relative aspect-[4/3] bg-primary-tint">
+                          <div className="relative bg-primary-tint">
                             {it.image ? (
-                              <img
-                                src={it.image}
-                                alt={it.text}
-                                loading="lazy"
-                                className="size-full object-cover"
-                              />
+                              <ShapedImage url={it.image} alt={it.text} maxPortraitHeight={false} />
                             ) : (
-                              <div className="grid size-full place-items-center">
+                              <div className="grid aspect-[4/3] w-full place-items-center">
                                 <Ico className="size-12 text-primary/55" aria-hidden />
                               </div>
                             )}

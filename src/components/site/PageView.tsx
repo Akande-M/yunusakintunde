@@ -5,6 +5,7 @@ import { toParagraphs } from "@/lib/cms";
 import { TOPIC_RULES, type PageSection, type SitePage } from "@/lib/pages";
 import { Emphasised, iconFor } from "./Achievements";
 import { PhotoGallery } from "./PhotoGallery";
+import { ShapedImage } from "./ShapedImage";
 import { ProjectsList } from "./ProjectsList";
 import { Reveal } from "./Reveal";
 import { btn, Eyebrow, SectionHead } from "./ui";
@@ -30,31 +31,19 @@ function Paragraphs({ body }: { body: string }) {
   );
 }
 
-function Photo({
-  src,
-  alt,
-  className = "aspect-[4/3]",
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-}) {
-  return (
-    <div className={`overflow-hidden rounded-lg border border-border bg-primary-tint ${className}`}>
-      <img src={src} alt={alt} loading="lazy" className="size-full object-cover" />
-    </div>
-  );
+function Photo({ src, alt }: { src: string; alt: string }) {
+  return <ShapedImage url={src} alt={alt} className="rounded-lg border border-border" />;
 }
 
 function AchievementTile({ text, image, n }: { text: string; image: string; n?: number }) {
   const Ico = iconFor(text);
   return (
     <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
-      <div className="relative aspect-[4/3] bg-primary-tint">
+      <div className="relative bg-primary-tint">
         {image ? (
-          <img src={image} alt={text} loading="lazy" className="size-full object-cover" />
+          <ShapedImage url={image} alt={text} maxPortraitHeight={false} />
         ) : (
-          <div className="grid size-full place-items-center">
+          <div className="grid aspect-[4/3] w-full place-items-center">
             <Ico className="size-12 text-primary/55" aria-hidden />
           </div>
         )}
@@ -72,9 +61,20 @@ function AchievementTile({ text, image, n }: { text: string; image: string; n?: 
 }
 
 /** "Title: description" shows the title in bold with the description under it. */
-function ListText({ text }: { text: string }) {
+function ListText({ text, plain = false }: { text: string; plain?: boolean }) {
   const at = text.indexOf(": ");
-  if (at < 3) return <span className="pt-1.5 text-[15.5px] font-semibold text-foreground">{text}</span>;
+  if (at < 3)
+    return (
+      <span
+        className={
+          plain
+            ? "text-[15px] text-foreground"
+            : "pt-1.5 text-[15.5px] font-semibold text-foreground"
+        }
+      >
+        {text}
+      </span>
+    );
   return (
     <span className="pt-1">
       <span className="block text-[15.5px] font-bold text-foreground">{text.slice(0, at)}</span>
@@ -127,12 +127,7 @@ function Section({ s, data, index }: { s: PageSection; data: PageData; index: nu
                 <Reveal key={i} as="li" delay={Math.min(i, 6) * 50} className="flex">
                   <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
                     {c.image && (
-                      <img
-                        src={c.image}
-                        alt={c.title}
-                        loading="lazy"
-                        className="aspect-[4/3] w-full object-cover"
-                      />
+                      <ShapedImage url={c.image} alt={c.title} maxPortraitHeight={false} />
                     )}
                     <div className="p-5">
                       <h3 className="font-sans text-[16px] font-bold text-primary">{c.title}</h3>
@@ -159,28 +154,47 @@ function Section({ s, data, index }: { s: PageSection; data: PageData; index: nu
           </div>
         </section>
       );
-    case "list":
+    case "list": {
       if (!s.items.length) return null;
+      const bulleted = s.style === "bulleted";
       return (
         <section className={`py-12 sm:py-14 ${tone}`}>
           <div className="wrap max-w-[900px]">
             {s.heading && <SectionHead title={s.heading} />}
-            {s.intro && <p className="-mt-3 mb-8 max-w-[70ch] text-muted-foreground">{s.intro}</p>}
-            <ol className="space-y-3">
-              {s.items.map((t, i) => (
-                <Reveal key={i} as="li" delay={Math.min(i, 8) * 50}>
-                  <div className="flex items-start gap-4 rounded-lg border border-border bg-card px-5 py-4">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary font-serif text-[16px] font-semibold text-primary-foreground">
-                      {i + 1}
-                    </span>
-                    <ListText text={t} />
-                  </div>
-                </Reveal>
-              ))}
-            </ol>
+            {s.intro && (
+              <p className="-mt-3 mb-8 max-w-[70ch] whitespace-pre-line text-muted-foreground">
+                {s.intro}
+              </p>
+            )}
+            {bulleted ? (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {s.items.map((t, i) => (
+                  <Reveal key={i} as="li" delay={Math.min(i, 8) * 40}>
+                    <div className="flex h-full items-start gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
+                      <span aria-hidden className="mt-2 size-2 shrink-0 rounded-full bg-accent" />
+                      <ListText text={t} plain />
+                    </div>
+                  </Reveal>
+                ))}
+              </ul>
+            ) : (
+              <ol className="space-y-3">
+                {s.items.map((t, i) => (
+                  <Reveal key={i} as="li" delay={Math.min(i, 8) * 50}>
+                    <div className="flex items-start gap-4 rounded-lg border border-border bg-card px-5 py-4">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary font-serif text-[16px] font-semibold text-primary-foreground">
+                        {i + 1}
+                      </span>
+                      <ListText text={t} />
+                    </div>
+                  </Reveal>
+                ))}
+              </ol>
+            )}
           </div>
         </section>
       );
+    }
     case "projects":
       return (
         <section className={`py-12 sm:py-14 ${tone}`}>
@@ -307,14 +321,12 @@ export function PageView({ page, data }: { page: SitePage; data: PageData }) {
             )}
           </div>
           {page.heroImage && (
-            <div className="overflow-hidden rounded-lg border border-border bg-primary-tint">
-              <img
-                src={page.heroImage}
-                alt={page.heroAlt || page.title}
-                className="aspect-[4/3] w-full object-cover"
-                fetchPriority="high"
-              />
-            </div>
+            <ShapedImage
+              url={page.heroImage}
+              alt={page.heroAlt || page.title}
+              loading="eager"
+              className="rounded-lg border border-border"
+            />
           )}
         </div>
       </section>

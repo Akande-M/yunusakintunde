@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { GalleryImage } from "@/lib/pages";
+import { splitShape } from "@/lib/image-shape";
+import { ShapedImage } from "./ShapedImage";
 
 /* Photos at their natural shape (certificates and trophies aren't cropped), each with its
    caption. Click a photo to view it large; arrow keys move between photos, Esc closes. */
@@ -42,11 +44,12 @@ export function PhotoGallery({ images, label }: { images: GalleryImage[]; label:
                 className="group block w-full cursor-zoom-in overflow-hidden bg-primary-tint"
                 aria-label={`View larger: ${g.caption || `photo ${i + 1}`}`}
               >
-                <img
-                  src={g.url}
+                <ShapedImage
+                  url={g.url}
                   alt={g.caption || label}
-                  loading="lazy"
-                  className="block h-auto w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                  fallback="original"
+                  maxPortraitHeight={false}
+                  imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
               </button>
               {g.caption && (
@@ -82,7 +85,7 @@ export function PhotoGallery({ images, label }: { images: GalleryImage[]; label:
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-16">
             <img
-              src={current.url}
+              src={splitShape(current.url).src}
               alt={current.caption || label}
               className="max-h-full max-w-full object-contain"
               onClick={(e) => e.stopPropagation()}

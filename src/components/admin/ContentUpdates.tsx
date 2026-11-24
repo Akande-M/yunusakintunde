@@ -50,7 +50,8 @@ export function ContentUpdates() {
         <Sparkles className="size-4 text-accent-deep" /> Content updates ready ({pending.length})
       </h2>
       <p className="mb-4 text-[13px] text-muted-foreground">
-        New content prepared for the website. Click Apply to put it live. You can still edit everything afterwards.
+        New content prepared for the website. Click Apply to put it live. You can still edit
+        everything afterwards.
       </p>
       <ul className="space-y-3">
         {pending.map((u) => (

@@ -38,7 +38,10 @@ const depthOf = (rows: MenuRow[], id: string | null): number => {
 };
 
 /** Groups (links without their own page) a page can sit under, at most three levels deep. */
-export function groupOptions(rows: MenuRow[]): { id: string; label: string }[] {
+export function groupOptions(
+  rows: MenuRow[],
+  ownSlug?: string | null,
+): { id: string; label: string }[] {
   const path = (r: MenuRow): string => {
     const parent = rows.find((x) => x.id === r.parent_id);
     return parent ? `${path(parent)} › ${r.label}` : r.label;
@@ -48,7 +51,12 @@ export function groupOptions(rows: MenuRow[]): { id: string; label: string }[] {
     return parent ? [...order(parent), r.sort_order] : [r.sort_order];
   };
   return rows
-    .filter((r) => !r.page_slug && !r.href && depthOf(rows, r.id) < 3)
+    .filter(
+      (r) =>
+        (!ownSlug || r.page_slug !== ownSlug) &&
+        ((!r.page_slug && !r.href) || rows.some((c) => c.parent_id === r.id)) &&
+        depthOf(rows, r.id) < 3,
+    )
     .sort((a, b) => {
       const oa = order(a);
       const ob = order(b);
@@ -89,6 +97,20 @@ export async function applyPlacement(
   const mine = rows.find((r) => r.page_slug && slugs.includes(r.page_slug));
   if (p.parent === NOT_IN_MENU) {
     if (!slugs.length) return null;
+    // A link with sub-links stays as a plain group so its sub-links aren't removed.
+    const groups = rows.filter(
+      (r) => r.page_slug && slugs.includes(r.page_slug) && rows.some((c) => c.parent_id === r.id),
+    );
+    if (groups.length) {
+      const g = await db
+        .from("menu_items")
+        .update({ page_slug: null })
+        .in(
+          "id",
+          groups.map((r) => r.id),
+        );
+      if (g.error) return g.error.message;
+    }
     const { error } = await db.from("menu_items").delete().in("page_slug", slugs);
     return error?.message ?? null;
   }

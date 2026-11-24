@@ -123,7 +123,13 @@ function PagesList() {
       toast.error(errMsg(error));
       return;
     }
-    await db.from("menu_items").delete().eq("page_slug", r.slug);
+    // Keep a menu group that has sub-links; just unlink it from the deleted page.
+    const own = menu.filter((m) => m.page_slug === r.slug);
+    for (const m of own) {
+      const hasKids = menu.some((c) => c.parent_id === m.id);
+      if (hasKids) await db.from("menu_items").update({ page_slug: null }).eq("id", m.id);
+      else await db.from("menu_items").delete().eq("id", m.id);
+    }
     toast.success("Page deleted");
     void load();
   }

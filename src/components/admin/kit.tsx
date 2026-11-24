@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { siteUrl } from "@/lib/asset-url";
+import { SHAPE_ASPECT, SHAPES, splitShape, withShape, type Shape } from "@/lib/image-shape";
 
 // ------------------------------------------------------------------ styling
 const BTN =
@@ -199,13 +200,23 @@ export function ImageField({
   onChange,
   folder,
   accept = "image/*,.heic,.heif",
+  shapes = false,
+  defaultShape = "landscape",
 }: {
   value: string | null | undefined;
   onChange: (url: string) => void;
   folder: "news" | "gallery" | "projects" | "site" | "pages";
   accept?: string;
+  /** Let the editor choose the frame: Landscape / Portrait / Square / Original. */
+  shapes?: boolean;
+  /** The frame the website uses when none is chosen. */
+  defaultShape?: Shape;
 }) {
   const [busy, setBusy] = useState(false);
+  const { src: rawSrc, shape: chosenShape } = splitShape(value);
+  const shape: Shape = chosenShape ?? defaultShape;
+  const previewAspect = !shapes || shape === "original" ? "aspect-[16/10]" : SHAPE_ASPECT[shape];
+  const keepShape = (url: string) => (shapes && chosenShape ? withShape(url, chosenShape) : url);
   const [broken, setBroken] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   const isVideo = !!value && /\.(mp4|webm|mov)(\?|$)/i.test(value);
@@ -215,7 +226,7 @@ export function ImageField({
     let alive = true;
     setBroken(false);
     if (!value || isVideo) return;
-    void canLoadImage(siteUrl(value)).then((ok) => alive && setBroken(!ok));
+    void canLoadImage(siteUrl(splitShape(value).src)).then((ok) => alive && setBroken(!ok));
     return () => {
       alive = false;
     };
@@ -225,7 +236,7 @@ export function ImageField({
     if (!file) return;
     setBusy(true);
     try {
-      onChange(await uploadMedia(file, folder));
+      onChange(keepShape(await uploadMedia(file, folder)));
       toast.success("Uploaded. Click Save to put it on the website.");
     } catch (e) {
       toast.error(errMsg(e));
@@ -237,7 +248,11 @@ export function ImageField({
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-      <div className="relative grid aspect-[16/10] w-full shrink-0 place-items-center overflow-hidden rounded-sm border border-dashed border-border bg-paper sm:w-56">
+      <div
+        className={`relative grid w-full shrink-0 place-items-center overflow-hidden rounded-sm border border-dashed border-border bg-paper sm:w-56 ${previewAspect} ${
+          shapes && shape === "portrait" ? "sm:w-40" : ""
+        }`}
+      >
         {value && broken ? (
           <span className="px-3 text-center text-[12px] font-semibold text-destructive">
             Image not loading
@@ -251,7 +266,13 @@ export function ImageField({
               preload="metadata"
             />
           ) : (
-            <img src={siteUrl(value)} alt="" className="size-full object-cover" />
+            <img
+              src={siteUrl(rawSrc)}
+              alt=""
+              className={`size-full ${shapes && shape === "original" ? "object-contain" : "object-cover"} ${
+                shape === "portrait" ? "object-[center_25%]" : ""
+              }`}
+            />
           )
         ) : (
           <ImagePlus className="size-7 text-muted-foreground" />
@@ -281,9 +302,38 @@ export function ImageField({
         <input
           className={inputCls}
           placeholder="…or paste an image link"
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value.trim())}
+          value={rawSrc}
+          onChange={(e) => onChange(keepShape(e.target.value.trim()))}
         />
+        {shapes && value && !isVideo && (
+          <div>
+            <span className="mb-1 block text-[12px] font-bold text-muted-foreground">
+              Frame on the website
+            </span>
+            <div
+              role="radiogroup"
+              aria-label="Frame on the website"
+              className="inline-flex flex-wrap rounded-sm border border-border bg-card p-0.5"
+            >
+              {SHAPES.map((o) => (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={shape === o.value}
+                  onClick={() => onChange(withShape(rawSrc, o.value))}
+                  className={`min-h-8 cursor-pointer rounded-sm px-3 text-[12.5px] font-bold transition-colors ${
+                    shape === o.value
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {broken && (
           <p role="alert" className="text-[12.5px] font-semibold text-destructive">
             ⚠ This image doesn't load, so visitors won't see it. Upload the photo itself, or paste a
@@ -765,7 +815,8 @@ export function ItemsEditor({
     if (!file) return;
     setBusy(i);
     try {
-      patch(i, { image: await uploadMedia(file, "projects") });
+      const url = await uploadMedia(file, "projects");
+      patch(i, { image: withShape(url, splitShape(value[i]?.image).shape) });
     } catch (e) {
       toast.error(errMsg(e));
     } finally {
@@ -781,7 +832,11 @@ export function ItemsEditor({
           </span>
           <div className="relative size-16 shrink-0 overflow-hidden rounded-sm border border-dashed border-border bg-card">
             {it.image ? (
-              <img src={siteUrl(it.image)} alt="" className="size-full object-cover" />
+              <img
+                src={siteUrl(splitShape(it.image).src)}
+                alt=""
+                className="size-full object-cover"
+              />
             ) : (
               <ImagePlus className="absolute inset-0 m-auto size-5 text-muted-foreground" />
             )}
@@ -817,6 +872,24 @@ export function ItemsEditor({
                 >
                   Remove photo
                 </button>
+              )}
+              {it.image && (
+                <label className="flex items-center gap-1.5 text-muted-foreground">
+                  Frame
+                  <select
+                    className="rounded-sm border border-border bg-card px-1.5 py-0.5 text-[12.5px] font-bold text-foreground"
+                    value={splitShape(it.image).shape ?? "landscape"}
+                    onChange={(e) =>
+                      patch(i, { image: withShape(it.image, e.target.value as Shape) })
+                    }
+                  >
+                    {SHAPES.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               )}
             </div>
           </div>

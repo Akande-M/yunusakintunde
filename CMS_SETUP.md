@@ -231,3 +231,16 @@ supabase/migrations/20261124130000_open_settings_reads.sql on the Cloud database
 written, as one migration."* After this, new kinds of site settings show on the website without
 any database change. Private settings (the content-updates log, and any key starting with
 `private_`) stay hidden from visitors.
+
+## Update 14 (Nov 2026): photo frames, Committees, Constituency pages
+No database step. Upload, deploy, then click **Apply** in the dashboard's Content updates box.
+
+- **Photo frame choice**: in Pages (main photo, text photos, cards, galleries) and on Achievements
+  photos, each image has *Frame on the website*: Landscape, Portrait, Square or Original. Gallery
+  photos default to Original (their own shape); the others default to Landscape. (The homepage
+  carousels keep their fixed frames.)
+- **List sections** can be numbered or bullet points.
+- **Content update**: Bills & Motions (Geomatics bill corrected to 2024 (SB.496), police retirees
+  section, public hearing photos, committee work photos, 5 more Senate photos), Committees &
+  Oversight (published), a new Constituency Projects & Interventions page linked from its menu
+  group, and new text at the top of Outreach, Infrastructure Projects and Skills, Jobs & Empowerment.

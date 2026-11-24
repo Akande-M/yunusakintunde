@@ -22,7 +22,14 @@ export type PageSection =
     }
   | { type: "cards"; heading: string; intro: string; items: CardItem[] }
   | { type: "gallery"; heading: string; images: GalleryImage[] }
-  | { type: "list"; heading: string; intro: string; items: string[] }
+  | {
+      type: "list";
+      heading: string;
+      intro: string;
+      items: string[];
+      /** Numbered (1, 2, 3) or bullet points. */
+      style?: "numbered" | "bulleted";
+    }
   | { type: "projects"; heading: string; intro: string } // Admin → Record & Agenda → Projects
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards
   | { type: "topic"; heading: string; intro: string; topic: Topic }; // Admin → Achievements, filtered
@@ -42,7 +49,7 @@ export const SECTION_LABELS: Record<PageSection["type"], string> = {
   text: "Text (with optional photo)",
   cards: "Cards with photos",
   gallery: "Photo gallery",
-  list: "Numbered list",
+  list: "List (numbered or bullet points)",
   projects: "Projects list (from Record & Agenda → Projects)",
   legislative: "Bills & motions (from Achievements → Legislative Duties)",
   topic: "Achievements by topic (from Achievements)",
@@ -72,7 +79,7 @@ export function blankSection(type: PageSection["type"]): PageSection {
     case "gallery":
       return { type, heading: "", images: [] };
     case "list":
-      return { type, heading: "", intro: "", items: [] };
+      return { type, heading: "", intro: "", items: [], style: "numbered" };
     case "topic":
       return { type, heading: "", intro: "", topic: "outreach" };
     default:

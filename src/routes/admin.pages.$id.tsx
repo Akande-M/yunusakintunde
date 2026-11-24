@@ -177,6 +177,7 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               value={s.image}
               onChange={(image) => onChange({ ...s, image })}
               folder="pages"
+              shapes
             />
           </Field>
           {s.image && (
@@ -268,6 +269,7 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
                   <ImageField
                     value={c.image}
                     folder="pages"
+                    shapes
                     onChange={(image) =>
                       onChange({
                         ...s,
@@ -315,6 +317,8 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
                 <ImageField
                   value={g.url}
                   folder="pages"
+                  shapes
+                  defaultShape="original"
                   onChange={(url) =>
                     onChange({
                       ...s,
@@ -365,7 +369,20 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               onChange={(e) => onChange({ ...s, intro: e.target.value })}
             />
           </Field>
-          <Field label="Items" hint="One item per line, numbered automatically. To show a bold title with a description under it, write: Title: description">
+          <Field label="Style">
+            <select
+              className={inputCls}
+              value={s.style ?? "numbered"}
+              onChange={(e) => onChange({ ...s, style: e.target.value as "numbered" | "bulleted" })}
+            >
+              <option value="numbered">Numbered (1, 2, 3)</option>
+              <option value="bulleted">Bullet points</option>
+            </select>
+          </Field>
+          <Field
+            label="Items"
+            hint="One item per line, numbered automatically. To show a bold title with a description under it, write: Title: description"
+          >
             <textarea
               rows={Math.max(5, s.items.length + 1)}
               className={inputCls}
@@ -651,6 +668,7 @@ function PageEditor() {
                 value={page.hero_image}
                 onChange={(v) => set("hero_image", v)}
                 folder="pages"
+                shapes
               />
             </Field>
             <Field
@@ -786,7 +804,7 @@ function MenuPlacementCard({
   onChange: (v: Placement) => void;
 }) {
   if (!rows) return null;
-  const groups = groupOptions(rows);
+  const groups = groupOptions(rows, slug);
   const sibs = value.parent === NOT_IN_MENU ? [] : siblingsOf(rows, value.parent, slug);
   return (
     <Card>
