@@ -210,3 +210,24 @@ untouched draft) and lets the website read the Biography and page-heading text.
 - **Menu screen removed.** Each page in Pages has a **Top menu** box: not in the menu, on the main
   bar, or under a group, plus the menu text and its position. Deleting a page also removes its
   menu link. Menu icons are picked automatically from the link text.
+
+## Update 12 (Nov 2026): Bills & Motions content, "Content updates" (no more SQL for content)
+No database step. Upload, deploy, then open the CMS dashboard.
+
+- **Content updates**: new content prepared with the code (text, captions, photos) now shows up as
+  a gold "Content updates ready" box on the Dashboard and on Pages. Click **Apply** to put it live,
+  or **Don't apply** to skip it. Each update runs once and everything stays editable afterwards.
+  Only changes to the database *structure* (new tables or settings) still need a migration.
+- First update: **Bills & Motions**: the new introduction, 6 bills and 2 motions sponsored and
+  supported (shown as bold title + description), the two bills at the stakeholders' engagement,
+  and a 20-photo "In the Senate" gallery. The Legislative Duties card on Achievements gets the same
+  list. Photos are in `public/site-images/legislative/` (the smaller ones were upscaled 2×).
+- Numbered list sections: write `Title: description` on a line to show a bold title with the
+  description under it.
+
+## Update 13 (Nov 2026): last routine database step
+**Apply once in the Lovable chat:** *"Run the SQL in
+supabase/migrations/20261124130000_open_settings_reads.sql on the Cloud database exactly as
+written, as one migration."* After this, new kinds of site settings show on the website without
+any database change. Private settings (the content-updates log, and any key starting with
+`private_`) stay hidden from visitors.

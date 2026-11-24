@@ -365,7 +365,7 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               onChange={(e) => onChange({ ...s, intro: e.target.value })}
             />
           </Field>
-          <Field label="Items" hint="One item per line. They are numbered automatically.">
+          <Field label="Items" hint="One item per line, numbered automatically. To show a bold title with a description under it, write: Title: description">
             <textarea
               rows={Math.max(5, s.items.length + 1)}
               className={inputCls}

@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { abtn, Card, PageTitle, Spinner } from "@/components/admin/kit";
 import { useAdminAuth } from "@/components/admin/auth";
 import { ImageCheck } from "@/components/admin/ImageCheck";
+import { ContentUpdates } from "@/components/admin/ContentUpdates";
 
 export const Route = createFileRoute("/admin/")({
   component: Dashboard,
@@ -76,6 +77,7 @@ function Dashboard() {
           </>
         }
       />
+      <ContentUpdates />
       {!s ? (
         <Spinner />
       ) : (

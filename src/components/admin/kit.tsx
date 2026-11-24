@@ -146,6 +146,7 @@ export function ConfirmButton({
   onConfirm,
   className = abtn.icon,
   children,
+  tone = "danger",
 }: {
   label: string;
   title: string;
@@ -153,6 +154,7 @@ export function ConfirmButton({
   onConfirm: () => void | Promise<void>;
   className?: string;
   children?: ReactNode;
+  tone?: "danger" | "primary";
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -175,7 +177,11 @@ export function ConfirmButton({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
+              className={
+                tone === "danger"
+                  ? "bg-destructive text-white hover:bg-destructive/90"
+                  : "bg-primary text-primary-foreground hover:bg-primary-hover"
+              }
               onClick={() => void onConfirm()}
             >
               {label}

@@ -71,6 +71,18 @@ function AchievementTile({ text, image, n }: { text: string; image: string; n?: 
   );
 }
 
+/** "Title: description" shows the title in bold with the description under it. */
+function ListText({ text }: { text: string }) {
+  const at = text.indexOf(": ");
+  if (at < 3) return <span className="pt-1.5 text-[15.5px] font-semibold text-foreground">{text}</span>;
+  return (
+    <span className="pt-1">
+      <span className="block text-[15.5px] font-bold text-foreground">{text.slice(0, at)}</span>
+      <span className="mt-1 block text-[14.5px] text-muted-foreground">{text.slice(at + 2)}</span>
+    </span>
+  );
+}
+
 function Section({ s, data, index }: { s: PageSection; data: PageData; index: number }) {
   const tone = index % 2 === 1 ? "bg-paper-2 border-y border-border" : "";
   switch (s.type) {
@@ -161,7 +173,7 @@ function Section({ s, data, index }: { s: PageSection; data: PageData; index: nu
                     <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary font-serif text-[16px] font-semibold text-primary-foreground">
                       {i + 1}
                     </span>
-                    <span className="pt-1.5 text-[15.5px] font-semibold text-foreground">{t}</span>
+                    <ListText text={t} />
                   </div>
                 </Reveal>
               ))}

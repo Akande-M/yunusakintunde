@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { abtn, Badge, ConfirmButton, errMsg, PageTitle, Spinner } from "@/components/admin/kit";
 import { loadMenuRows, type MenuRow } from "@/components/admin/menu-placement";
+import { ContentUpdates } from "@/components/admin/ContentUpdates";
 
 export const Route = createFileRoute("/admin/pages/")({
   component: PagesList,
@@ -138,6 +139,8 @@ function PagesList() {
           </Link>
         }
       />
+
+      <ContentUpdates />
 
       <h2 className="mb-3 font-serif text-[19px] font-semibold">Main pages</h2>
       <ul className="mb-9 grid gap-3 md:grid-cols-2">
