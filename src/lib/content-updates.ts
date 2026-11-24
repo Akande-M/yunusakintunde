@@ -1,9 +1,11 @@
 import { db } from "@/lib/db";
+import { hostBundledImages } from "@/lib/bundled-images";
 import {
   BILLS_AND_MOTIONS_PAGE,
   SENATE_CARD,
 } from "@/content-updates/2026-11-24-bills-and-motions";
 import * as LC from "@/content-updates/2026-11-24-legislative-and-constituency";
+import * as OOI from "@/content-updates/2026-11-24-oversight-outreach-infrastructure";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -32,7 +34,9 @@ type PageSeed = {
   sections: unknown;
 };
 
-async function upsertPage(slug: string, p: PageSeed) {
+async function upsertPage(slug: string, seed: PageSeed) {
+  // Photos shipped with the code are copied into the media library so they show on every host.
+  const p = await hostBundledImages(seed);
   const row = { ...p, status: "published" as const };
   const existing = await db.from("site_pages").select("id").eq("slug", slug).maybeSingle();
   if (existing.error) throw existing.error;
@@ -45,7 +49,8 @@ async function upsertPage(slug: string, p: PageSeed) {
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 /** Puts sections at the top of an existing page, replacing any earlier copy with the same heading. */
-async function prependSections(slug: string, add: { heading: string }[]) {
+async function prependSections(slug: string, addRaw: { heading: string }[]) {
+  const add = await hostBundledImages(addRaw);
   const { data, error } = await db
     .from("site_pages")
     .select("sections")
@@ -130,6 +135,20 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
         "skills-jobs-and-empowerment",
         plain(LC.SKILLS) as { heading: string }[],
       );
+    },
+  },
+  {
+    id: "2026-11-24-oversight-outreach-infrastructure",
+    title: "Oversight, Outreach and Infrastructure: new sections and 19 photos",
+    summary:
+      "Committees & Oversight: Police Affairs engagements (8 photos) and the meeting with the Canadian High Commissioner. Outreach: Optical Medical Outreach and Medical Facilities & Healthcare Outreach. Infrastructure Projects: Education Infrastructure Development (classroom projects by local government, renovations, FCE (Special) Oyo, ICT centres, UTME support), water, Light Up Oyo Central, transformers and markets. All photos are copied into the media library so they show straight away.",
+    replaces:
+      "This replaces the Committees & Oversight page and adds the new sections near the top of Outreach and Infrastructure Projects (their existing achievement listings stay underneath).",
+    viewUrl: "/infrastructure-projects",
+    apply: async () => {
+      await upsertPage("committees-and-oversight", plain(OOI.COMMITTEES) as PageSeed);
+      await prependSections("outreach", plain(OOI.OUTREACH_SECTIONS) as { heading: string }[]);
+      await prependSections("infrastructure-projects", plain(OOI.INFRA_SECTIONS) as { heading: string }[]);
     },
   },
 ];

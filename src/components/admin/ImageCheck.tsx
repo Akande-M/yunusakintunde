@@ -7,18 +7,21 @@ import { normalizeItems } from "@/lib/achievements-data";
 import { canLoadImage } from "@/components/admin/upload";
 import { abtn, Card } from "@/components/admin/kit";
 import { siteUrl } from "@/lib/asset-url";
+import { normalizeSections } from "@/lib/pages";
+import { splitShape } from "@/lib/image-shape";
 
 type Ref = { url: string; where: string; fix: string };
 type Result = { checked: number; broken: Ref[] };
 
 /** Collects every image URL the CMS controls, with where it shows and where to fix it. */
 async function collect(): Promise<Ref[]> {
-  const [settings, gallery, news, projects, cards] = await Promise.all([
+  const [settings, gallery, news, projects, cards, pages] = await Promise.all([
     db.from("site_settings").select("key,value"),
     db.from("gallery_items").select("kind,url,thumbnail_url,caption").eq("published", true),
     db.from("news_posts").select("title,hero_image_url,photos"),
     db.from("projects").select("name,image_url").eq("published", true),
     db.from("achievement_cards").select("title,items").eq("published", true),
+    db.from("site_pages").select("id,title,hero_image,sections").eq("status", "published"),
   ]);
   const refs: Ref[] = [];
   const s = mergeSettings((settings.data as { key: string; value: unknown }[]) ?? []);
@@ -92,7 +95,26 @@ async function collect(): Promise<Ref[]> {
           fix: "/admin/achievements",
         }),
     );
-  return refs.filter((r) => r.url);
+  for (const p of (pages.data ?? []) as {
+    id: string;
+    title: string;
+    hero_image: string | null;
+    sections: unknown;
+  }[]) {
+    const fix = `/admin/pages/${p.id}`;
+    if (p.hero_image) refs.push({ url: p.hero_image, where: `${p.title}: main photo`, fix });
+    for (const sec of normalizeSections(p.sections)) {
+      if (sec.type === "text" && sec.image)
+        refs.push({ url: sec.image, where: `${p.title}: ${sec.heading || "text"} photo`, fix });
+      if (sec.type === "cards")
+        sec.items.forEach((c) => c.image && refs.push({ url: c.image, where: `${p.title}: card “${c.title}”`, fix }));
+      if (sec.type === "gallery")
+        sec.images.forEach((g, i) =>
+          refs.push({ url: g.url, where: `${p.title}: ${sec.heading || "gallery"} photo ${i + 1}`, fix }),
+        );
+    }
+  }
+  return refs.filter((r) => r.url).map((r) => ({ ...r, url: splitShape(r.url).src }));
 }
 
 export function ImageCheck() {

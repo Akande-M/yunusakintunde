@@ -191,6 +191,9 @@ function Section({ s, data, index }: { s: PageSection; data: PageData; index: nu
                 ))}
               </ol>
             )}
+            {s.outro && (
+              <p className="mt-8 max-w-[70ch] whitespace-pre-line text-[15.5px] text-muted-foreground">{s.outro}</p>
+            )}
           </div>
         </section>
       );

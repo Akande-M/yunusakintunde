@@ -244,3 +244,19 @@ No database step. Upload, deploy, then click **Apply** in the dashboard's Conten
   section, public hearing photos, committee work photos, 5 more Senate photos), Committees &
   Oversight (published), a new Constituency Projects & Interventions page linked from its menu
   group, and new text at the top of Outreach, Infrastructure Projects and Skills, Jobs & Empowerment.
+
+## Update 15 (Nov 2026): photos always show; Oversight, Outreach, Infrastructure content
+No database step. Upload, deploy, then open the CMS dashboard.
+
+- **Why some photos didn't show:** photos that come with a code update live in
+  `public/site-images/…` and only exist on a host once that host has redeployed. The live site
+  (lovable.yunusakintunde.com) hadn't been republished, so new photos were missing there.
+- **Fix:** the dashboard now shows **"N photos to move into the media library"**. Click **Fix photos
+  now**: each photo is copied from GitHub into the media library (where CMS uploads go) and the
+  pages are updated. They then show on every host straight away. Content updates also do this
+  automatically when you click Apply.
+- Photos you upload in the CMS always go to the media library and show immediately.
+- **Content update**: Committees & Oversight (Police Affairs engagements and the meeting with the
+  Canadian High Commissioner), Outreach (optical and medical outreach), Infrastructure Projects
+  (education infrastructure, ICT centres, water, Light Up Oyo Central, transformers, markets).
+- List sections can have closing text under the list.

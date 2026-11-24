@@ -390,6 +390,14 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               onChange={(e) => onChange({ ...s, items: e.target.value.split("\n") })}
             />
           </Field>
+          <Field label="Closing text (optional)" hint="Shown under the list.">
+            <textarea
+              rows={2}
+              className={inputCls}
+              value={s.outro ?? ""}
+              onChange={(e) => onChange({ ...s, outro: e.target.value })}
+            />
+          </Field>
         </>
       );
     default: {

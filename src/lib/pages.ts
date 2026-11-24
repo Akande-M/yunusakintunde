@@ -29,6 +29,8 @@ export type PageSection =
       items: string[];
       /** Numbered (1, 2, 3) or bullet points. */
       style?: "numbered" | "bulleted";
+      /** Optional closing text under the list. */
+      outro?: string;
     }
   | { type: "projects"; heading: string; intro: string } // Admin → Record & Agenda → Projects
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards

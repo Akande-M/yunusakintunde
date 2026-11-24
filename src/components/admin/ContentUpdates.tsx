@@ -1,12 +1,59 @@
 import { useCallback, useEffect, useState } from "react";
-import { ExternalLink, Sparkles } from "lucide-react";
+import { ExternalLink, ImageUp, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { CONTENT_UPDATES, loadUpdateLog, recordUpdate } from "@/lib/content-updates";
+import { countBundledImages, fixBundledImagesEverywhere } from "@/lib/bundled-images";
 import { useAdminAuth } from "./auth";
 import { abtn, ConfirmButton, errMsg } from "./kit";
 
 /** Banner listing content updates that shipped with the code and haven't been applied yet. */
+/** Offers to move photos that shipped with the code into the media library, so they show on every host. */
+function PhotoFix() {
+  const [count, setCount] = useState(0);
+  const [progress, setProgress] = useState<string | null>(null);
+  const load = useCallback(() => void countBundledImages().then(setCount).catch(() => setCount(0)), []);
+  useEffect(load, [load]);
+  if (!count) return null;
+
+  async function fix() {
+    setProgress("Starting…");
+    try {
+      const n = await fixBundledImagesEverywhere((done, total) => setProgress(`Copying photo ${done} of ${total}…`));
+      toast.success(n ? "Photos fixed. They now show on the website." : "All photos were already fine.");
+      load();
+    } catch (e) {
+      toast.error(errMsg(e as { message?: string }));
+    } finally {
+      setProgress(null);
+    }
+  }
+
+  return (
+    <section className="mb-6 rounded-sm border-2 border-primary/40 bg-primary-tint/50 p-5">
+      <h2 className="mb-1 flex items-center gap-2 text-[15px] font-extrabold">
+        <ImageUp className="size-4 text-primary" /> {count} photo{count > 1 ? "s" : ""} to move into the media library
+      </h2>
+      <p className="mb-4 text-[13px] text-muted-foreground">
+        These photos came with recent content updates and may not show on the live website until it is
+        republished. Moving them into the media library makes them show everywhere, straight away. It takes about a minute.
+      </p>
+      <button type="button" className={abtn.primary} disabled={!!progress} onClick={() => void fix()}>
+        {progress ?? "Fix photos now"}
+      </button>
+    </section>
+  );
+}
+
 export function ContentUpdates() {
+  return (
+    <>
+      <PhotoFix />
+      <PendingUpdates />
+    </>
+  );
+}
+
+function PendingUpdates() {
   const { fullName } = useAdminAuth();
   const [pending, setPending] = useState<typeof CONTENT_UPDATES | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
