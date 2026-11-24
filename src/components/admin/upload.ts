@@ -89,6 +89,22 @@ export async function prepareImage(file: File): Promise<{ blob: Blob; type: stri
   return { blob, type: outType, ext: keepAlpha ? "png" : "jpg" };
 }
 
+/** Retries slow loads and asks the server directly, so a slow connection isn't mistaken for private storage. */
+async function isVisible(url: string): Promise<boolean> {
+  for (let i = 0; i < 3; i++) {
+    if (await canLoadImage(url, 30000)) return true;
+    try {
+      const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+      if (res.ok) return true;
+      if (res.status === 400 || res.status === 403 || res.status === 404) return false;
+    } catch {
+      /* network hiccup: try again */
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  return true; // uploaded fine and storage didn't refuse it; don't block on a flaky connection
+}
+
 function safeName(name: string) {
   return (
     name
@@ -134,6 +150,6 @@ export async function uploadMedia(
   const url = db.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
 
   // Prove a visitor can actually see it, instead of failing silently on the live site.
-  if (isImage && !(await canLoadImage(url))) throw new Error(NOT_PUBLIC_MESSAGE);
+  if (isImage && !(await isVisible(url))) throw new Error(NOT_PUBLIC_MESSAGE);
   return url;
 }
