@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
-import { canLoadImage, uploadMedia } from "@/components/admin/upload";
+import { isVisible, uploadMedia } from "@/components/admin/upload";
 import { normalizeItems, type AchievementItem } from "@/lib/achievements-data";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -229,7 +229,7 @@ export function ImageField({
     let alive = true;
     setBroken(false);
     if (!value || isVideo) return;
-    void canLoadImage(siteUrl(splitShape(value).src)).then((ok) => alive && setBroken(!ok));
+    void isVisible(siteUrl(splitShape(value).src)).then((ok) => alive && setBroken(!ok));
     return () => {
       alive = false;
     };

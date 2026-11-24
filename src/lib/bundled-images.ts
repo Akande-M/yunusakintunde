@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { canLoadImage, uploadMedia } from "@/components/admin/upload";
+import { isVisible, uploadMedia } from "@/components/admin/upload";
 import { splitShape, withShape } from "@/lib/image-shape";
 
 /*
@@ -44,7 +44,7 @@ async function fetchBlob(url: string): Promise<Blob | null> {
 /** Copies one bundled photo into the media library (once) and returns its permanent URL. */
 async function importOne(path: string, log: ImportLog): Promise<string> {
   const known = log[path];
-  if (known && (await canLoadImage(known))) return known;
+  if (known && (await isVisible(known))) return known;
   const blob = (await fetchBlob(`${RAW}${path}`)) ?? (await fetchBlob(path));
   if (!blob) throw new Error(`Couldn't find the photo ${path}. Has the latest zip been uploaded to GitHub?`);
   const name = path.split("/").pop() ?? "photo.jpg";

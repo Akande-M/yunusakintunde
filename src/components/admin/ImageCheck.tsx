@@ -4,7 +4,7 @@ import { CheckCircle2, ImageOff, Loader2, ScanSearch } from "lucide-react";
 import { db } from "@/lib/db";
 import { IMAGE_SLOTS, mergeSettings } from "@/lib/cms-defaults";
 import { normalizeItems } from "@/lib/achievements-data";
-import { canLoadImage } from "@/components/admin/upload";
+import { isVisible } from "@/components/admin/upload";
 import { abtn, Card } from "@/components/admin/kit";
 import { siteUrl } from "@/lib/asset-url";
 import { normalizeSections } from "@/lib/pages";
@@ -129,7 +129,7 @@ export function ImageCheck() {
     const ok = new Map<string, boolean>();
     for (let i = 0; i < unique.length; i += 6) {
       const batch = unique.slice(i, i + 6);
-      const res = await Promise.all(batch.map((u) => canLoadImage(siteUrl(u))));
+      const res = await Promise.all(batch.map((u) => isVisible(siteUrl(u))));
       batch.forEach((u, j) => ok.set(u, res[j]!));
     }
     setResult({ checked: unique.length, broken: refs.filter((r) => !ok.get(r.url)) });

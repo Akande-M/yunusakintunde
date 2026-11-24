@@ -90,7 +90,7 @@ export async function prepareImage(file: File): Promise<{ blob: Blob; type: stri
 }
 
 /** Retries slow loads and asks the server directly, so a slow connection isn't mistaken for private storage. */
-async function isVisible(url: string): Promise<boolean> {
+export async function isVisible(url: string): Promise<boolean> {
   for (let i = 0; i < 3; i++) {
     if (await canLoadImage(url, 30000)) return true;
     try {
