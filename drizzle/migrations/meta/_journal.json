@@ -57,6 +57,13 @@
       "when": 1795473908584,
       "tag": "0007_recognition_and_page_text",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795523898539,
+      "tag": "0008_open_settings_reads",
+      "breakpoints": true
     }
   ]
 }
