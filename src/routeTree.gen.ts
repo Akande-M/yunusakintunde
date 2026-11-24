@@ -26,6 +26,7 @@ import { Route as AdminAchievementsRouteImport } from './routes/admin.achievemen
 import { Route as AdminBiographyRouteImport } from './routes/admin.biography'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
+import { Route as AdminPhotosRouteImport } from './routes/admin.photos'
 import { Route as AdminRecordRouteImport } from './routes/admin.record'
 import { Route as AdminResetRouteImport } from './routes/admin.reset'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
@@ -123,6 +124,11 @@ const AdminMediaRoute = AdminMediaRouteImport.update({
   path: '/media',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPhotosRoute = AdminPhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRecordRoute = AdminRecordRouteImport.update({
   id: '/record',
   path: '/record',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/admin/biography': typeof AdminBiographyRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/photos': typeof AdminPhotosRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/admin/biography': typeof AdminBiographyRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/photos': typeof AdminPhotosRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/admin/biography': typeof AdminBiographyRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/photos': typeof AdminPhotosRoute
   '/admin/record': typeof AdminRecordRoute
   '/admin/reset': typeof AdminResetRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/admin/biography'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/photos'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/admin/biography'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/photos'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/admin/biography'
     | '/admin/content'
     | '/admin/media'
+    | '/admin/photos'
     | '/admin/record'
     | '/admin/reset'
     | '/admin/setup'
@@ -495,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMediaRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/photos': {
+      id: '/admin/photos'
+      path: '/photos'
+      fullPath: '/admin/photos'
+      preLoaderRoute: typeof AdminPhotosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/record': {
       id: '/admin/record'
       path: '/record'
@@ -580,6 +599,7 @@ interface AdminRouteChildren {
   AdminBiographyRoute: typeof AdminBiographyRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminPhotosRoute: typeof AdminPhotosRoute
   AdminRecordRoute: typeof AdminRecordRoute
   AdminResetRoute: typeof AdminResetRoute
   AdminSetupRoute: typeof AdminSetupRoute
@@ -597,6 +617,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBiographyRoute: AdminBiographyRoute,
   AdminContentRoute: AdminContentRoute,
   AdminMediaRoute: AdminMediaRoute,
+  AdminPhotosRoute: AdminPhotosRoute,
   AdminRecordRoute: AdminRecordRoute,
   AdminResetRoute: AdminResetRoute,
   AdminSetupRoute: AdminSetupRoute,

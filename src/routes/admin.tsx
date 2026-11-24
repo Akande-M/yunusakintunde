@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import {
   ExternalLink,
   FileText,
+  ImagePlus,
   Images,
   LayoutDashboard,
   ListChecks,
@@ -324,14 +325,20 @@ function ChangePassword() {
   );
 }
 
+/** The everyday jobs, in the order people need them. */
 const NAV = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/news", label: "News", icon: PenSquare },
-  { to: "/admin/media", label: "Media gallery", icon: Images },
+  { to: "/admin", label: "Start here", icon: LayoutDashboard, exact: true },
+  { to: "/admin/photos", label: "Add photos", icon: ImagePlus },
   { to: "/admin/pages", label: "Pages", icon: Files },
-  { to: "/admin/record", label: "Record & Agenda", icon: ListChecks },
-  { to: "/admin/content", label: "Site content", icon: FileText },
+  { to: "/admin/news", label: "News", icon: PenSquare },
   { to: "/admin/signups", label: "Sign-ups", icon: UserPlus },
+] as const;
+
+/** Rarely needed; shown smaller under "More". */
+const MORE = [
+  { to: "/admin/media", label: "Media gallery page", icon: Images },
+  { to: "/admin/content", label: "Header, footer & home", icon: FileText },
+  { to: "/admin/record", label: "Record & Agenda", icon: ListChecks },
 ] as const;
 
 function Shell() {
@@ -374,14 +381,31 @@ function Shell() {
               <n.icon className="size-4" /> {n.label}
             </Link>
           ))}
-          {auth.role === "admin" && (
-            <Link to="/admin/team" className={linkCls} activeProps={active}>
-              <Users className="size-4" /> Team
-            </Link>
-          )}
           <a href="/" target="_blank" rel="noreferrer" className={linkCls}>
             <ExternalLink className="size-4" /> View website
           </a>
+          <div className="hidden px-3 pt-4 pb-1 text-[10.5px] font-extrabold tracking-[0.1em] text-on-dark-muted uppercase lg:block">
+            More
+          </div>
+          {MORE.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              className={`${linkCls} lg:py-1.5 lg:text-[12.5px]`}
+              activeProps={active}
+            >
+              <n.icon className="size-3.5" /> {n.label}
+            </Link>
+          ))}
+          {auth.role === "admin" && (
+            <Link
+              to="/admin/team"
+              className={`${linkCls} lg:py-1.5 lg:text-[12.5px]`}
+              activeProps={active}
+            >
+              <Users className="size-3.5" /> Team
+            </Link>
+          )}
         </nav>
         <div className="hidden border-t border-on-dark-line px-4 py-4 text-[12.5px] lg:block">
           <div className="truncate font-semibold text-on-dark">

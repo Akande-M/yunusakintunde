@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { siteUrl } from "@/lib/asset-url";
+import { normalizeLga } from "@/lib/lgas";
 
 /*
  * CMS pages (site_pages) and the navigation menu (menu_items).
@@ -11,7 +12,7 @@ export type CardItem = { title: string; text: string; image: string };
 export type GalleryImage = { url: string; caption: string };
 export type Topic = "outreach" | "infrastructure" | "empowerment";
 
-export type PageSection =
+type SectionBody =
   | {
       type: "text";
       heading: string;
@@ -20,7 +21,15 @@ export type PageSection =
       caption: string;
       imageSide: "left" | "right";
     }
-  | { type: "cards"; heading: string; intro: string; items: CardItem[] }
+  | {
+      type: "cards";
+      heading: string;
+      intro: string;
+      items: CardItem[];
+      /** Optional photo shown beside the heading. */
+      image?: string;
+      caption?: string;
+    }
   | { type: "gallery"; heading: string; images: GalleryImage[] }
   | {
       type: "list";
@@ -31,10 +40,27 @@ export type PageSection =
       style?: "numbered" | "bulleted";
       /** Optional closing text under the list. */
       outro?: string;
+      /** Optional photo shown beside the heading. */
+      image?: string;
+      caption?: string;
     }
   | { type: "projects"; heading: string; intro: string } // Admin → Record & Agenda → Projects
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards
-  | { type: "topic"; heading: string; intro: string; topic: Topic }; // Admin → Achievements, filtered
+  | { type: "topic"; heading: string; intro: string; topic: Topic } // Admin → Achievements, filtered
+  | { type: "areas"; heading: string; intro: string }; // local government content from AREA_PAGES
+
+/**
+ * Every section can belong to one local government (lga). Sections with an lga show under
+ * that local government's tab; sections without one are about the whole district.
+ */
+export type PageSection = SectionBody & { lga?: string };
+
+/** Pages whose local-government content the "areas" section gathers into one set of tabs. */
+export const AREA_PAGES = [
+  { slug: "infrastructure-projects", title: "Infrastructure" },
+  { slug: "outreach", title: "Outreach" },
+  { slug: "skills-jobs-and-empowerment", title: "Skills, Jobs & Empowerment" },
+] as const;
 
 export type SitePage = {
   slug: string;
@@ -54,7 +80,8 @@ export const SECTION_LABELS: Record<PageSection["type"], string> = {
   list: "List (numbered or bullet points)",
   projects: "Projects list (from Record & Agenda → Projects)",
   legislative: "Bills & motions (from Achievements → Legislative Duties)",
-  topic: "Achievements by topic (from Achievements)",
+  topic: "Local government tabs (adds matching Achievements)",
+  areas: "Local government tabs from Outreach, Infrastructure & Skills pages",
 };
 
 export const TOPIC_LABELS: Record<Topic, string> = {
@@ -84,8 +111,10 @@ export function blankSection(type: PageSection["type"]): PageSection {
       return { type, heading: "", intro: "", items: [], style: "numbered" };
     case "topic":
       return { type, heading: "", intro: "", topic: "outreach" };
+    case "areas":
+      return { type, heading: "Projects by local government", intro: "" };
     default:
-      return { type, heading: "", intro: "" };
+      return { type, heading: "", intro: "" } as PageSection;
   }
 }
 
@@ -99,7 +128,12 @@ export function normalizeSections(v: unknown): PageSection[] {
     const type = raw?.["type"] as PageSection["type"];
     if (!type || !(type in SECTION_LABELS)) continue;
     const base = { ...blankSection(type), ...raw } as PageSection;
+    base.lga = normalizeLga(raw["lga"]);
     if (base.type === "text") base.image = siteUrl(str(base.image));
+    if (base.type === "list" || base.type === "cards") {
+      base.image = siteUrl(str(base.image));
+      base.caption = str(base.caption);
+    }
     if (base.type === "cards")
       base.items = (Array.isArray(base.items) ? base.items : []).map((i) => ({
         title: str(i?.title),
@@ -154,6 +188,36 @@ export async function getPage(slug: string): Promise<SitePage | null> {
   } catch (err) {
     console.warn("[cms] page", slug, err);
     return null;
+  }
+}
+
+/** A local-government section from another page, for the "areas" tabs. */
+export type AreaSection = { page: string; slug: string; section: PageSection };
+
+/** Gathers the local-government sections of the Outreach, Infrastructure and Skills pages. */
+export async function getAreaSections(): Promise<AreaSection[]> {
+  try {
+    const { data, error } = await db
+      .from("site_pages")
+      .select("slug,title,sections")
+      .in(
+        "slug",
+        AREA_PAGES.map((p) => p.slug),
+      )
+      .eq("status", "published");
+    if (error) throw error;
+    const rows = (data ?? []) as { slug: string; title: string; sections: unknown }[];
+    const out: AreaSection[] = [];
+    for (const p of AREA_PAGES) {
+      const row = rows.find((r) => r.slug === p.slug);
+      if (!row) continue;
+      for (const s of normalizeSections(row.sections))
+        if (s.lga) out.push({ page: row.title || p.title, slug: p.slug, section: s });
+    }
+    return out;
+  } catch (err) {
+    console.warn("[cms] area sections", err);
+    return [];
   }
 }
 

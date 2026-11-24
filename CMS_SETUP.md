@@ -260,3 +260,12 @@ No database step. Upload, deploy, then open the CMS dashboard.
   Canadian High Commissioner), Outreach (optical and medical outreach), Infrastructure Projects
   (education infrastructure, ICT centres, water, Light Up Oyo Central, transformers, markets).
 - List sections can have closing text under the list.
+
+## Update 16: local government tabs, simpler admin, 20 photos
+
+- **Admin menu**: Start here, Add photos, Pages, News, Sign-ups. Rarely used screens are under "More".
+- **Add photos** (`/admin/photos`): pick a page, optionally a local government, a photo section (or start one), drop photos, add captions, Save.
+- **Local government tabs**: every page section has a local government picker. Sections with one show under that local government's tab (zones: Ibadan, Oyo, Ogbomoso). A "Local government tabs" section sets where the tabs sit and their heading; the "Local government tabs from Outreach, Infrastructure & Skills" section (Constituency page) gathers all three pages' tabs.
+- **List and card sections** can have their own photo beside the heading.
+- **Dashboard "Website updates" box** stays visible and shows each step, success or the error, instead of disappearing.
+- Content update `2026-11-24-local-government-tabs` rearranges Infrastructure, Outreach and Skills by local government, adds 20 photos (`public/site-images/infrastructure`, `public/site-images/skills`), adds tabs to the Constituency page, removes the sample "Delivered projects" list from Infrastructure, and regroups Achievements (adds Afijio, Atiba, Oyo East, Oyo West).

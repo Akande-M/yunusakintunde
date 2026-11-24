@@ -6,6 +6,7 @@ import {
 } from "@/content-updates/2026-11-24-bills-and-motions";
 import * as LC from "@/content-updates/2026-11-24-legislative-and-constituency";
 import * as OOI from "@/content-updates/2026-11-24-oversight-outreach-infrastructure";
+import { applyLocalGovernmentTabs } from "@/content-updates/2026-11-24-local-government-tabs";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -21,7 +22,8 @@ export type ContentUpdate = {
   /** What gets replaced, shown in the confirmation. */
   replaces: string;
   viewUrl: string;
-  apply: () => Promise<void>;
+  /** Runs the update; progress() reports each step so staff can see it working. */
+  apply: (progress: (msg: string) => void) => Promise<void>;
 };
 
 type PageSeed = {
@@ -148,8 +150,21 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
     apply: async () => {
       await upsertPage("committees-and-oversight", plain(OOI.COMMITTEES) as PageSeed);
       await prependSections("outreach", plain(OOI.OUTREACH_SECTIONS) as { heading: string }[]);
-      await prependSections("infrastructure-projects", plain(OOI.INFRA_SECTIONS) as { heading: string }[]);
+      await prependSections(
+        "infrastructure-projects",
+        plain(OOI.INFRA_SECTIONS) as { heading: string }[],
+      );
     },
+  },
+  {
+    id: "2026-11-24-local-government-tabs",
+    title: "Local government tabs, Achievements zones and 20 new photos",
+    summary:
+      "Infrastructure Projects, Outreach and Skills, Jobs & Empowerment get one tab per local government (Ibadan, Oyo and Ogbomoso zones), with every school, police formation, market and project moved under its local government. New photos: boreholes in Oyo East and Oyo West, the UBEC classroom at Oranyan Grammar School (Atiba), roads, the NITDA digital skills and laptops programmes, and the NAPTIN solar PV training in Akinmoorin (Afijio). The Constituency page gets the same tabs, and Achievements now lists all 11 local governments in their zones (Afijio, Atiba, Oyo East and Oyo West are added).",
+    replaces:
+      "This rearranges Infrastructure Projects, Outreach and Skills, Jobs & Empowerment into local government tabs (your earlier edits are kept), and adds four Achievements cards.",
+    viewUrl: "/infrastructure-projects",
+    apply: (progress) => applyLocalGovernmentTabs(progress),
   },
 ];
 

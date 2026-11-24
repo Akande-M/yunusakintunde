@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ExternalLink,
   House,
+  ImagePlus,
   Images,
   Newspaper,
   PanelTop,
@@ -17,7 +18,6 @@ import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { abtn, Badge, ConfirmButton, errMsg, PageTitle, Spinner } from "@/components/admin/kit";
 import { loadMenuRows, type MenuRow } from "@/components/admin/menu-placement";
-import { ContentUpdates } from "@/components/admin/ContentUpdates";
 
 export const Route = createFileRoute("/admin/pages/")({
   component: PagesList,
@@ -105,6 +105,31 @@ function PagesList() {
   }, []);
   useEffect(() => void load(), [load]);
 
+  /** Pages grouped the way the website's top menu groups them. */
+  const groups = useMemo(() => {
+    if (!rows) return [];
+    const byId = new Map(menu.map((r) => [r.id, r]));
+    const top = (r: MenuRow): MenuRow => {
+      let cur = r;
+      while (cur.parent_id && byId.get(cur.parent_id)) cur = byId.get(cur.parent_id)!;
+      return cur;
+    };
+    const out = new Map<string, { label: string; order: number; rows: Row[] }>();
+    for (const r of rows) {
+      const mine = menu.find((m) => m.page_slug === r.slug);
+      const t = mine ? top(mine) : null;
+      const key = t ? t.id : "_none";
+      const g = out.get(key) ?? {
+        label: t ? t.label : "Not in the menu",
+        order: t ? (t.sort_order ?? 0) : 1e9,
+        rows: [],
+      };
+      g.rows.push(r);
+      out.set(key, g);
+    }
+    return [...out.values()].sort((a, b) => a.order - b.order);
+  }, [rows, menu]);
+
   const placeOf = useMemo(() => {
     const byId = new Map(menu.map((r) => [r.id, r]));
     const path = (r: MenuRow | undefined): string =>
@@ -145,8 +170,6 @@ function PagesList() {
           </Link>
         }
       />
-
-      <ContentUpdates />
 
       <h2 className="mb-3 font-serif text-[19px] font-semibold">Main pages</h2>
       <ul className="mb-9 grid gap-3 md:grid-cols-2">
@@ -189,7 +212,7 @@ function PagesList() {
         ))}
       </ul>
 
-      <h2 className="mb-3 font-serif text-[19px] font-semibold">Other pages</h2>
+      <h2 className="mb-3 font-serif text-[19px] font-semibold">Pages in the top menu</h2>
       {missing && (
         <p className="mb-4 rounded-sm border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
           The pages table isn't set up yet. Apply the migration{" "}
@@ -201,53 +224,71 @@ function PagesList() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">No pages yet.</p>
       ) : (
-        <ul className="divide-y divide-border rounded-sm border border-border bg-card">
-          {rows.map((r) => (
-            <li key={r.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-              <div className="min-w-0 flex-1">
-                <Link
-                  to="/admin/pages/$id"
-                  params={{ id: r.id }}
-                  className="block truncate text-[14.5px] font-bold hover:text-primary"
-                >
-                  {r.title}
-                </Link>
-                <span className="text-[12.5px] text-muted-foreground">
-                  /{r.slug} · {placeOf(r.slug)} · edited{" "}
-                  {format(new Date(r.updated_at), "d MMM yyyy")}
-                </span>
-              </div>
-              <Badge tone={r.status === "published" ? "green" : "neutral"}>
-                {r.status === "published" ? "Published" : "Draft (coming soon)"}
-              </Badge>
-              {r.status === "published" && (
-                <a
-                  href={`/${r.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={abtn.icon}
-                  aria-label="View page"
-                >
-                  <ExternalLink className="size-4" />
-                </a>
-              )}
-              <Link
-                to="/admin/pages/$id"
-                params={{ id: r.id }}
-                className={abtn.icon}
-                aria-label="Edit"
-              >
-                <Pencil className="size-4" />
-              </Link>
-              <ConfirmButton
-                label="Delete page"
-                title={`Delete “${r.title}”?`}
-                description="The page and its link in the top menu are removed. This can't be undone."
-                onConfirm={() => remove(r)}
-              />
-            </li>
+        <div className="space-y-6">
+          {groups.map((g) => (
+            <section key={g.label}>
+              <h3 className="mb-2 text-[12px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
+                {g.label}
+              </h3>
+              <ul className="divide-y divide-border rounded-sm border border-border bg-card">
+                {g.rows.map((r) => (
+                  <li key={r.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                    <div className="min-w-0 flex-1">
+                      <Link
+                        to="/admin/pages/$id"
+                        params={{ id: r.id }}
+                        className="block truncate text-[14.5px] font-bold hover:text-primary"
+                      >
+                        {r.title}
+                      </Link>
+                      <span className="text-[12.5px] text-muted-foreground">
+                        /{r.slug} · {placeOf(r.slug)} · edited{" "}
+                        {format(new Date(r.updated_at), "d MMM yyyy")}
+                      </span>
+                    </div>
+                    <Badge tone={r.status === "published" ? "green" : "neutral"}>
+                      {r.status === "published" ? "Published" : "Draft (coming soon)"}
+                    </Badge>
+                    {r.status === "published" && (
+                      <a
+                        href={`/${r.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={abtn.icon}
+                        aria-label="View page"
+                      >
+                        <ExternalLink className="size-4" />
+                      </a>
+                    )}
+                    <Link
+                      to="/admin/photos"
+                      search={{ page: r.id }}
+                      className={abtn.icon}
+                      aria-label={`Add photos to ${r.title}`}
+                      title="Add photos"
+                    >
+                      <ImagePlus className="size-4" />
+                    </Link>
+                    <Link
+                      to="/admin/pages/$id"
+                      params={{ id: r.id }}
+                      className={abtn.icon}
+                      aria-label="Edit"
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
+                    <ConfirmButton
+                      label="Delete page"
+                      title={`Delete “${r.title}”?`}
+                      description="The page and its link in the top menu are removed. This can't be undone."
+                      onConfirm={() => remove(r)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       )}
     </>
   );

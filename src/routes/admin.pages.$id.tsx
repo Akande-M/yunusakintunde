@@ -1,10 +1,24 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowUp, Eye, ExternalLink, Plus, Trash2, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  ExternalLink,
+  MapPin,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
+import { ZONES } from "@/lib/lgas";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { getAchievements, getRecord } from "@/lib/cms";
 import {
+  getAreaSections,
   blankSection,
   normalizeSections,
   RESERVED_SLUGS,
@@ -28,6 +42,7 @@ import {
 } from "@/components/admin/menu-placement";
 import {
   needsAchievements,
+  needsAreas,
   needsProjects,
   PageView,
   type PageData,
@@ -148,6 +163,74 @@ function reorder<T>(list: T[], i: number, d: -1 | 1): T[] {
   return next;
 }
 
+/** Local government picker: "" means the section is about the whole district. */
+function LgaSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <label className="flex items-center gap-2 text-[12.5px] font-semibold text-muted-foreground">
+      <MapPin className="size-4 text-primary" aria-hidden />
+      <span className="sr-only">Local government</span>
+      <select
+        className={`${inputCls} !min-h-9 !py-1 text-[13px]`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">Whole district (not in a tab)</option>
+        {ZONES.map((z) => (
+          <optgroup key={z.zone} label={`${z.zone} zone`}>
+            {z.lgas.map((l) => (
+              <option key={l} value={l}>
+                {l} tab
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+/** Optional photo beside a list's or cards' heading. */
+function SectionPhoto({
+  s,
+  onChange,
+}: {
+  s: Extract<PageSection, { type: "list" | "cards" }>;
+  onChange: (s: PageSection) => void;
+}) {
+  return (
+    <>
+      <Field label="Section photo (optional)" hint="Shown beside the heading.">
+        <ImageField
+          value={s.image ?? ""}
+          onChange={(image) => onChange({ ...s, image })}
+          folder="pages"
+          shapes
+        />
+      </Field>
+      {s.image && (
+        <Field label="Photo caption">
+          <input
+            className={inputCls}
+            value={s.caption ?? ""}
+            onChange={(e) => onChange({ ...s, caption: e.target.value })}
+          />
+        </Field>
+      )}
+    </>
+  );
+}
+
+/** Short summary of a section for its collapsed header. */
+function sectionSummary(s: PageSection): string {
+  const n =
+    s.type === "gallery"
+      ? `${s.images.length} photo${s.images.length === 1 ? "" : "s"}`
+      : s.type === "list" || s.type === "cards"
+        ? `${s.items.length} item${s.items.length === 1 ? "" : "s"}`
+        : "";
+  return [n].filter(Boolean).join(" · ");
+}
+
 function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSection) => void }) {
   switch (s.type) {
     case "text":
@@ -223,6 +306,7 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               onChange={(e) => onChange({ ...s, intro: e.target.value })}
             />
           </Field>
+          <SectionPhoto s={s} onChange={onChange} />
           <div className="space-y-3">
             {s.items.map((c, i) => (
               <div key={i} className="rounded-sm border border-border bg-paper-2 p-4">
@@ -369,6 +453,7 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               onChange={(e) => onChange({ ...s, intro: e.target.value })}
             />
           </Field>
+          <SectionPhoto s={s} onChange={onChange} />
           <Field label="Style">
             <select
               className={inputCls}
@@ -406,7 +491,9 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
           ? "The projects themselves are edited in Record & Agenda → Projects."
           : s.type === "legislative"
             ? "The bills and motions are edited in Achievements → the “Legislative Duties” (Senate) card."
-            : "The items are picked from Achievements by their wording. Edit them there and they update here too.";
+            : s.type === "areas"
+              ? "Shows tabs for the 11 local governments, filled with every section tagged with a local government on the Outreach, Infrastructure and Skills pages. Edit those pages and this updates too."
+              : "Shows tabs for the 11 local governments. Each tab holds this page's sections tagged with that local government, plus matching items from Achievements.";
       return (
         <>
           <p className="mb-4 rounded-sm bg-primary-tint px-3 py-2 text-[13px] text-primary">
@@ -458,6 +545,15 @@ function PageEditor() {
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [adding, setAdding] = useState<PageSection["type"]>("text");
+  const [filter, setFilter] = useState("*");
+  const [open, setOpen] = useState<Set<number>>(new Set());
+  const toggle = (i: number) =>
+    setOpen((o) => {
+      const n = new Set(o);
+      if (n.has(i)) n.delete(i);
+      else n.add(i);
+      return n;
+    });
   const [preview, setPreview] = useState<PageData | null>(null);
   const [menuRows, setMenuRows] = useState<MenuRow[] | null>(null);
   const [placement, setPlacement] = useState<Placement>({
@@ -520,11 +616,12 @@ function PageEditor() {
   async function openPreview() {
     if (!page) return;
     const p = asSitePage(page);
-    const [record, cards] = await Promise.all([
+    const [record, cards, areas] = await Promise.all([
       needsProjects(p) ? getRecord() : null,
       needsAchievements(p) ? getAchievements() : null,
+      needsAreas(p) ? getAreaSections() : null,
     ]);
-    setPreview({ projects: record?.projects ?? [], cards: cards ?? [] });
+    setPreview({ projects: record?.projects ?? [], cards: cards ?? [], areas: areas ?? [] });
   }
 
   async function save(status: Page["status"]) {
@@ -691,30 +788,99 @@ function PageEditor() {
             </Field>
           </Card>
           <div>
-            <h2 className="mb-3 font-serif text-[20px] font-semibold">Sections</h2>
-            <div className="space-y-4">
-              {page.sections.map((s, i) => (
-                <Card key={i}>
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-                    <span className="text-[13px] font-extrabold tracking-wide text-accent-deep uppercase">
-                      {i + 1}. {SECTION_LABELS[s.type]}
-                    </span>
-                    <Mover
-                      i={i}
-                      n={page.sections.length}
-                      label="section"
-                      move={(a, d) => set("sections", reorder(page.sections, a, d))}
-                      remove={(a) =>
-                        set(
-                          "sections",
-                          page.sections.filter((_, j) => j !== a),
-                        )
-                      }
-                    />
-                  </div>
-                  <SectionFields s={s} onChange={(next) => setSection(i, next)} />
-                </Card>
-              ))}
+            <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="font-serif text-[20px] font-semibold">Sections</h2>
+                <p className="text-[12.5px] text-muted-foreground">
+                  Click a section to open it. Pick a local government to put a section under that
+                  local government's tab on the website.
+                </p>
+              </div>
+              <label className="text-[12.5px] font-semibold">
+                <span className="mb-1 block">Show</span>
+                <select
+                  className={`${inputCls} !min-h-9 !py-1 text-[13px]`}
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                >
+                  <option value="*">All sections ({page.sections.length})</option>
+                  <option value="">
+                    Whole district ({page.sections.filter((x) => !x.lga).length})
+                  </option>
+                  {ZONES.map((z) => (
+                    <optgroup key={z.zone} label={`${z.zone} zone`}>
+                      {z.lgas.map((l) => (
+                        <option key={l} value={l}>
+                          {l} ({page.sections.filter((x) => x.lga === l).length})
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="space-y-3">
+              {page.sections.map((s, i) => {
+                if (filter !== "*" && (s.lga ?? "") !== filter) return null;
+                const isOpen = open.has(i);
+                return (
+                  <Card key={i} className={isOpen ? "border-primary/50" : ""}>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <button
+                        type="button"
+                        className="flex min-h-10 min-w-0 flex-1 cursor-pointer items-center gap-2 text-left"
+                        aria-expanded={isOpen}
+                        onClick={() => toggle(i)}
+                      >
+                        {isOpen ? (
+                          <ChevronDown className="size-4 shrink-0 text-primary" />
+                        ) : (
+                          <ChevronRight className="size-4 shrink-0 text-primary" />
+                        )}
+                        <span className="min-w-0">
+                          <span className="block truncate text-[14.5px] font-bold">
+                            {i + 1}. {("heading" in s && s.heading) || SECTION_LABELS[s.type]}
+                          </span>
+                          <span className="block text-[12px] text-muted-foreground">
+                            {SECTION_LABELS[s.type]}
+                            {sectionSummary(s) && ` · ${sectionSummary(s)}`}
+                          </span>
+                        </span>
+                      </button>
+                      {s.lga && <Badge tone="gold">{s.lga}</Badge>}
+                      <Mover
+                        i={i}
+                        n={page.sections.length}
+                        label="section"
+                        move={(a, d) => {
+                          setOpen(new Set());
+                          set("sections", reorder(page.sections, a, d));
+                        }}
+                        remove={(a) => {
+                          setOpen(new Set());
+                          set(
+                            "sections",
+                            page.sections.filter((_, j) => j !== a),
+                          );
+                        }}
+                      />
+                    </div>
+                    {isOpen && (
+                      <div className="mt-4 border-t border-border pt-4">
+                        {s.type !== "topic" && s.type !== "areas" && (
+                          <div className="mb-4">
+                            <LgaSelect
+                              value={s.lga ?? ""}
+                              onChange={(lga) => setSection(i, { ...s, lga })}
+                            />
+                          </div>
+                        )}
+                        <SectionFields s={s} onChange={(next) => setSection(i, next)} />
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <select
@@ -731,9 +897,15 @@ function PageEditor() {
               <button
                 type="button"
                 className={abtn.outline}
-                onClick={() => set("sections", [...page.sections, blankSection(adding)])}
+                onClick={() => {
+                  const lga =
+                    filter !== "*" && adding !== "topic" && adding !== "areas" ? filter : "";
+                  setOpen(new Set([page.sections.length]));
+                  set("sections", [...page.sections, { ...blankSection(adding), lga }]);
+                }}
               >
                 <Plus className="size-4" /> Add section
+                {filter !== "*" && filter ? ` to ${filter}` : ""}
               </button>
             </div>
           </div>

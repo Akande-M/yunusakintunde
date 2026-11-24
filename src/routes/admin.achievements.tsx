@@ -37,9 +37,9 @@ const FIELDS: FieldDef[] = [
     label: "Zone",
     type: "select",
     options: [
-      { value: "Ibadan", label: "Ibadan" },
-      { value: "Ogbomoso", label: "Ogbomoso" },
-      { value: "Oyo", label: "Oyo" },
+      { value: "Ibadan", label: "Ibadan (Akinyele, Egbeda, Lagelu, Oluyole, Ona Ara)" },
+      { value: "Oyo", label: "Oyo (Afijio, Atiba, Oyo East, Oyo West)" },
+      { value: "Ogbomoso", label: "Ogbomoso (Ogo Oluwa, Surulere)" },
       { value: "Senate", label: "Senate (legislative duties)" },
     ],
   },

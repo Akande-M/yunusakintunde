@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Images, PenSquare, UserPlus } from "lucide-react";
+import { Files, ImagePlus, PenSquare, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
-import { abtn, Card, PageTitle, Spinner } from "@/components/admin/kit";
+import { Card, PageTitle, Spinner } from "@/components/admin/kit";
 import { useAdminAuth } from "@/components/admin/auth";
 import { ImageCheck } from "@/components/admin/ImageCheck";
 import { ContentUpdates } from "@/components/admin/ContentUpdates";
@@ -65,18 +65,40 @@ function Dashboard() {
     <>
       <PageTitle
         title={`Welcome${fullName ? `, ${fullName.split(" ")[0]}` : ""}`}
-        sub="Everything you change here goes live on the website as soon as you save or publish."
-        action={
-          <>
-            <Link to="/admin/news/$id" params={{ id: "new" }} className={abtn.primary}>
-              <PenSquare className="size-4" /> Write news
-            </Link>
-            <Link to="/admin/media" className={abtn.outline}>
-              <Images className="size-4" /> Add photos / video
-            </Link>
-          </>
-        }
+        sub="What would you like to do? Everything you save goes live on the website straight away."
       />
+      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+        {[
+          {
+            to: "/admin/photos" as const,
+            icon: ImagePlus,
+            title: "Add photos",
+            text: "Put photos on any page or local government tab.",
+          },
+          {
+            to: "/admin/pages" as const,
+            icon: Files,
+            title: "Edit a page",
+            text: "Change text, lists and photos on any page.",
+          },
+          {
+            to: "/admin/news" as const,
+            icon: PenSquare,
+            title: "Post news",
+            text: "Write a news story or update.",
+          },
+        ].map((t) => (
+          <Link
+            key={t.to}
+            to={t.to}
+            className="group rounded-sm border-2 border-border bg-card p-5 transition-colors hover:border-primary"
+          >
+            <t.icon className="mb-3 size-7 text-primary" aria-hidden />
+            <div className="text-[16px] font-extrabold group-hover:text-primary">{t.title}</div>
+            <div className="mt-1 text-[13px] text-muted-foreground">{t.text}</div>
+          </Link>
+        ))}
+      </div>
       <ContentUpdates />
       {!s ? (
         <Spinner />

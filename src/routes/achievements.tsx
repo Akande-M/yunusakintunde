@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { LGAS, matchLga, ZONES } from "@/lib/lgas";
 import { getAchievements, getRecord } from "@/lib/cms";
 import { ShapedImage } from "@/components/site/ShapedImage";
 import { PromiseTracker } from "@/components/site/PromiseTracker";
@@ -52,9 +53,23 @@ function sumOf(cards: AchievementCard[], re: RegExp) {
 function AchievementsPage() {
   const { cards, record } = Route.useLoaderData();
   const { achievements: page } = useSiteSettings();
-  const zones = useMemo(() => ["All", ...Array.from(new Set(cards.map((c) => c.zone)))], [cards]);
-  const [zone, setZone] = useState("All");
-  const shown = cards.filter((c) => zone === "All" || c.zone === zone);
+  // Local governments in zone order (Ibadan, Oyo, Ogbomoso), then the Senate card.
+  const ordered = useMemo(() => {
+    const rank = (c: AchievementCard) => {
+      if (isSenate(c)) return 100;
+      const l = matchLga(c.title);
+      return l ? LGAS.indexOf(l) : 50;
+    };
+    return [...cards].sort((a, b) => rank(a) - rank(b));
+  }, [cards]);
+  // "All", "zone:Ibadan", "lga:Oyo East" or "senate".
+  const [filter, setFilter] = useState("All");
+  const shown = ordered.filter((c) => {
+    if (filter === "All") return true;
+    if (filter === "senate") return isSenate(c);
+    if (filter.startsWith("zone:")) return !isSenate(c) && c.zone === filter.slice(5);
+    return !isSenate(c) && matchLga(c.title) === filter.slice(4);
+  });
 
   const lgaCards = cards.filter((c) => !isSenate(c));
   const stats = [
@@ -87,14 +102,40 @@ function AchievementsPage() {
       <section className="py-10 sm:py-12">
         <div className="wrap">
           <div className="mb-4 flex flex-wrap gap-2.5">
-            {zones.map((z) => (
-              <Chip key={z} active={zone === z} onClick={() => setZone(z)}>
-                {z === "All"
-                  ? "All"
-                  : z.toLowerCase() === "senate"
-                    ? "Legislative duties"
-                    : `${z} zone`}
+            <Chip active={filter === "All"} onClick={() => setFilter("All")}>
+              All
+            </Chip>
+            {ordered.some(isSenate) && (
+              <Chip active={filter === "senate"} onClick={() => setFilter("senate")}>
+                Legislative duties
               </Chip>
+            )}
+          </div>
+          <div className="mb-8 grid gap-4 rounded-lg border border-border bg-card p-4 sm:p-5 lg:grid-cols-[1.25fr_1fr_.6fr]">
+            {ZONES.map((z) => (
+              <div key={z.zone}>
+                <button
+                  type="button"
+                  aria-pressed={filter === `zone:${z.zone}`}
+                  onClick={() => setFilter(`zone:${z.zone}`)}
+                  className={`mb-2 cursor-pointer text-[11.5px] font-extrabold tracking-[0.08em] uppercase underline-offset-4 hover:underline ${
+                    filter === `zone:${z.zone}` ? "text-primary underline" : "text-accent-deep"
+                  }`}
+                >
+                  {z.zone} zone
+                </button>
+                <div className="flex flex-wrap gap-2">
+                  {z.lgas.map((l) => (
+                    <Chip
+                      key={l}
+                      active={filter === `lga:${l}`}
+                      onClick={() => setFilter(`lga:${l}`)}
+                    >
+                      {l}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
           <nav
@@ -112,6 +153,11 @@ function AchievementsPage() {
             ))}
           </nav>
 
+          {shown.length === 0 && (
+            <p className="rounded-lg border border-dashed border-border bg-card px-5 py-6 text-muted-foreground">
+              Achievements for this local government will be added soon.
+            </p>
+          )}
           <div className="space-y-14">
             {shown.map((c) => (
               <section

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getAchievements, getRecord } from "@/lib/cms";
-import { getComingSoon, getPage } from "@/lib/pages";
-import { needsAchievements, needsProjects, PageView } from "@/components/site/PageView";
+import { getAreaSections, getComingSoon, getPage } from "@/lib/pages";
+import { needsAchievements, needsAreas, needsProjects, PageView } from "@/components/site/PageView";
 import { btn, Eyebrow } from "@/components/site/ui";
 
 /* Pages built in Admin → Pages (e.g. /outreach, /bills-and-motions). A published page shows
@@ -14,14 +14,15 @@ export const Route = createFileRoute("/$slug")({
       if (!label) throw notFound();
       return { kind: "soon" as const, label };
     }
-    const [record, cards] = await Promise.all([
+    const [record, cards, areas] = await Promise.all([
       needsProjects(page) ? getRecord() : null,
       needsAchievements(page) ? getAchievements() : null,
+      needsAreas(page) ? getAreaSections() : null,
     ]);
     return {
       kind: "page" as const,
       page,
-      data: { projects: record?.projects ?? [], cards: cards ?? [] },
+      data: { projects: record?.projects ?? [], cards: cards ?? [], areas: areas ?? [] },
     };
   },
   head: ({ loaderData }) => {

@@ -148,6 +148,7 @@ export function ConfirmButton({
   className = abtn.icon,
   children,
   tone = "danger",
+  disabled = false,
 }: {
   label: string;
   title: string;
@@ -156,6 +157,7 @@ export function ConfirmButton({
   className?: string;
   children?: ReactNode;
   tone?: "danger" | "primary";
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -165,6 +167,7 @@ export function ConfirmButton({
         aria-label={label}
         title={label}
         className={className}
+        disabled={disabled}
         onClick={() => setOpen(true)}
       >
         {children ?? <Trash2 className="size-4" />}
