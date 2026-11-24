@@ -95,7 +95,7 @@ export async function isVisible(url: string): Promise<boolean> {
     if (await canLoadImage(url, 30000)) return true;
     try {
       const res = await fetch(url, { method: "HEAD", cache: "no-store" });
-      if (res.ok) return true;
+      if (res.ok) return (res.headers.get("content-type") ?? "image/").startsWith("image/");
       if (res.status === 400 || res.status === 403 || res.status === 404) return false;
     } catch {
       /* network hiccup: try again */
