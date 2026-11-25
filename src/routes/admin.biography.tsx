@@ -114,7 +114,7 @@ function BiographyAdmin() {
     const clean: BiographySettings = {
       ...bio,
       facts: bio.facts.filter((f) => f.n.trim() || f.l.trim()),
-      sections: bio.sections.filter((s) => s.heading.trim() || s.body.trim()),
+      sections: bio.sections.filter((s) => s.heading.trim() || s.body.trim() || s.image),
       timeline: bio.timeline.filter((t) => t.year.trim() || t.title.trim()),
     };
     const nextImages = { ...imagesRow, bioTop: photos.bioTop, bioSecond: photos.bioSecond };
@@ -318,6 +318,34 @@ function BiographyAdmin() {
                       }
                     />
                   </Field>
+                  <Field label="Photo (optional)" hint="Shown under the heading.">
+                    <ImageField
+                      value={sec.image ?? ""}
+                      onChange={(image) =>
+                        update({
+                          sections: bio.sections.map((x, j) => (j === i ? { ...x, image } : x)),
+                        })
+                      }
+                      folder="site"
+                      shapes
+                      defaultShape="original"
+                    />
+                  </Field>
+                  {sec.image && (
+                    <Field label="Photo caption">
+                      <input
+                        className={inputCls}
+                        value={sec.caption ?? ""}
+                        onChange={(e) =>
+                          update({
+                            sections: bio.sections.map((x, j) =>
+                              j === i ? { ...x, caption: e.target.value } : x,
+                            ),
+                          })
+                        }
+                      />
+                    </Field>
+                  )}
                 </div>
               ))}
             </div>

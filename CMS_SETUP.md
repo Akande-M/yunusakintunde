@@ -283,3 +283,9 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - New section type "Tabs of the pages under this page in the menu" (`subpages`): one tab per page linked under this page in the top menu, showing that page's content. Used on Political Leadership & Party Engagement. Edit each sub-page and the tabs follow; menu order sets tab order.
 - New pages: political-leadership-and-party-engagement (menu group now links to it), constituency-engagements, campaigns-and-mobilisation, stakeholder-engagements, oversight-and-institutional-engagement ("Oversight" in the menu).
 - Skills, Jobs & Empowerment: five topic tabs plus local government tabs; Job Beneficiaries photos.
+
+## Update 19: In the press, FCE (Special) Oyo, the book
+
+- **In the press** (Admin → News, bottom): paste an article link; the server reads its preview (headline, picture, description, date) like a social-media link preview (`src/lib/press.functions.ts`). Stored in `site_settings.press_links`. Shown on /news, 16 per page with "Page x of y" arrows; Read opens a reader on the site (YouTube links play there); the full article opens on the publisher's site in a new tab.
+- Biography parts can each have a photo and caption.
+- The Media page also shows Biography photos.

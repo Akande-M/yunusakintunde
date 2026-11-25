@@ -94,6 +94,7 @@ const TAB_ORDER = [
   "Outreach",
   "Skills & Empowerment",
   "Political Leadership",
+  "Biography",
 ];
 
 /**
@@ -154,6 +155,12 @@ export async function getMediaLibrary(): Promise<{ items: MediaItem[]; tabs: str
       }
       if (p.hero_image) add(p.hero_image, p.hero_alt || p.title, tab);
     }
+    const bio = await db.from("site_settings").select("value").eq("key", "biography").maybeSingle();
+    const bioSecs = ((bio.data as { value?: { sections?: unknown } } | null)?.value?.sections ??
+      []) as { heading?: string; image?: string; caption?: string }[];
+    if (Array.isArray(bioSecs))
+      for (const b of bioSecs)
+        if (b?.image) add(b.image, b.caption || b.heading || "Biography", "Biography");
     for (const c of cards)
       for (const it of [...c.items, ...c.extraItems])
         if (it.image)

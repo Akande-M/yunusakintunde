@@ -64,7 +64,8 @@ export type BiographySettings = {
   intro: string;
   showApcBadge: boolean;
   facts: { n: string; l: string }[];
-  sections: { heading: string; body: string }[];
+  /** Each part may have its own photo, shown under its heading. */
+  sections: { heading: string; body: string; image?: string; caption?: string }[];
   photoCaption: string;
   timelineHeading: string;
   timeline: { year: string; title: string; note: string; current: boolean }[];

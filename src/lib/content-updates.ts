@@ -9,6 +9,7 @@ import * as OOI from "@/content-updates/2026-11-24-oversight-outreach-infrastruc
 import { applyLocalGovernmentTabs } from "@/content-updates/2026-11-24-local-government-tabs";
 import { applyPhotosAndCommitteeTabs } from "@/content-updates/2026-11-25-photos-and-committee-tabs";
 import { applyPoliticalOversightSkills } from "@/content-updates/2026-11-25-political-oversight-skills";
+import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -187,6 +188,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This replaces the short overview at the top of Skills, Jobs & Empowerment, creates five pages, and changes the Political & Party Leadership menu.",
     viewUrl: "/political-leadership-and-party-engagement",
     apply: (progress) => applyPoliticalOversightSkills(progress),
+  },
+  {
+    id: "2026-11-25-press-fce-book",
+    title: "News in the press, FCE (Special) Oyo photos, the book, 4 job beneficiaries",
+    summary:
+      'The News page gets an "In the press" section with 30 articles and videos about the Senator, 16 per page, each opening in a reader on the site (headlines, pictures and descriptions are read from each news website while this runs). Also: photos of the projects commissioned at FCE (Special), Oyo; four more job beneficiaries; the second United Nations photo on Oversight; and the book Dimensions of Energy Poverty and Rural Electrification in Nigeria on the Biography page, with the photo of its presentation to President Tinubu.',
+    replaces:
+      "This adds to the News, Skills, Infrastructure, Oversight and Biography pages without removing anything.",
+    viewUrl: "/news#in-the-press",
+    apply: (progress) => applyPressFceBook(progress),
   },
 ];
 

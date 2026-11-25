@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { NEWS_FILTERS } from "@/lib/site-data";
 import { getNewsList } from "@/lib/cms";
+import { getPressLinks } from "@/lib/press";
+import { PressCoverage } from "@/components/site/PressCoverage";
 import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, NewsCard, PageHeader } from "@/components/site/ui";
 
@@ -21,13 +23,16 @@ export const Route = createFileRoute("/news/")({
       },
     ],
   }),
-  loader: () => getNewsList(),
+  loader: async () => {
+    const [news, press] = await Promise.all([getNewsList(), getPressLinks()]);
+    return { news, press };
+  },
   component: News,
 });
 
 function News() {
   const heading = useSiteSettings().page_headers.news;
-  const news = Route.useLoaderData();
+  const { news, press } = Route.useLoaderData();
   const [filter, setFilter] = useState<(typeof NEWS_FILTERS)[number]>("All");
   const items = news.filter((n) => filter === "All" || n.category === filter);
 
@@ -53,6 +58,7 @@ function News() {
           )}
         </div>
       </section>
+      <PressCoverage items={press} />
     </>
   );
 }

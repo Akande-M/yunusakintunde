@@ -4,6 +4,7 @@ import { toParagraphs } from "@/lib/cms";
 import { Eyebrow, SmartImage } from "@/components/site/ui";
 import { ApcBadge } from "@/components/site/ApcBadge";
 import { Reveal } from "@/components/site/Reveal";
+import { ShapedImage } from "@/components/site/ShapedImage";
 
 export const Route = createFileRoute("/biography")({
   head: () => ({
@@ -29,9 +30,27 @@ function Biography() {
   const images = useSiteImages();
   const bio = useSiteSettings().biography;
   const [first, ...rest] = bio.sections;
-  const textBlock = (sec: { heading: string; body: string }, i: number) => (
+  const textBlock = (
+    sec: { heading: string; body: string; image?: string; caption?: string },
+    i: number,
+  ) => (
     <div key={i} className={i > 0 ? "mt-9" : ""}>
       {sec.heading && <h2 className="text-[22px] font-semibold">{sec.heading}</h2>}
+      {sec.image && (
+        <figure className="mt-4">
+          <ShapedImage
+            url={sec.image}
+            alt={sec.caption || sec.heading}
+            fallback="original"
+            className="rounded-lg border border-border"
+          />
+          {sec.caption && (
+            <figcaption className="mt-2 text-[13px] text-muted-foreground">
+              {sec.caption}
+            </figcaption>
+          )}
+        </figure>
+      )}
       {toParagraphs(sec.body).map((p, j) => (
         <p key={j} className="mt-4 text-[15.5px] whitespace-pre-line text-muted-foreground">
           {p}

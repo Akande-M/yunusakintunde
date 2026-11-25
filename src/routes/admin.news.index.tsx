@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "@/components/admin/kit";
 import { PageHeadingCard } from "@/components/admin/PageHeadingCard";
+import { PressLinksEditor } from "@/components/admin/PressLinksEditor";
 
 export const Route = createFileRoute("/admin/news/")({
   component: NewsList,
@@ -158,6 +159,7 @@ function NewsList() {
           })}
         </ul>
       )}
+      <PressLinksEditor />
     </>
   );
 }
