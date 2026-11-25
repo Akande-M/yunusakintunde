@@ -81,7 +81,7 @@ function AchievementsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Major achievements" title={page.pageTitle} lede={page.pageIntro} />
+      <PageHeader eyebrow="Achievements" title={page.pageTitle} lede={page.pageIntro} />
 
       <section className="border-b border-border bg-card py-8">
         <div className="wrap">
