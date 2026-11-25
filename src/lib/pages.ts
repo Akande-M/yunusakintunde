@@ -20,6 +20,9 @@ type SectionBody =
       image: string;
       caption: string;
       imageSide: "left" | "right";
+      /** Optional second photo, shown overlapping the first. */
+      image2?: string;
+      caption2?: string;
     }
   | {
       type: "cards";
@@ -53,7 +56,11 @@ type SectionBody =
  * Every section can belong to one local government (lga). Sections with an lga show under
  * that local government's tab; sections without one are about the whole district.
  */
-export type PageSection = SectionBody & { lga?: string };
+export type PageSection = SectionBody & {
+  lga?: string;
+  /** Sections with a tab name are shown in tabs (one tab per name, in page order). */
+  tab?: string;
+};
 
 /** Pages whose local-government content the "areas" section gathers into one set of tabs. */
 export const AREA_PAGES = [
@@ -129,7 +136,12 @@ export function normalizeSections(v: unknown): PageSection[] {
     if (!type || !(type in SECTION_LABELS)) continue;
     const base = { ...blankSection(type), ...raw } as PageSection;
     base.lga = normalizeLga(raw["lga"]);
-    if (base.type === "text") base.image = siteUrl(str(base.image));
+    base.tab = str(raw["tab"]).trim();
+    if (base.type === "text") {
+      base.image = siteUrl(str(base.image));
+      base.image2 = siteUrl(str(base.image2));
+      base.caption2 = str(base.caption2);
+    }
     if (base.type === "list" || base.type === "cards") {
       base.image = siteUrl(str(base.image));
       base.caption = str(base.caption);

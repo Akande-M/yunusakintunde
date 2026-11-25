@@ -5,6 +5,7 @@ import {
   AGENDA_2027,
   ENDORSEMENTS,
   GALLERY,
+  GALLERY_FILTERS,
   NEWS,
   PROJECTS,
   PROMISES_KEPT,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/site-data";
 import { STATIC_ARTICLES } from "@/lib/static-articles";
 import { ACHIEVEMENTS, normalizeItems, type AchievementCard } from "@/lib/achievements-data";
+import { normalizeSections } from "@/lib/pages";
 import { DEFAULT_SETTINGS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
 
 /*
@@ -54,6 +56,119 @@ export type GalleryView = {
   category: GalleryCategory;
   archived: boolean;
 };
+
+/** A photo or video on the Media page; page photos are grouped into tabs named after their page. */
+export type MediaItem = Omit<GalleryView, "category"> & { category: string };
+
+/** Template stock pictures from the first build: never shown as real photos. */
+export const STOCK_IMAGES = [
+  "/site-images/senate.jpg",
+  "/site-images/solar-night.jpg",
+  "/site-images/medical.jpg",
+  "/site-images/skills.jpg",
+  "/site-images/ict-hub.jpg",
+  "/site-images/townhall.jpg",
+];
+export const isStock = (url: string) => STOCK_IMAGES.some((s) => url.split("#")[0]!.endsWith(s));
+
+/** Which Media tab each page's photos go under. Other pages use their own title. */
+const PAGE_TABS: Record<string, string> = {
+  "bills-and-motions": "In the Senate",
+  "committees-and-oversight": "Committees & Oversight",
+  recognition: "Recognition & Awards",
+  "infrastructure-projects": "Infrastructure",
+  "constituency-interventions-and-development-projects": "Infrastructure",
+  outreach: "Outreach",
+  "skills-jobs-and-empowerment": "Skills & Empowerment",
+};
+const TAB_ORDER = [
+  "In the Senate",
+  "Committees & Oversight",
+  "Recognition & Awards",
+  "Infrastructure",
+  "Outreach",
+  "Skills & Empowerment",
+];
+
+/**
+ * Everything for the Media page: the photos and videos added in Admin → Media gallery page,
+ * plus every photo used on the website's pages and achievement cards, so nothing uploaded
+ * anywhere is missing. Each photo appears once.
+ */
+export async function getMediaLibrary(): Promise<{ items: MediaItem[]; tabs: string[] }> {
+  const own = (await getGallery()).filter((g) => !isStock(g.url));
+  // Same photo = same file name, ignoring the frame setting and the upload's random prefix.
+  const keyOf = (u: string) =>
+    (siteUrl(u).split("#")[0]!.split("/").pop() ?? "").replace(/^[0-9a-f]{8}-/, "");
+  const seen = new Set(own.map((g) => keyOf(g.url)));
+  const extra: MediaItem[] = [];
+  const add = (url: string, caption: string, category: string) => {
+    const key = keyOf(url);
+    if (!url || seen.has(key) || isStock(url)) return;
+    seen.add(key);
+    extra.push({
+      id: `p${extra.length}`,
+      kind: "image",
+      url: siteUrl(url),
+      thumb: siteUrl(url),
+      alt: caption,
+      caption,
+      category,
+      archived: false,
+    });
+  };
+  try {
+    const [pages, cards] = await Promise.all([
+      db
+        .from("site_pages")
+        .select("slug,title,hero_image,hero_alt,sections")
+        .eq("status", "published"),
+      getAchievements(),
+    ]);
+    const rows = (pages.data ?? []) as {
+      slug: string;
+      title: string;
+      hero_image: string | null;
+      hero_alt: string | null;
+      sections: unknown;
+    }[];
+    for (const p of rows) {
+      const tab = PAGE_TABS[p.slug] ?? p.title;
+      const where = (lga?: string) => (lga ? ` (${lga})` : "");
+      for (const sec of normalizeSections(p.sections)) {
+        if (sec.type === "gallery")
+          for (const im of sec.images)
+            add(im.url, (im.caption || sec.heading) + where(sec.lga), tab);
+        if ((sec.type === "text" || sec.type === "list" || sec.type === "cards") && sec.image)
+          add(sec.image, (sec.caption || sec.heading) + where(sec.lga), tab);
+        if (sec.type === "text" && sec.image2)
+          add(sec.image2, (sec.caption2 || sec.heading) + where(sec.lga), tab);
+        if (sec.type === "cards")
+          for (const c of sec.items) if (c.image) add(c.image, c.title + where(sec.lga), tab);
+      }
+      if (p.hero_image) add(p.hero_image, p.hero_alt || p.title, tab);
+    }
+    for (const c of cards)
+      for (const it of [...c.items, ...c.extraItems])
+        if (it.image)
+          add(
+            it.image,
+            `${c.title.replace(/ Local Government$/, "")}: ${it.text}`,
+            "Local governments",
+          );
+  } catch (err) {
+    console.warn("[cms] media library", err);
+  }
+  const items = [...extra, ...own];
+  const present = new Set(items.map((i) => i.category));
+  const tabs = [
+    "All",
+    ...TAB_ORDER.filter((t) => present.has(t)),
+    ...[...present].filter((t) => !TAB_ORDER.includes(t) && !GALLERY_FILTERS.includes(t as never)),
+    ...GALLERY_FILTERS.filter((t) => t !== "All" && (present.has(t) || t === "Videos")),
+  ];
+  return { items, tabs };
+}
 
 export type RecordData = { kept: Commitment[]; agenda: Commitment[]; projects: Project[] };
 export type EndorsementView = { quote: string; name: string; role: string };
@@ -341,7 +456,7 @@ export function getAchievements(): Promise<AchievementCard[]> {
         heading: r.heading,
         items: normalizeItems(r.items),
         extraHeading: r.extra_heading,
-        extraItems: strList(r.extra_items),
+        extraItems: normalizeItems(r.extra_items),
       })),
     () => ACHIEVEMENTS,
   );

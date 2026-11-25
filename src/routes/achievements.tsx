@@ -8,7 +8,7 @@ import type { AchievementCard } from "@/lib/achievements-data";
 import { useSiteSettings } from "@/lib/use-settings";
 import { btn, Chip, PageHeader } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
-import { Emphasised, iconFor, LetsDoMore } from "@/components/site/Achievements";
+import { Emphasised, ItemArt, LetsDoMore } from "@/components/site/Achievements";
 
 export const Route = createFileRoute("/achievements")({
   head: () => ({
@@ -60,7 +60,7 @@ function AchievementsPage() {
       const l = matchLga(c.title);
       return l ? LGAS.indexOf(l) : 50;
     };
-    return [...cards].sort((a, b) => rank(a) - rank(b));
+    return cards.filter((c) => !isSenate(c)).sort((a, b) => rank(a) - rank(b));
   }, [cards]);
   // "All", "zone:Ibadan", "lga:Oyo East" or "senate".
   const [filter, setFilter] = useState("All");
@@ -105,11 +105,13 @@ function AchievementsPage() {
             <Chip active={filter === "All"} onClick={() => setFilter("All")}>
               All
             </Chip>
-            {ordered.some(isSenate) && (
-              <Chip active={filter === "senate"} onClick={() => setFilter("senate")}>
-                Legislative duties
-              </Chip>
-            )}
+            <Link
+              to="/$slug"
+              params={{ slug: "bills-and-motions" }}
+              className="inline-flex min-h-10 items-center rounded-full border border-border bg-card px-4 text-[13.5px] font-semibold text-primary hover:border-primary"
+            >
+              Bills & motions in the Senate →
+            </Link>
           </div>
           <div className="mb-8 grid gap-4 rounded-lg border border-border bg-card p-4 sm:p-5 lg:grid-cols-[1.25fr_1fr_.6fr]">
             {ZONES.map((z) => (
@@ -185,7 +187,6 @@ function AchievementsPage() {
 
                 <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {c.items.map((it, i) => {
-                    const Ico = iconFor(it.text);
                     return (
                       <Reveal key={i} as="li" delay={Math.min(i, 7) * 50} className="flex">
                         <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
@@ -193,9 +194,7 @@ function AchievementsPage() {
                             {it.image ? (
                               <ShapedImage url={it.image} alt={it.text} maxPortraitHeight={false} />
                             ) : (
-                              <div className="grid aspect-[4/3] w-full place-items-center">
-                                <Ico className="size-12 text-primary/55" aria-hidden />
-                              </div>
+                              <ItemArt text={it.text} />
                             )}
                             <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary-deep text-[13px] font-bold text-primary-foreground">
                               {i + 1}
@@ -211,17 +210,24 @@ function AchievementsPage() {
                 </ol>
 
                 {c.extraItems.length > 0 && (
-                  <div className="mt-5 rounded-lg border border-border bg-paper-2 p-5">
-                    <h3 className="mb-2 text-[12px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
+                  <div className="mt-6 rounded-lg border border-border bg-paper-2 p-5">
+                    <h3 className="mb-4 text-[12px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
                       {c.extraHeading || "Also"}
                     </h3>
-                    <ul className="grid gap-x-6 gap-y-1.5 text-[14px] sm:grid-cols-2">
+                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       {c.extraItems.map((x, i) => (
-                        <li key={i} className="flex gap-2">
-                          <span aria-hidden className="text-accent">
-                            ◆
-                          </span>
-                          {x}
+                        <li
+                          key={i}
+                          className="overflow-hidden rounded-md border border-border bg-card"
+                        >
+                          {x.image ? (
+                            <ShapedImage url={x.image} alt={x.text} maxPortraitHeight={false} />
+                          ) : (
+                            <ItemArt text={`${c.extraHeading} ${x.text}`} />
+                          )}
+                          <p className="px-3.5 py-3 text-[13.5px] leading-snug font-semibold">
+                            {x.text}
+                          </p>
                         </li>
                       ))}
                     </ul>

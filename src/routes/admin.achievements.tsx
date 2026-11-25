@@ -62,7 +62,12 @@ const FIELDS: FieldDef[] = [
     type: "text",
     hint: "e.g. “Schools renovated” or “Motions”",
   },
-  { name: "extra_items", label: "Second list", type: "lines", rows: 4 },
+  {
+    name: "extra_items",
+    label: "Second list",
+    type: "items",
+    hint: "e.g. each school renovated, with a photo of it.",
+  },
   { name: "published", label: "Show on website", type: "toggle" },
 ];
 
@@ -193,7 +198,7 @@ function AchievementsAdmin() {
           heading: "10 major achievements",
           items: [],
           extra_heading: "",
-          extra_items: "",
+          extra_items: [],
           published: true,
         }}
         summary={(r: Row) => {

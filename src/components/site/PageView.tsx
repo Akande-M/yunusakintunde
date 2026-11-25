@@ -5,7 +5,7 @@ import type { Project } from "@/lib/site-data";
 import { toParagraphs } from "@/lib/cms";
 import { TOPIC_RULES, type AreaSection, type PageSection, type SitePage } from "@/lib/pages";
 import { LGAS, lgaSlug, matchLga, zoneOf, ZONES } from "@/lib/lgas";
-import { Emphasised, iconFor } from "./Achievements";
+import { Emphasised, ItemArt } from "./Achievements";
 import { PhotoGallery } from "./PhotoGallery";
 import { ShapedImage } from "./ShapedImage";
 import { ProjectsList } from "./ProjectsList";
@@ -20,7 +20,8 @@ export const needsAchievements = (p: SitePage) =>
   p.sections.some((s) => s.type === "legislative" || s.type === "topic");
 export const needsAreas = (p: SitePage) => p.sections.some((s) => s.type === "areas");
 /** Sections shown inside the local-government tabs rather than down the page. */
-const inTabs = (s: PageSection) => Boolean(s.lga) || s.type === "topic" || s.type === "areas";
+const inTabs = (s: PageSection) =>
+  !s.tab && (Boolean(s.lga) || s.type === "topic" || s.type === "areas");
 
 const isSenate = (c: AchievementCard) => c.zone.toLowerCase() === "senate";
 
@@ -41,16 +42,13 @@ function Photo({ src, alt }: { src: string; alt: string }) {
 }
 
 function AchievementTile({ text, image, n }: { text: string; image: string; n?: number }) {
-  const Ico = iconFor(text);
   return (
     <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
       <div className="relative bg-primary-tint">
         {image ? (
           <ShapedImage url={image} alt={text} maxPortraitHeight={false} />
         ) : (
-          <div className="grid aspect-[4/3] w-full place-items-center">
-            <Ico className="size-12 text-primary/55" aria-hidden />
-          </div>
+          <ItemArt text={text} />
         )}
         {n !== undefined && (
           <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary-deep text-[13px] font-bold text-primary-foreground">
@@ -166,6 +164,7 @@ function Section({
   switch (s.type) {
     case "text": {
       const hasImg = Boolean(s.image);
+      const two = hasImg && Boolean(s.image2);
       const inner = (
         <>
           <div className={hasImg && s.imageSide === "left" ? "lg:order-2" : ""}>
@@ -179,17 +178,25 @@ function Section({
                   {s.heading}
                 </h2>
               ))}
+            {two && <span aria-hidden className="mb-4 block h-1 w-14 rounded-full bg-accent" />}
             <Paragraphs body={s.body} />
           </div>
-          {hasImg && (
-            <figure>
-              <Photo src={s.image} alt={s.caption || s.heading} />
-              {s.caption && (
-                <figcaption className="mt-2 text-[13px] text-muted-foreground">
-                  {s.caption}
-                </figcaption>
-              )}
-            </figure>
+          {two ? (
+            <TwoPhotos
+              a={{ url: s.image, caption: s.caption || s.heading }}
+              b={{ url: s.image2!, caption: s.caption2 || "" }}
+            />
+          ) : (
+            hasImg && (
+              <figure>
+                <Photo src={s.image} alt={s.caption || s.heading} />
+                {s.caption && (
+                  <figcaption className="mt-2 text-[13px] text-muted-foreground">
+                    {s.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )
           )}
         </>
       );
@@ -330,7 +337,7 @@ function Section({
                           <span className="font-serif text-[18px] font-semibold text-accent">
                             {String(i + 1).padStart(2, "0")}
                           </span>
-                          <span>{x}</span>
+                          <span>{x.text}</span>
                         </li>
                       ))}
                     </ol>
@@ -346,6 +353,107 @@ function Section({
     default:
       return null;
   }
+}
+
+/** Two photos of one story: the main one large, the second overlapping its corner. */
+function TwoPhotos({
+  a,
+  b,
+}: {
+  a: { url: string; caption: string };
+  b: { url: string; caption: string };
+}) {
+  return (
+    <figure>
+      <div className="relative pb-14 sm:pr-10 sm:pb-20">
+        <ShapedImage
+          url={a.url}
+          alt={a.caption}
+          className="rounded-lg border border-border shadow-sm"
+        />
+        <div className="absolute right-0 bottom-0 w-[52%] overflow-hidden rounded-lg border-4 border-card shadow-lg">
+          <ShapedImage url={b.url} alt={b.caption} fallback="landscape" />
+        </div>
+        <span
+          aria-hidden
+          className="absolute -top-3 -left-3 -z-10 size-24 rounded-lg bg-accent/25"
+        />
+      </div>
+      {(a.caption || b.caption) && (
+        <figcaption className="mt-3 space-y-1 text-[13px] text-muted-foreground">
+          {a.caption && <span className="block">{a.caption}</span>}
+          {b.caption && b.caption !== a.caption && <span className="block">{b.caption}</span>}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+const tabSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+/** Page sections grouped into named tabs (set per section in the CMS). */
+function SectionTabs({ page, data }: { page: SitePage; data: PageData }) {
+  const names = [...new Set(page.sections.map((s) => s.tab).filter((t): t is string => !!t))];
+  const [sel, setSel] = useState(names[0] ?? "");
+  useEffect(() => {
+    const fromHash = () => {
+      const h = window.location.hash.replace(/^#tab-/, "");
+      const t = names.find((n) => tabSlug(n) === h);
+      if (!t) return;
+      setSel(t);
+      window.setTimeout(
+        () => document.getElementById("page-tabs")?.scrollIntoView({ behavior: "smooth" }),
+        350,
+      );
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    return () => window.removeEventListener("hashchange", fromHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [names.join("|")]);
+  const current = page.sections.filter((s) => s.tab === sel);
+  return (
+    <section id="page-tabs" className="scroll-mt-24 py-10 sm:py-12">
+      <div className="wrap">
+        <div
+          role="tablist"
+          aria-label="Sections"
+          className="sticky top-[76px] z-10 -mx-4 flex gap-2 overflow-x-auto border-b border-border bg-paper/95 px-4 py-3 backdrop-blur sm:mx-0 sm:flex-wrap sm:px-0"
+        >
+          {names.map((n) => {
+            const on = n === sel;
+            return (
+              <button
+                key={n}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                aria-controls="page-tab-panel"
+                onClick={() => {
+                  setSel(n);
+                  history.replaceState(null, "", `#tab-${tabSlug(n)}`);
+                }}
+                className={`min-h-10 shrink-0 cursor-pointer rounded-full border px-4 text-[14px] font-semibold whitespace-nowrap transition-colors ${
+                  on
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                }`}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </div>
+        <div id="page-tab-panel" role="tabpanel" aria-label={sel} className="pt-2">
+          {current.map((s, i) => (
+            <div key={`${sel}-${i}`} className={i > 0 ? "border-t border-border" : ""}>
+              <Section s={s} data={data} index={0} compact />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 const COMMON = new Set(
@@ -558,6 +666,7 @@ function LgaTabs({ page, data }: { page: SitePage; data: PageData }) {
 
 export function PageView({ page, data }: { page: SitePage; data: PageData }) {
   const tabsAt = page.sections.findIndex(inTabs);
+  const namedAt = page.sections.findIndex((s) => Boolean(s.tab));
   let n = 0;
   return (
     <>
@@ -592,7 +701,11 @@ export function PageView({ page, data }: { page: SitePage; data: PageData }) {
           n = 0;
           return <LgaTabs key="lga-tabs" page={page} data={data} />;
         }
-        if (inTabs(s)) return null;
+        if (i === namedAt) {
+          n = 0;
+          return <SectionTabs key="named-tabs" page={page} data={data} />;
+        }
+        if (inTabs(s) || s.tab) return null;
         return <Section key={i} s={s} data={data} index={n++} />;
       })}
 

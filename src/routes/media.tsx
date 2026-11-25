@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { GALLERY_FILTERS } from "@/lib/site-data";
-import { getGallery, youtubeId, type GalleryView } from "@/lib/cms";
+import { getMediaLibrary, youtubeId, type MediaItem } from "@/lib/cms";
 import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
@@ -23,15 +22,15 @@ export const Route = createFileRoute("/media")({
       },
     ],
   }),
-  loader: () => getGallery(),
+  loader: () => getMediaLibrary(),
   component: Media,
 });
 
-function isPlayable(g: GalleryView) {
+function isPlayable(g: MediaItem) {
   return g.kind === "youtube" || g.kind === "video";
 }
 
-function Viewer({ item }: { item: GalleryView }) {
+function Viewer({ item }: { item: MediaItem }) {
   if (item.kind === "youtube") {
     const id = youtubeId(item.url);
     return (
@@ -65,9 +64,9 @@ function Viewer({ item }: { item: GalleryView }) {
 
 function Media() {
   const heading = useSiteSettings().page_headers.media;
-  const gallery = Route.useLoaderData();
-  const [filter, setFilter] = useState<(typeof GALLERY_FILTERS)[number]>("All");
-  const [open, setOpen] = useState<GalleryView | null>(null);
+  const { items: gallery, tabs } = Route.useLoaderData();
+  const [filter, setFilter] = useState("All");
+  const [open, setOpen] = useState<MediaItem | null>(null);
   const items = gallery.filter(
     (g) => filter === "All" || g.category === filter || (filter === "Videos" && isPlayable(g)),
   );
@@ -78,7 +77,7 @@ function Media() {
       <section className="py-12 sm:py-14">
         <div className="wrap">
           <div className="mb-7 flex flex-wrap gap-2.5">
-            {GALLERY_FILTERS.map((f) => (
+            {tabs.map((f) => (
               <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
                 {f}
               </Chip>

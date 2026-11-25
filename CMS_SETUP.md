@@ -269,3 +269,11 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - **List and card sections** can have their own photo beside the heading.
 - **Dashboard "Website updates" box** stays visible and shows each step, success or the error, instead of disappearing.
 - Content update `2026-11-24-local-government-tabs` rearranges Infrastructure, Outreach and Skills by local government, adds 20 photos (`public/site-images/infrastructure`, `public/site-images/skills`), adds tabs to the Constituency page, removes the sample "Delivered projects" list from Infrastructure, and regroups Achievements (adds Afijio, Atiba, Oyo East, Oyo West).
+
+## Update 17: photos on achievements, Committees tabs, media library
+
+- Achievement items and the "Second list" (e.g. schools renovated) each take a photo in Pages → Achievements. Items without a photo show a designed panel (icon + headline figure) instead of a blank box.
+- The Senate "Legislative Duties" card is no longer shown on Achievements; the bills and motions live on Bills & Motions.
+- Any page section can be given a **Tab** name; sections sharing a name show together in that tab (used on Committees & Oversight). Text sections can have a **second photo**.
+- The Media page now includes every photo used on any page or achievement card automatically, in tabs by page (In the Senate, Committees & Oversight, Recognition & Awards, Infrastructure, Outreach, Skills & Empowerment), plus the Media gallery items.
+- `STOCK_IMAGES` in `src/lib/cms.ts` lists the template pictures from the first build; they are never shown in the media library. Content update `2026-11-25-photos-and-committee-tabs` removes them from pages and hides them in the gallery.

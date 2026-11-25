@@ -30,31 +30,70 @@ import { Reveal } from "@/components/site/Reveal";
 
 type Icon = ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 
-/** Picks an icon from the wording, so editors never have to choose one. Order matters. */
-const ICON_RULES: [RegExp, Icon][] = [
-  [/\b(bill|act)\b.*\b(19|20)\d{2}\b/i, ScrollText],
-  [/streetlight/i, Lightbulb],
-  [/borehole|water/i, Droplets],
-  [/scholarship|tuition/i, GraduationCap],
-  [/\bGSM\b/i, Smartphone],
-  [/\bICT\b|tablet/i, Laptop],
-  [/tractor|farm/i, Tractor],
-  [/hospital/i, Building2],
-  [/medical|health/i, Stethoscope],
-  [/tailoring|sewing/i, Scissors],
-  [/grinding|welding|mechanic|tool/i, Wrench],
-  [/road|drainage/i, Route],
-  [/cash|grant/i, Banknote],
-  [/women|girls/i, HeartHandshake],
-  [/mosque|church|market|palace|worship/i, Landmark],
-  [/classroom|school/i, School],
-  [/\bbill\b|\bact\b/i, ScrollText],
-  [/motion|appeal|halt/i, Gavel],
-  [/youth|empower|training|beneficiar/i, Users],
+/** Picks an icon (and a short label) from the wording, so editors never have to choose one. Order matters. */
+const ICON_RULES: [RegExp, Icon, string][] = [
+  [/\b(bill|act)\b.*\b(19|20)\d{2}\b/i, ScrollText, "Bill"],
+  [/streetlight|solar lighting/i, Lightbulb, "Solar streetlights"],
+  [/borehole|water/i, Droplets, "Water"],
+  [/scholarship|tuition/i, GraduationCap, "Scholarships"],
+  [/\bGSM\b/i, Smartphone, "GSM repair training"],
+  [/\bICT\b|tablet/i, Laptop, "ICT training"],
+  [/tractor|farm/i, Tractor, "Agriculture"],
+  [/hospital/i, Building2, "Health"],
+  [/medical|health/i, Stethoscope, "Health"],
+  [/tailoring|sewing/i, Scissors, "Tailoring"],
+  [/grinding|welding|mechanic|tool/i, Wrench, "Artisans"],
+  [/road|drainage/i, Route, "Roads"],
+  [/cash|grant/i, Banknote, "Grants"],
+  [/women|girls/i, HeartHandshake, "Women & girls"],
+  [/mosque|church|market|palace|worship/i, Landmark, "Community buildings"],
+  [/classroom|school/i, School, "Education"],
+  [/\bbill\b|\bact\b/i, ScrollText, "Bill"],
+  [/motion|appeal|halt/i, Gavel, "Motion"],
+  [/youth|empower|training|beneficiar/i, Users, "Empowerment"],
 ];
 
 export function iconFor(text: string): Icon {
   return ICON_RULES.find(([re]) => re.test(text))?.[1] ?? CheckCircle2;
+}
+
+/**
+ * Picture for an achievement with no photo yet: a branded panel with the item's icon and its
+ * headline figure, so no tile is ever blank. A real photo added in the CMS replaces it.
+ */
+export function ItemArt({ text, className = "" }: { text: string; className?: string }) {
+  const rule = ICON_RULES.find(([re]) => re.test(text));
+  const Ico = rule?.[1] ?? CheckCircle2;
+  const label = rule?.[2] ?? "Delivered";
+  // The headline figure, e.g. 714 or ₦50,000 (not "3-day" or a year).
+  const figure = text.match(/₦[\d,]+|\b\d[\d,]*(?:km)?\b(?!-)/)?.[0];
+  const showFigure = figure && !/^(19|20)\d{2}$/.test(figure);
+  return (
+    <div
+      aria-hidden
+      className={`relative grid aspect-[4/3] w-full place-items-center overflow-hidden bg-primary-deep text-on-dark ${className}`}
+      style={{
+        backgroundImage:
+          "radial-gradient(circle at 1px 1px, rgba(255,255,255,.09) 1px, transparent 0)",
+        backgroundSize: "18px 18px",
+      }}
+    >
+      <Ico className="absolute -right-5 -bottom-5 size-36 text-on-dark/[.07]" aria-hidden />
+      <div className="relative flex flex-col items-center gap-2 px-4 text-center">
+        <span className="grid size-14 place-items-center rounded-full border-2 border-accent/70 bg-on-dark/5">
+          <Ico className="size-7 text-accent" aria-hidden />
+        </span>
+        {showFigure && (
+          <span className="font-serif text-[30px] leading-none font-semibold text-accent">
+            {figure}
+          </span>
+        )}
+        <span className="text-[11px] font-extrabold tracking-[0.12em] text-on-dark/80 uppercase">
+          {label}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 /** Bolds the figures (714, ₦50,000, 8km…) so the scale reads at a glance. Years and bill numbers stay plain. */
@@ -185,7 +224,7 @@ function LgaCard({ card }: { card: AchievementCard }) {
                     <span aria-hidden className="text-accent">
                       ◆
                     </span>
-                    {x}
+                    {x.text}
                   </li>
                 ))}
               </ul>

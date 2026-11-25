@@ -286,6 +286,30 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
               </Field>
             </div>
           )}
+          {s.image && (
+            <>
+              <Field
+                label="Second photo (optional)"
+                hint="Shown overlapping the corner of the first photo."
+              >
+                <ImageField
+                  value={s.image2 ?? ""}
+                  onChange={(image2) => onChange({ ...s, image2 })}
+                  folder="pages"
+                  shapes
+                />
+              </Field>
+              {s.image2 && (
+                <Field label="Second photo caption">
+                  <input
+                    className={inputCls}
+                    value={s.caption2 ?? ""}
+                    onChange={(e) => onChange({ ...s, caption2: e.target.value })}
+                  />
+                </Field>
+              )}
+            </>
+          )}
         </>
       );
     case "cards":
@@ -819,6 +843,11 @@ function PageEditor() {
                 </select>
               </label>
             </div>
+            <datalist id="page-tab-names">
+              {[...new Set(page.sections.map((x) => x.tab).filter(Boolean))].map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
             <div className="space-y-3">
               {page.sections.map((s, i) => {
                 if (filter !== "*" && (s.lga ?? "") !== filter) return null;
@@ -848,6 +877,7 @@ function PageEditor() {
                         </span>
                       </button>
                       {s.lga && <Badge tone="gold">{s.lga}</Badge>}
+                      {s.tab && <Badge>{`Tab: ${s.tab}`}</Badge>}
                       <Mover
                         i={i}
                         n={page.sections.length}
@@ -867,14 +897,24 @@ function PageEditor() {
                     </div>
                     {isOpen && (
                       <div className="mt-4 border-t border-border pt-4">
-                        {s.type !== "topic" && s.type !== "areas" && (
-                          <div className="mb-4">
+                        <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                          {s.type !== "topic" && s.type !== "areas" && (
                             <LgaSelect
                               value={s.lga ?? ""}
                               onChange={(lga) => setSection(i, { ...s, lga })}
                             />
-                          </div>
-                        )}
+                          )}
+                          <label className="flex items-center gap-2 text-[12.5px] font-semibold text-muted-foreground">
+                            Tab
+                            <input
+                              className={`${inputCls} !min-h-9 !w-48 !py-1 text-[13px]`}
+                              list="page-tab-names"
+                              placeholder="None"
+                              value={s.tab ?? ""}
+                              onChange={(e) => setSection(i, { ...s, tab: e.target.value })}
+                            />
+                          </label>
+                        </div>
                         <SectionFields s={s} onChange={(next) => setSection(i, next)} />
                       </div>
                     )}

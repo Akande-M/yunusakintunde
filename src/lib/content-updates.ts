@@ -7,6 +7,7 @@ import {
 import * as LC from "@/content-updates/2026-11-24-legislative-and-constituency";
 import * as OOI from "@/content-updates/2026-11-24-oversight-outreach-infrastructure";
 import { applyLocalGovernmentTabs } from "@/content-updates/2026-11-24-local-government-tabs";
+import { applyPhotosAndCommitteeTabs } from "@/content-updates/2026-11-25-photos-and-committee-tabs";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -165,6 +166,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This rearranges Infrastructure Projects, Outreach and Skills, Jobs & Empowerment into local government tabs (your earlier edits are kept), and adds four Achievements cards.",
     viewUrl: "/infrastructure-projects",
     apply: (progress) => applyLocalGovernmentTabs(progress),
+  },
+  {
+    id: "2026-11-25-photos-and-committee-tabs",
+    title: "Photos on every achievement, Committees & Oversight in tabs",
+    summary:
+      "Achievement items get real photos of the same kind of project (boreholes, roads, classrooms, ICT centres, skills training), and every school renovated gets a school photo. Committees & Oversight is arranged in four tabs (Leadership & Membership, Police Affairs, Environment, Appropriations), with the Canadian High Commissioner meeting shown as one section with two photos. The Committee Work photos come off Bills & Motions. Template stock pictures are replaced with real photos or removed.",
+    replaces:
+      "This adds photos to achievement items that have none (photos you added are kept), rearranges Committees & Oversight, and removes Committee Work from Bills & Motions.",
+    viewUrl: "/achievements",
+    apply: (progress) => applyPhotosAndCommitteeTabs(progress),
   },
 ];
 

@@ -14,10 +14,13 @@ export type AchievementCard = {
   heading: string; // heading for the main list
   items: AchievementItem[];
   extraHeading: string; // optional second list, e.g. "Schools renovated" or "Motions"
-  extraItems: string[];
+  extraItems: AchievementItem[];
 };
 
-type RawCard = Omit<AchievementCard, "items"> & { items: string[] };
+type RawCard = Omit<AchievementCard, "items" | "extraItems"> & {
+  items: string[];
+  extraItems: string[];
+};
 
 const RAW: RawCard[] = [
   {
@@ -210,4 +213,5 @@ export function normalizeItems(v: unknown): AchievementItem[] {
 export const ACHIEVEMENTS: AchievementCard[] = RAW.map((c) => ({
   ...c,
   items: normalizeItems(c.items),
+  extraItems: normalizeItems(c.extraItems),
 }));
