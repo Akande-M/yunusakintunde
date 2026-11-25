@@ -80,6 +80,11 @@ const PAGE_TABS: Record<string, string> = {
   "constituency-interventions-and-development-projects": "Infrastructure",
   outreach: "Outreach",
   "skills-jobs-and-empowerment": "Skills & Empowerment",
+  "political-leadership-and-party-engagement": "Political Leadership",
+  "constituency-engagements": "Political Leadership",
+  "campaigns-and-mobilisation": "Political Leadership",
+  "stakeholder-engagements": "Political Leadership",
+  "oversight-and-institutional-engagement": "Committees & Oversight",
 };
 const TAB_ORDER = [
   "In the Senate",
@@ -88,6 +93,7 @@ const TAB_ORDER = [
   "Infrastructure",
   "Outreach",
   "Skills & Empowerment",
+  "Political Leadership",
 ];
 
 /**

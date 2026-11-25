@@ -3,7 +3,13 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AchievementCard } from "@/lib/achievements-data";
 import type { Project } from "@/lib/site-data";
 import { toParagraphs } from "@/lib/cms";
-import { TOPIC_RULES, type AreaSection, type PageSection, type SitePage } from "@/lib/pages";
+import {
+  TOPIC_RULES,
+  type AreaSection,
+  type PageSection,
+  type SitePage,
+  type SubPage,
+} from "@/lib/pages";
 import { LGAS, lgaSlug, matchLga, zoneOf, ZONES } from "@/lib/lgas";
 import { Emphasised, ItemArt } from "./Achievements";
 import { PhotoGallery } from "./PhotoGallery";
@@ -13,12 +19,18 @@ import { Reveal } from "./Reveal";
 import { btn, Eyebrow, SectionHead } from "./ui";
 
 /** Content that some section types pull in from other parts of the CMS. */
-export type PageData = { projects: Project[]; cards: AchievementCard[]; areas?: AreaSection[] };
+export type PageData = {
+  projects: Project[];
+  cards: AchievementCard[];
+  areas?: AreaSection[];
+  subpages?: SubPage[];
+};
 
 export const needsProjects = (p: SitePage) => p.sections.some((s) => s.type === "projects");
 export const needsAchievements = (p: SitePage) =>
   p.sections.some((s) => s.type === "legislative" || s.type === "topic");
 export const needsAreas = (p: SitePage) => p.sections.some((s) => s.type === "areas");
+export const needsSubpages = (p: SitePage) => p.sections.some((s) => s.type === "subpages");
 /** Sections shown inside the local-government tabs rather than down the page. */
 const inTabs = (s: PageSection) =>
   !s.tab && (Boolean(s.lga) || s.type === "topic" || s.type === "areas");
@@ -389,6 +401,87 @@ function TwoPhotos({
   );
 }
 
+/** One tab per page linked under this page in the menu, showing that page's content. */
+function SubpageTabs({ s, data }: { s: PageSection; data: PageData }) {
+  const subs = data.subpages ?? [];
+  const [sel, setSel] = useState(subs[0]?.slug ?? "");
+  useEffect(() => {
+    const h = window.location.hash.replace(/^#tab-/, "");
+    if (subs.some((x) => x.slug === h)) {
+      setSel(h);
+      window.setTimeout(
+        () => document.getElementById("subpage-tabs")?.scrollIntoView({ behavior: "smooth" }),
+        350,
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  if (!subs.length) return null;
+  const cur = subs.find((x) => x.slug === sel) ?? subs[0]!;
+  return (
+    <section id="subpage-tabs" className="scroll-mt-24 py-10 sm:py-12">
+      <div className="wrap">
+        {"heading" in s && s.heading && <SectionHead title={s.heading} />}
+        {"intro" in s && s.intro && (
+          <p className="-mt-3 mb-6 max-w-[70ch] text-muted-foreground">{s.intro}</p>
+        )}
+        <div
+          role="tablist"
+          aria-label="Sections"
+          className="sticky top-[76px] z-10 -mx-4 flex gap-2 overflow-x-auto border-b border-border bg-paper/95 px-4 py-3 backdrop-blur sm:mx-0 sm:flex-wrap sm:px-0"
+        >
+          {subs.map((x) => {
+            const on = x.slug === cur.slug;
+            return (
+              <button
+                key={x.slug}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                aria-controls="subpage-panel"
+                onClick={() => {
+                  setSel(x.slug);
+                  history.replaceState(null, "", `#tab-${x.slug}`);
+                }}
+                className={`min-h-10 shrink-0 cursor-pointer rounded-full border px-4 text-[14px] font-semibold whitespace-nowrap transition-colors ${
+                  on
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                }`}
+              >
+                {x.label}
+              </button>
+            );
+          })}
+        </div>
+        <div id="subpage-panel" role="tabpanel" aria-label={cur.label} className="pt-6">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-accent pb-3">
+            <h2 className="font-serif text-[26px] font-semibold sm:text-[30px]">{cur.title}</h2>
+            <a
+              href={`/${cur.slug}`}
+              className="text-[13px] font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              Open as a page →
+            </a>
+          </div>
+          {cur.intro && (
+            <p className="mt-4 max-w-[70ch] text-[16px] whitespace-pre-line text-muted-foreground">
+              {cur.intro}
+            </p>
+          )}
+          {cur.sections
+            .filter((x) => x.type !== "subpages")
+            .map((x, i) => (
+              <div key={`${cur.slug}-${i}`} className={i > 0 ? "border-t border-border" : ""}>
+                <Section s={x} data={data} index={0} compact />
+              </div>
+            ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const tabSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 /** Page sections grouped into named tabs (set per section in the CMS). */
@@ -701,6 +794,7 @@ export function PageView({ page, data }: { page: SitePage; data: PageData }) {
           n = 0;
           return <LgaTabs key="lga-tabs" page={page} data={data} />;
         }
+        if (s.type === "subpages") return <SubpageTabs key={`sub-${i}`} s={s} data={data} />;
         if (i === namedAt) {
           n = 0;
           return <SectionTabs key="named-tabs" page={page} data={data} />;

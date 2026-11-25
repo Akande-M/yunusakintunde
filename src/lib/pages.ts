@@ -50,7 +50,8 @@ type SectionBody =
   | { type: "projects"; heading: string; intro: string } // Admin → Record & Agenda → Projects
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards
   | { type: "topic"; heading: string; intro: string; topic: Topic } // Admin → Achievements, filtered
-  | { type: "areas"; heading: string; intro: string }; // local government content from AREA_PAGES
+  | { type: "areas"; heading: string; intro: string } // local government content from AREA_PAGES
+  | { type: "subpages"; heading: string; intro: string }; // one tab per page linked under this page in the menu
 
 /**
  * Every section can belong to one local government (lga). Sections with an lga show under
@@ -89,6 +90,7 @@ export const SECTION_LABELS: Record<PageSection["type"], string> = {
   legislative: "Bills & motions (from Achievements → Legislative Duties)",
   topic: "Local government tabs (adds matching Achievements)",
   areas: "Local government tabs from Outreach, Infrastructure & Skills pages",
+  subpages: "Tabs of the pages under this page in the menu",
 };
 
 export const TOPIC_LABELS: Record<Topic, string> = {
@@ -120,6 +122,8 @@ export function blankSection(type: PageSection["type"]): PageSection {
       return { type, heading: "", intro: "", topic: "outreach" };
     case "areas":
       return { type, heading: "Projects by local government", intro: "" };
+    case "subpages":
+      return { type, heading: "", intro: "" };
     default:
       return { type, heading: "", intro: "" } as PageSection;
   }
@@ -200,6 +204,68 @@ export async function getPage(slug: string): Promise<SitePage | null> {
   } catch (err) {
     console.warn("[cms] page", slug, err);
     return null;
+  }
+}
+
+/** A page linked under another page in the menu, for the "subpages" tabs. */
+export type SubPage = {
+  slug: string;
+  label: string;
+  title: string;
+  intro: string;
+  sections: PageSection[];
+};
+
+/** The published pages linked under `slug` in the top menu, in menu order. */
+export async function getSubpages(slug: string): Promise<SubPage[]> {
+  try {
+    const menu = await db.from("menu_items").select("id,label,page_slug,parent_id,sort_order");
+    if (menu.error) throw menu.error;
+    const rows = (menu.data ?? []) as {
+      id: string;
+      label: string;
+      page_slug: string | null;
+      parent_id: string | null;
+      sort_order: number;
+    }[];
+    const me = rows.find((r) => r.page_slug === slug);
+    if (!me) return [];
+    const kids = rows
+      .filter((r) => r.parent_id === me.id && r.page_slug)
+      .sort((a, b) => a.sort_order - b.sort_order);
+    if (!kids.length) return [];
+    const { data, error } = await db
+      .from("site_pages")
+      .select("slug,title,intro,sections")
+      .in(
+        "slug",
+        kids.map((k) => k.page_slug!),
+      )
+      .eq("status", "published");
+    if (error) throw error;
+    const pages = (data ?? []) as {
+      slug: string;
+      title: string;
+      intro: string;
+      sections: unknown;
+    }[];
+    return kids.flatMap((k) => {
+      const p = pages.find((x) => x.slug === k.page_slug);
+      return p
+        ? [
+            {
+              slug: p.slug,
+              label: k.label,
+              title: p.title,
+              intro: p.intro ?? "",
+              sections: normalizeSections(p.sections),
+            },
+          ]
+        : [];
+    });
+  } catch (err) {
+    console.warn("[cms] subpages", err);
+    return [];
   }
 }
 

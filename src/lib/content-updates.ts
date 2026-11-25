@@ -8,6 +8,7 @@ import * as LC from "@/content-updates/2026-11-24-legislative-and-constituency";
 import * as OOI from "@/content-updates/2026-11-24-oversight-outreach-infrastructure";
 import { applyLocalGovernmentTabs } from "@/content-updates/2026-11-24-local-government-tabs";
 import { applyPhotosAndCommitteeTabs } from "@/content-updates/2026-11-25-photos-and-committee-tabs";
+import { applyPoliticalOversightSkills } from "@/content-updates/2026-11-25-political-oversight-skills";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -176,6 +177,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This adds photos to achievement items that have none (photos you added are kept), rearranges Committees & Oversight, and removes Committee Work from Bills & Motions.",
     viewUrl: "/achievements",
     apply: (progress) => applyPhotosAndCommitteeTabs(progress),
+  },
+  {
+    id: "2026-11-25-political-oversight-skills",
+    title: "Political Leadership & Oversight pages, full Skills content, 20 photos",
+    summary:
+      "New Political Leadership & Party Engagement page with tabs for Constituency Engagements, Campaigns & Mobilisation, Stakeholder Engagements and the new Oversight page (also added to the top menu). Skills, Jobs & Empowerment gets the full content in five tabs (Jobs, Skills, Grants & Women, Agriculture, ICT Centres) with local items under their local government, plus the Job Beneficiaries photos. New photos: Aho Parapo Community Secondary School (Ona Ara), Isokun PHC (Oyo West), classroom commissioning, and the United Nations visit.",
+    replaces:
+      "This replaces the short overview at the top of Skills, Jobs & Empowerment, creates five pages, and changes the Political & Party Leadership menu.",
+    viewUrl: "/political-leadership-and-party-engagement",
+    apply: (progress) => applyPoliticalOversightSkills(progress),
   },
 ];
 
