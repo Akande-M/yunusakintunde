@@ -180,7 +180,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       "Senator Yunus Abiodun Akintunde, PhD, is the sitting Senator for Oyo Central Senatorial District, asking for a second term on the strength of 38 delivered projects, 6 sponsored bills, and a promise-tracker that shows exactly what has been kept.",
     stats: [
       { n: "38", l: "Projects delivered" },
-      { n: "12", l: "LGAs & wards reached" },
+      { n: "11", l: "Local governments reached" },
       { n: "6", l: "Bills sponsored" },
       { n: "100%", l: "2023 promises delivered" },
     ],
@@ -301,7 +301,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   images: DEFAULT_IMAGES,
   achievements: {
-    pageTitle: "10 major achievements in every local government",
+    pageTitle: "Major achievements in every local government",
     pageIntro:
       "Every project delivered across Oyo Central, local government by local government, plus the Senator's work on the floor of the Senate.",
     tagline: "Let's do more",

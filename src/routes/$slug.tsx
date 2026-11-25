@@ -1,4 +1,12 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+
+/** Pages that were merged into tabs of another page: old links open the right tab. */
+const MOVED: Record<string, string> = {
+  "constituency-engagements": "/political-leadership-and-party-engagement#tab-constituency-engagements",
+  "campaigns-and-mobilisation": "/political-leadership-and-party-engagement#tab-campaigns-mobilisation",
+  "stakeholder-engagements": "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
+  "oversight-and-institutional-engagement": "/political-leadership-and-party-engagement#tab-oversight",
+};
 import { getAchievements, getRecord } from "@/lib/cms";
 import { getAreaSections, getComingSoon, getPage, getSubpages } from "@/lib/pages";
 import {
@@ -14,6 +22,8 @@ import { btn, Eyebrow } from "@/components/site/ui";
    its content. A menu link whose page isn't published yet shows "coming soon" (never the draft). */
 export const Route = createFileRoute("/$slug")({
   loader: async ({ params }) => {
+    const moved = MOVED[params.slug];
+    if (moved) throw redirect({ href: moved, statusCode: 301 });
     const page = await getPage(params.slug);
     if (!page) {
       const label = await getComingSoon(params.slug);

@@ -235,61 +235,50 @@ function Home() {
             {home.campaignVideoUrl ? (
               <CampaignVideo url={home.campaignVideoUrl} caption={home.campaignVideoCaption} />
             ) : (
-              <figure className="group relative overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
-                <div className="relative aspect-video">
-                  <img
-                    src={images.filmCover}
-                    alt="Placeholder still from the forthcoming Akintunde 2027 campaign film"
-                    loading="lazy"
-                    className="size-full object-cover object-[center_25%] opacity-40 transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <span className="absolute inset-0 grid place-items-center">
-                    <span className="grid size-16 place-items-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
-                      <Play size={26} strokeWidth={2.4} className="ml-0.5" aria-hidden />
-                    </span>
-                  </span>
-                  <span className="absolute top-3 left-3 rounded-sm bg-primary-deep/85 px-2.5 py-1 text-[11.5px] font-bold text-on-dark">
-                    Campaign film coming soon
-                  </span>
-                </div>
-                <figcaption className="border-t border-on-dark-line px-5 py-3.5 text-[13px] text-on-dark-muted">
-                  Headline campaign video: “Four years of delivery”, Akintunde 2027.
-                </figcaption>
+              <figure className="overflow-hidden rounded-lg border border-on-dark-line">
+                <img
+                  src={images.filmCover}
+                  alt="Senator Akintunde in Oyo Central"
+                  loading="lazy"
+                  className="aspect-video size-full object-cover object-[center_25%]"
+                />
               </figure>
             )}
           </Reveal>
         </div>
       </section>
 
-      <section className="py-16 sm:py-19">
-        <div className="wrap">
-          <SectionHead eyebrow="Endorsements" title="Standing with Akintunde 2027" />
-          <Reveal>
-            <AutoCarousel
-              label="Endorsements for Senator Akintunde"
-              interval={5000}
-              gapClassName="-ml-5"
-              slideClassName="basis-full pl-5 sm:basis-1/2"
-              arrows
-            >
-              {endorsements.map((e) => (
-                <article
-                  key={e.name + e.role}
-                  className="flex h-full flex-col border-l-2 border-accent bg-card py-6 pr-6 pl-6 transition-shadow duration-300 hover:shadow-[0_10px_26px_rgba(18,52,36,.1)]"
-                >
-                  <blockquote className="font-serif text-[17px] leading-relaxed text-foreground italic">
-                    “{e.quote.replace(/^“|”$/g, "")}”
-                  </blockquote>
-                  <div className="mt-auto pt-4">
-                    <span className="block text-sm font-bold text-primary-deep">{e.name}</span>
-                    <span className="block text-[13px] text-muted-foreground">{e.role}</span>
-                  </div>
-                </article>
-              ))}
-            </AutoCarousel>
-          </Reveal>
-        </div>
-      </section>
+      {endorsements.length > 0 && (
+        <section className="py-16 sm:py-19">
+          <div className="wrap">
+            <SectionHead eyebrow="Endorsements" title="Standing with Akintunde 2027" />
+            <Reveal>
+              <AutoCarousel
+                label="Endorsements for Senator Akintunde"
+                interval={5000}
+                gapClassName="-ml-5"
+                slideClassName="basis-full pl-5 sm:basis-1/2"
+                arrows
+              >
+                {endorsements.map((e) => (
+                  <article
+                    key={e.name + e.role}
+                    className="flex h-full flex-col border-l-2 border-accent bg-card py-6 pr-6 pl-6 transition-shadow duration-300 hover:shadow-[0_10px_26px_rgba(18,52,36,.1)]"
+                  >
+                    <blockquote className="font-serif text-[17px] leading-relaxed text-foreground italic">
+                      “{e.quote.replace(/^“|”$/g, "")}”
+                    </blockquote>
+                    <div className="mt-auto pt-4">
+                      <span className="block text-sm font-bold text-primary-deep">{e.name}</span>
+                      <span className="block text-[13px] text-muted-foreground">{e.role}</span>
+                    </div>
+                  </article>
+                ))}
+              </AutoCarousel>
+            </Reveal>
+          </div>
+        </section>
+      )}
 
       <section className="border-t border-border bg-paper-2 py-16">
         <div className="wrap text-center">

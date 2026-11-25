@@ -29,35 +29,52 @@ export const Route = createFileRoute("/biography")({
 function Biography() {
   const images = useSiteImages();
   const bio = useSiteSettings().biography;
-  const [first, ...rest] = bio.sections;
-  const textBlock = (
-    sec: { heading: string; body: string; image?: string; caption?: string },
-    i: number,
-  ) => (
-    <div key={i} className={i > 0 ? "mt-9" : ""}>
-      {sec.heading && <h2 className="text-[22px] font-semibold">{sec.heading}</h2>}
-      {sec.image && (
-        <figure className="mt-4">
-          <ShapedImage
-            url={sec.image}
-            alt={sec.caption || sec.heading}
-            fallback="original"
-            className="rounded-lg border border-border"
-          />
-          {sec.caption && (
-            <figcaption className="mt-2 text-[13px] text-muted-foreground">
-              {sec.caption}
-            </figcaption>
+  type Part = { heading: string; body: string; image?: string; caption?: string };
+  /** One part of the story: text on one side, its photo on the other, alternating sides. */
+  const row = (sec: Part, i: number) => {
+    const photoLeft = i % 2 === 1;
+    return (
+      <Reveal
+        key={i}
+        className={`grid items-center gap-8 lg:gap-14 ${sec.image ? "lg:grid-cols-2" : "max-w-[75ch]"} ${
+          i > 0 ? "mt-16 border-t border-border pt-16 sm:mt-20 sm:pt-20" : ""
+        }`}
+      >
+        <div className={sec.image && photoLeft ? "lg:order-2" : ""}>
+          {sec.heading && (
+            <h2 className="font-serif text-[26px] leading-tight font-semibold text-primary-deep sm:text-[30px]">
+              {sec.heading}
+            </h2>
           )}
-        </figure>
-      )}
-      {toParagraphs(sec.body).map((p, j) => (
-        <p key={j} className="mt-4 text-[15.5px] whitespace-pre-line text-muted-foreground">
-          {p}
-        </p>
-      ))}
-    </div>
-  );
+          <span aria-hidden className="mt-4 block h-1 w-14 rounded-full bg-accent" />
+          {toParagraphs(sec.body).map((p, j) => (
+            <p
+              key={j}
+              className="mt-4 text-[16px] leading-relaxed whitespace-pre-line text-muted-foreground"
+            >
+              {p}
+            </p>
+          ))}
+        </div>
+        {sec.image && (
+          <figure className={`lg:sticky lg:top-28 ${photoLeft ? "lg:order-1" : ""}`}>
+            <ShapedImage
+              url={sec.image}
+              alt={sec.caption || sec.heading}
+              fallback="landscape"
+              className="rounded-lg border border-border shadow-sm"
+            />
+            {sec.caption && (
+              <figcaption className="mt-2 text-[13px] text-muted-foreground">
+                {sec.caption}
+              </figcaption>
+            )}
+          </figure>
+        )}
+      </Reveal>
+    );
+  };
+
   return (
     <>
       <section className="border-b border-border bg-paper-2 py-12 sm:py-14">
@@ -93,33 +110,37 @@ function Biography() {
         </section>
       )}
 
-      <section className="py-16">
-        <div className="wrap grid items-start gap-12 lg:grid-cols-2">
-          <div>
-            {first && textBlock(first, 0)}
-            {rest.map((sec, i) => textBlock(sec, i + 1))}
-            <figure className="mt-8">
-              <SmartImage
-                src={images.bioSecond}
-                alt={bio.photoCaption || bio.title}
-                ratio="aspect-[4/5] sm:aspect-[4/3]"
-                imgClassName="object-[center_12%]"
-                className="rounded-lg"
-              />
+      <section className="py-16 sm:py-20">
+        <div className="wrap">{bio.sections.map((sec, i) => row(sec, i))}</div>
+      </section>
+
+      <section className="border-t border-border bg-paper-2 py-16 sm:py-20">
+        <div className="wrap grid items-start gap-10 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-16">
+          <figure className="lg:sticky lg:top-28">
+            <SmartImage
+              src={images.bioSecond}
+              alt={bio.photoCaption || bio.title}
+              ratio="aspect-[4/5]"
+              imgClassName="object-[center_12%]"
+              className="rounded-lg"
+            />
+            {bio.photoCaption && (
               <figcaption className="mt-2 text-[13px] text-muted-foreground">
                 {bio.photoCaption}
               </figcaption>
-            </figure>
-          </div>
-
+            )}
+          </figure>
           <div>
-            <h2 className="mb-6 text-[16px] font-semibold">{bio.timelineHeading}</h2>
+            <Eyebrow>Career</Eyebrow>
+            <h2 className="mb-8 font-serif text-[26px] font-semibold text-primary-deep sm:text-[30px]">
+              {bio.timelineHeading}
+            </h2>
             <ol className="ml-1.5 border-l-2 border-border pl-8">
               {bio.timeline.map((t, i) => (
                 <li key={`${t.year}-${i}`} className="relative pb-8 last:pb-0">
                   <span
                     aria-hidden
-                    className={`absolute top-1 -left-[37px] size-2.5 rounded-full border-[3px] border-paper ${
+                    className={`absolute top-1 -left-[37px] size-2.5 rounded-full border-[3px] border-paper-2 ${
                       t.current ? "bg-accent" : "bg-primary"
                     }`}
                   />

@@ -10,6 +10,7 @@ import { applyLocalGovernmentTabs } from "@/content-updates/2026-11-24-local-gov
 import { applyPhotosAndCommitteeTabs } from "@/content-updates/2026-11-25-photos-and-committee-tabs";
 import { applyPoliticalOversightSkills } from "@/content-updates/2026-11-25-political-oversight-skills";
 import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
+import { applyCleanup } from "@/content-updates/2026-11-25-cleanup";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -198,6 +199,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This adds to the News, Skills, Infrastructure, Oversight and Biography pages without removing anything.",
     viewUrl: "/news#in-the-press",
     apply: (progress) => applyPressFceBook(progress),
+  },
+  {
+    id: "2026-11-25-cleanup",
+    title: "Clean-up: Political & Party Leadership tabs, achievement photos, campaign photos",
+    summary:
+      "Political & Party Leadership becomes one page with four tabs (Constituency Engagements, Campaigns & Mobilisation, Stakeholder Engagements, Oversight); the four separate pages and their menu links are removed, and the IGBALAYE radio section moves to Constituency Engagements. 18 APC campaign photos. Every achievement item gets a real photo. Infrastructure and Outreach are grouped into topic tabs. Sample content from the first build is taken down: placeholder endorsements and the empty sample news stories (kept as drafts).",
+    replaces:
+      "This deletes the four Political & Party Leadership sub-pages after moving their content into tabs, hides the sample endorsements and turns the empty sample news stories into drafts.",
+    viewUrl: "/political-leadership-and-party-engagement",
+    apply: (progress) => applyCleanup(progress),
   },
 ];
 

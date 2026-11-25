@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { siteUrl } from "@/lib/asset-url";
 import {
   AGENDA_2027,
-  ENDORSEMENTS,
   GALLERY,
   GALLERY_FILTERS,
   NEWS,
@@ -176,9 +175,12 @@ export async function getMediaLibrary(): Promise<{ items: MediaItem[]; tabs: str
   const present = new Set(items.map((i) => i.category));
   const tabs = [
     "All",
+    ...(present.has("In Office") ? ["In Office"] : []),
     ...TAB_ORDER.filter((t) => present.has(t)),
     ...[...present].filter((t) => !TAB_ORDER.includes(t) && !GALLERY_FILTERS.includes(t as never)),
-    ...GALLERY_FILTERS.filter((t) => t !== "All" && (present.has(t) || t === "Videos")),
+    ...GALLERY_FILTERS.filter(
+      (t) => t !== "All" && t !== "In Office" && (present.has(t) || t === "Videos"),
+    ),
   ];
   return { items, tabs };
 }
@@ -413,6 +415,11 @@ export function getRecord(): Promise<RecordData> {
 }
 
 // ---------------------------------------------------------------- endorsements & settings
+/** Sample entries from the first build ("[Party Leader Name]") are never shown. */
+export const isRealEndorsement = (e: { name: string; quote: string }) =>
+  Boolean(e.name.trim() && e.quote.trim()) &&
+  !/[[\]]|\b(party leader|community leader|constituent) name\b/i.test(e.name);
+
 export function getEndorsements(): Promise<EndorsementView[]> {
   return safe(
     "endorsements",
@@ -424,8 +431,9 @@ export function getEndorsements(): Promise<EndorsementView[]> {
           .eq("published", true)
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: true }),
-      ),
-    () => ENDORSEMENTS,
+      ).filter((e) => isRealEndorsement(e)),
+    // Never fall back to sample quotes: they would read as real people's words.
+    () => [],
   );
 }
 

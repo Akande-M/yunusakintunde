@@ -289,3 +289,12 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - **In the press** (Admin → News, bottom): paste an article link; the server reads its preview (headline, picture, description, date) like a social-media link preview (`src/lib/press.functions.ts`). Stored in `site_settings.press_links`. Shown on /news, 16 per page with "Page x of y" arrows; Read opens a reader on the site (YouTube links play there); the full article opens on the publisher's site in a new tab.
 - Biography parts can each have a photo and caption.
 - The Media page also shows Biography photos.
+
+## Update 20: clean-up after QA
+
+- Political & Party Leadership is one page with four tabs; the old sub-page links redirect to their tab (`MOVED` in `src/routes/$slug.tsx`).
+- Infrastructure and Outreach sections are grouped into topic tabs (the Tab field in the page editor).
+- Biography: each part shows its photo beside the text, alternating sides; timeline in its own band.
+- Endorsements with placeholder names ("[Party Leader Name]") are never shown, and the section hides when there are none. The sample news stories with no text are drafts.
+- Home: no "Campaign film coming soon" placeholder; the APC badge reads "APC, Oyo Central".
+- Media: "In Office" is the first tab after All.

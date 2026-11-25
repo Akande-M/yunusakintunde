@@ -5,7 +5,7 @@ import { useSiteImages } from "@/lib/use-settings";
  * candidate's name. "light" sits on paper/card surfaces, "dark" on deep green.
  */
 export function ApcBadge({
-  label = "APC Candidate, Oyo Central",
+  label = "APC, Oyo Central",
   size = "md",
   variant = "light",
   className = "",
