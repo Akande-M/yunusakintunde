@@ -6,6 +6,8 @@ import { useState, type FormEvent } from "react";
 import { useSiteSettings } from "@/lib/use-settings";
 import { signupSchema, submitSignup, type SignupInput } from "@/lib/signup.functions";
 import { PageHeader, btn } from "@/components/site/ui";
+import { getLgaContacts } from "@/lib/lga-contacts";
+import { LgaContactsSection } from "@/components/site/LgaContactsSection";
 
 export const Route = createFileRoute("/get-involved")({
   head: () => ({
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/get-involved")({
       },
     ],
   }),
+  loader: async () => ({ contacts: await getLgaContacts() }),
   component: GetInvolved,
 });
 
@@ -70,6 +73,7 @@ function GetInvolved() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const submit = useServerFn(submitSignup);
   const { contact } = useSiteSettings();
+  const { contacts } = Route.useLoaderData();
   const CONTACT = [
     { icon: "✉", label: "Email", value: contact.email },
     { icon: "☎", label: "Phone", value: contact.phone },
@@ -108,6 +112,8 @@ function GetInvolved() {
         title="Join the Akintunde 2027 campaign"
         lede="Volunteer, get campaign updates, support the re-election effort, or reach the constituency office directly."
       />
+
+      <LgaContactsSection data={contacts} />
 
       <section className="py-12 sm:py-14">
         <div className="wrap grid items-start gap-12 lg:grid-cols-2">

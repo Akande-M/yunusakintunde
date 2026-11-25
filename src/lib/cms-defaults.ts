@@ -34,6 +34,8 @@ export type HomeSettings = {
   quote: string;
   campaignVideoUrl: string;
   campaignVideoCaption: string;
+  /** Still image shown on the film before it plays. Empty = the film-cover photo. */
+  campaignVideoPoster?: string;
   heroSlides: HeroSlide[];
 };
 
@@ -350,6 +352,7 @@ export function mergeSettings(
     out.images[k] = siteUrl(out.images[k]);
   out.achievements.portrait = siteUrl(out.achievements.portrait);
   out.home.campaignVideoUrl = siteUrl(out.home.campaignVideoUrl);
+  out.home.campaignVideoPoster = siteUrl(out.home.campaignVideoPoster ?? "");
   if (out.home.heroSlides.length === 0) out.home.heroSlides = DEFAULT_SETTINGS.home.heroSlides;
   if (!Array.isArray(out.home.stats) || out.home.stats.length === 0)
     out.home.stats = DEFAULT_SETTINGS.home.stats;

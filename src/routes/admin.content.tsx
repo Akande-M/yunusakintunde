@@ -12,12 +12,14 @@ import {
   ImagesForm,
 } from "@/components/admin/content-forms";
 import { uploadMedia } from "@/components/admin/upload";
+import { LgaContactsEditor } from "@/components/admin/LgaContactsEditor";
 import {
   abtn,
   Card,
   Collection,
   errMsg,
   Field,
+  ImageField,
   inputCls,
   PageTitle,
   placeholderWarning,
@@ -37,6 +39,7 @@ const TABS = [
   ["images", "Images"],
   ["footer", "Footer"],
   ["contact", "Contact details"],
+  ["local", "Local contacts"],
   ["socials", "Social links"],
   ["endorsements", "Endorsements"],
 ] as const;
@@ -142,7 +145,7 @@ function ContentAdmin() {
     <>
       <PageTitle
         title="Site content"
-        sub="Header bar, homepage carousel and wording, site images and logos, footer, contact details, social links and endorsements."
+        sub="Header bar, homepage carousel and wording, site images and logos, footer, contact details, local government contacts, social links and endorsements."
       />
       <div
         role="tablist"
@@ -161,7 +164,9 @@ function ContentAdmin() {
         ))}
       </div>
 
-      {tab === "endorsements" ? (
+      {tab === "local" ? (
+        <LgaContactsEditor />
+      ) : tab === "endorsements" ? (
         <Collection
           table="endorsements"
           noun="endorsement"
@@ -396,7 +401,7 @@ function HomeForm({
         </Field>
         <Field
           label="Campaign film"
-          hint="Paste a YouTube link, or upload a short video (50 MB max). Leave empty to keep the “coming soon” placeholder."
+          hint="Paste a YouTube link, or upload a video file (over 50 MB it is made smaller automatically first; keep the tab open). Leave empty to show the cover photo."
           warn={videoOk ? null : "This isn't a YouTube link or a video file."}
         >
           <div className="flex gap-2">
@@ -427,6 +432,16 @@ function HomeForm({
             className={inputCls}
             value={home.campaignVideoCaption}
             onChange={(e) => set("campaignVideoCaption", e.target.value)}
+          />
+        </Field>
+        <Field
+          label="Film cover (shown before it plays)"
+          hint="Optional. Leave empty to use the film-cover photo from Site photos."
+        >
+          <ImageField
+            value={home.campaignVideoPoster ?? ""}
+            onChange={(url) => set("campaignVideoPoster", url)}
+            folder="site"
           />
         </Field>
       </Card>

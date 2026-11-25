@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { getAchievements, getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
 import { AchievementsSection } from "@/components/site/Achievements";
 import { useSiteSettings } from "@/lib/use-settings";
@@ -8,6 +9,8 @@ import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/si
 import { Reveal } from "@/components/site/Reveal";
 
 import { ApcBadge } from "@/components/site/ApcBadge";
+import { getPressLinks, type PressLink } from "@/lib/press";
+import { PressCard, PressReader, sortPress } from "@/components/site/PressCoverage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,12 +30,14 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const [news, endorsements, achievements] = await Promise.all([
+    const [news, endorsements, achievements, press] = await Promise.all([
       getNewsList(9),
       getEndorsements(),
       getAchievements(),
+      getPressLinks().catch(() => []),
     ]);
-    return { news, endorsements, achievements };
+    // The four newest stories from "In the press" join the news carousel.
+    return { news, endorsements, achievements, press: sortPress(press).slice(0, 4) };
   },
   component: Home,
 });
@@ -55,8 +60,17 @@ const VALUE_PROPS = [
   },
 ];
 
-function CampaignVideo({ url, caption }: { url: string; caption: string }) {
+function CampaignVideo({
+  url,
+  caption,
+  poster,
+}: {
+  url: string;
+  caption: string;
+  poster?: string | undefined;
+}) {
   const yt = youtubeId(url);
+  const [failed, setFailed] = useState(false);
   return (
     <figure className="overflow-hidden rounded-lg border border-on-dark-line bg-primary/25">
       <div className="relative aspect-video bg-black">
@@ -69,8 +83,40 @@ function CampaignVideo({ url, caption }: { url: string; caption: string }) {
             loading="lazy"
             className="absolute inset-0 size-full"
           />
+        ) : failed ? (
+          <div className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-on-dark-muted">
+            {poster && (
+              <img
+                src={poster}
+                alt=""
+                className="absolute inset-0 size-full object-cover opacity-40"
+              />
+            )}
+            <span className="relative">
+              The film couldn't load right now.{" "}
+              <a
+                href={url}
+                className="font-semibold text-on-dark underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open it directly
+              </a>
+            </span>
+          </div>
         ) : (
-          <video src={url} controls preload="metadata" className="absolute inset-0 size-full" />
+          <video
+            src={url}
+            poster={poster || undefined}
+            controls
+            playsInline
+            preload="metadata"
+            controlsList="nodownload"
+            onError={() => setFailed(true)}
+            className="absolute inset-0 size-full bg-black object-contain"
+          >
+            <track kind="captions" />
+          </video>
         )}
       </div>
       {caption && (
@@ -83,7 +129,8 @@ function CampaignVideo({ url, caption }: { url: string; caption: string }) {
 }
 
 function Home() {
-  const { news, endorsements, achievements } = Route.useLoaderData();
+  const { news, endorsements, achievements, press } = Route.useLoaderData();
+  const [reading, setReading] = useState<PressLink | null>(null);
   const { home, images } = useSiteSettings();
   const headlineStat = home.stats[0];
 
@@ -165,6 +212,39 @@ function Home() {
         </div>
       </section>
 
+      <section className="bg-primary-deep py-15 text-on-dark">
+        <div className="wrap grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
+          <Reveal>
+            <blockquote className="max-w-[46ch] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
+              “{home.quote}”
+            </blockquote>
+            <div className="mt-5 text-sm font-semibold text-on-dark-muted">
+              Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District
+            </div>
+            <ApcBadge variant="dark" className="mt-5" />
+          </Reveal>
+
+          <Reveal delay={120}>
+            {home.campaignVideoUrl ? (
+              <CampaignVideo
+                url={home.campaignVideoUrl}
+                caption={home.campaignVideoCaption}
+                poster={home.campaignVideoPoster || images.filmCover}
+              />
+            ) : (
+              <figure className="overflow-hidden rounded-lg border border-on-dark-line">
+                <img
+                  src={images.filmCover}
+                  alt="Senator Akintunde in Oyo Central"
+                  loading="lazy"
+                  className="aspect-video size-full object-cover object-[center_25%]"
+                />
+              </figure>
+            )}
+          </Reveal>
+        </div>
+      </section>
+
       <AchievementsSection cards={achievements} />
 
       <section className="py-16 sm:py-19">
@@ -214,39 +294,17 @@ function Home() {
                   <NewsCard {...n} />
                 </div>
               ))}
+              {press.map((p) => (
+                <div key={p.url} className="flex h-full">
+                  <PressCard it={p} onOpen={setReading} />
+                </div>
+              ))}
             </AutoCarousel>
           </Reveal>
         </div>
       </section>
 
-      <section className="bg-primary-deep py-15 text-on-dark">
-        <div className="wrap grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
-          <Reveal>
-            <blockquote className="max-w-[46ch] font-serif text-[21px] leading-[1.4] italic sm:text-[26px]">
-              “{home.quote}”
-            </blockquote>
-            <div className="mt-5 text-sm font-semibold text-on-dark-muted">
-              Senator Yunus Abiodun Akintunde, PhD, Oyo Central Senatorial District
-            </div>
-            <ApcBadge variant="dark" className="mt-5" />
-          </Reveal>
-
-          <Reveal delay={120}>
-            {home.campaignVideoUrl ? (
-              <CampaignVideo url={home.campaignVideoUrl} caption={home.campaignVideoCaption} />
-            ) : (
-              <figure className="overflow-hidden rounded-lg border border-on-dark-line">
-                <img
-                  src={images.filmCover}
-                  alt="Senator Akintunde in Oyo Central"
-                  loading="lazy"
-                  className="aspect-video size-full object-cover object-[center_25%]"
-                />
-              </figure>
-            )}
-          </Reveal>
-        </div>
-      </section>
+      <PressReader open={reading} onClose={() => setReading(null)} />
 
       {endorsements.length > 0 && (
         <section className="py-16 sm:py-19">

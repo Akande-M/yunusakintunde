@@ -1,5 +1,7 @@
+import { toast } from "sonner";
 import { db, MEDIA_BUCKET } from "@/lib/db";
 
+/** Videos above this are made smaller automatically before upload. */
 export const MAX_VIDEO_MB = 50;
 const MAX_IMAGE_EDGE = 2000;
 const WEB_SAFE = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
@@ -116,6 +118,111 @@ function safeName(name: string) {
   );
 }
 
+/** The storage limit per file (50 MB); videos above it are made smaller first. */
+const STORAGE_LIMIT = 50 * 1024 * 1024;
+
+/**
+ * Makes a large video small enough to upload, in the browser: it plays the video once (at
+ * normal speed, silently) and records it again at up to 720p and a bitrate that fits the
+ * limit. Works in Chrome, Edge, Firefox and recent Safari. The tab must stay open and visible.
+ */
+export async function shrinkVideo(
+  file: File,
+  maxBytes: number,
+  onProgress: (pct: number) => void,
+): Promise<{ blob: Blob; type: string; ext: string }> {
+  if (typeof MediaRecorder === "undefined" || !HTMLCanvasElement.prototype.captureStream)
+    throw new Error(
+      "This browser can't make videos smaller. Use Chrome or Edge on a computer, or upload the video to YouTube and paste the link.",
+    );
+  const types = [
+    "video/mp4;codecs=avc1.42E01F,mp4a.40.2",
+    "video/mp4;codecs=avc1,mp4a.40.2",
+    "video/mp4",
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm",
+  ];
+  const mimeType = types.find((t) => MediaRecorder.isTypeSupported(t));
+  if (!mimeType) throw new Error("This browser can't record video. Use Chrome or Edge.");
+
+  const src = URL.createObjectURL(file);
+  const video = document.createElement("video");
+  video.src = src;
+  video.playsInline = true;
+  video.preload = "auto";
+  try {
+    await new Promise<void>((ok, fail) => {
+      video.onloadedmetadata = () => ok();
+      video.onerror = () => fail(new Error("That video file couldn't be opened."));
+    });
+    const duration = video.duration;
+    if (!Number.isFinite(duration) || duration <= 0)
+      throw new Error("That video file couldn't be read.");
+    const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight));
+    const w = Math.max(2, Math.round((video.videoWidth * scale) / 2) * 2);
+    const h = Math.max(2, Math.round((video.videoHeight * scale) / 2) * 2);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    const stream = canvas.captureStream(30);
+
+    // Sound: routed into the recording only, so nothing plays out loud.
+    const audio = new AudioContext();
+    const source = audio.createMediaElementSource(video);
+    const dest = audio.createMediaStreamDestination();
+    source.connect(dest);
+    for (const t of dest.stream.getAudioTracks()) stream.addTrack(t);
+
+    const audioBps = 96_000;
+    const videoBps = Math.min(
+      4_000_000,
+      Math.max(250_000, Math.floor((maxBytes * 0.88 * 8) / duration - audioBps)),
+    );
+    const rec = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: videoBps,
+      audioBitsPerSecond: audioBps,
+    });
+    const chunks: Blob[] = [];
+    rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    const stopped = new Promise<void>((ok) => (rec.onstop = () => ok()));
+
+    let drawing = true;
+    const draw = () => {
+      if (!drawing) return;
+      ctx.drawImage(video, 0, 0, w, h);
+      onProgress(Math.min(99, Math.round((video.currentTime / duration) * 100)));
+      requestAnimationFrame(draw);
+    };
+    await audio.resume();
+    rec.start(1000);
+    await video.play();
+    draw();
+    await new Promise<void>((ok, fail) => {
+      video.onended = () => ok();
+      video.onerror = () =>
+        fail(new Error("The video stopped playing while it was being made smaller."));
+    });
+    drawing = false;
+    rec.stop();
+    await stopped;
+    void audio.close();
+    const type = mimeType.split(";")[0]!;
+    const blob = new Blob(chunks, { type });
+    if (blob.size > maxBytes)
+      throw new Error(
+        "Even made smaller, that video is too big. Upload it to YouTube and paste the link instead.",
+      );
+    onProgress(100);
+    return { blob, type, ext: type === "video/mp4" ? "mp4" : "webm" };
+  } finally {
+    URL.revokeObjectURL(src);
+    video.removeAttribute("src");
+  }
+}
+
 export async function uploadMedia(
   file: File,
   folder: "news" | "gallery" | "projects" | "site" | "pages",
@@ -123,19 +230,31 @@ export async function uploadMedia(
   const isVideo = file.type.startsWith("video/");
   const isImage = file.type.startsWith("image/") || isHeic(file);
   if (!isVideo && !isImage) throw new Error("Only photos and videos can be uploaded.");
-  if (isVideo && file.size > MAX_VIDEO_MB * 1024 * 1024) {
-    throw new Error(
-      `That video is ${(file.size / 1024 / 1024).toFixed(0)} MB. The limit is ${MAX_VIDEO_MB} MB. Upload long videos to YouTube and paste the link instead.`,
-    );
-  }
-
-  const prepared = isImage
-    ? await prepareImage(file)
-    : {
-        blob: file as Blob,
-        type: file.type,
-        ext: (file.name.split(".").pop() ?? "mp4").toLowerCase(),
-      };
+  let prepared: { blob: Blob; type: string; ext: string };
+  if (isImage) prepared = await prepareImage(file);
+  else if (file.size > STORAGE_LIMIT - 2 * 1024 * 1024) {
+    // Too big for storage as it is: make it smaller first, showing progress.
+    const id = toast.loading("Making the video smaller so it can upload… 0%", {
+      description: "Keep this tab open and on screen. It takes as long as the video lasts.",
+    });
+    try {
+      prepared = await shrinkVideo(file, STORAGE_LIMIT - 3 * 1024 * 1024, (pct) =>
+        toast.loading(`Making the video smaller so it can upload… ${pct}%`, {
+          id,
+          description: "Keep this tab open and on screen. It takes as long as the video lasts.",
+        }),
+      );
+      toast.dismiss(id);
+    } catch (e) {
+      toast.dismiss(id);
+      throw e;
+    }
+  } else
+    prepared = {
+      blob: file as Blob,
+      type: file.type,
+      ext: (file.name.split(".").pop() ?? "mp4").toLowerCase(),
+    };
 
   const now = new Date();
   const path = `${folder}/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${crypto

@@ -11,6 +11,7 @@ import { applyPhotosAndCommitteeTabs } from "@/content-updates/2026-11-25-photos
 import { applyPoliticalOversightSkills } from "@/content-updates/2026-11-25-political-oversight-skills";
 import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
 import { applyCleanup } from "@/content-updates/2026-11-25-cleanup";
+import { applyFilmContacts } from "@/content-updates/2026-11-25-film-contacts";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -209,6 +210,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This deletes the four Political & Party Leadership sub-pages after moving their content into tabs, hides the sample endorsements and turns the empty sample news stories into drafts.",
     viewUrl: "/political-leadership-and-party-engagement",
     apply: (progress) => applyCleanup(progress),
+  },
+  {
+    id: "2026-11-25-film-contacts",
+    title: "Campaign jingle on the homepage, local government contacts, one more job beneficiary",
+    summary:
+      "The campaign jingle plays in the homepage “Quote & campaign film” band (now just above Major achievements). The Contact Us list of CRC, LOs and SAs for every local government is saved so you can edit it under Header, footer & home → Local contacts. Elegbede Bolaji Niyi (Nigeria Revenue Service) joins Job Beneficiaries.",
+    replaces:
+      "This replaces the homepage campaign film link and caption, if one was set. Nothing else is removed.",
+    viewUrl: "/",
+    apply: (progress) => applyFilmContacts(progress),
   },
 ];
 

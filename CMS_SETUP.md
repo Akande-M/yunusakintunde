@@ -298,3 +298,11 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - Endorsements with placeholder names ("[Party Leader Name]") are never shown, and the section hides when there are none. The sample news stories with no text are drafts.
 - Home: no "Campaign film coming soon" placeholder; the APC badge reads "APC, Oyo Central".
 - Media: "In Office" is the first tab after All.
+
+## Update 21: campaign jingle, local contacts, large videos
+
+- Home: the "Quote & campaign film" band sits just above Major achievements. The film plays from `public/site-videos/campaign-jingle.mp4` (re-encoded to 720p, 10 MB, so it streams on phones) with a cover still; the cover can be changed under Header, footer & home → Homepage → Film cover.
+- Home → News & updates also shows the four newest "In the press" stories; Read opens the same reader as the News page.
+- "In the press" cards whose website gave no picture show a photo of the Senator (`SENATOR_PHOTOS` in `PressCoverage.tsx`) with the outlet's name on it.
+- Get Involved: "Contact Us" with a tab per local government (CRC first, then LOs, then SAs; phone numbers call when tapped). Edit under Header, footer & home → Local contacts (stored in `site_settings.lga_contacts`). Link to one tab with `/get-involved#contact-oyo-east`.
+- Video uploads over 50 MB are made smaller in the browser before upload (720p, bitrate chosen to fit). It runs in real time, so the tab must stay open; very long videos lose quality, so YouTube is still best for anything over about 10 minutes. True "unlimited" uploads need the storage bucket's 50 MB limit raised in the database.

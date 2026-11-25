@@ -251,7 +251,7 @@ function MediaAdmin() {
     <>
       <PageTitle
         title="Media gallery"
-        sub={`Photos and videos on the Media page. New items appear first. Videos: paste a YouTube link (best for anything long), or upload a short clip up to ${MAX_VIDEO_MB} MB.`}
+        sub={`Photos and videos on the Media page. New items appear first. Videos: paste a YouTube link (best for anything long), or upload a video file of any length (over ${MAX_VIDEO_MB} MB it is made smaller automatically first; keep the tab open while that runs).`}
       />
       <PageHeadingCard page="media" label="Media Gallery" />
       <div className="mb-5 flex flex-col gap-3 rounded-sm border border-border bg-card p-4 sm:flex-row sm:items-end">
