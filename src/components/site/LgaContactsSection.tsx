@@ -76,15 +76,6 @@ export function LgaContactsSection({ data }: { data: LgaContacts }) {
                       }`}
                     >
                       {l}
-                      {n > 0 && (
-                        <span
-                          className={`grid min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-bold ${
-                            on ? "bg-accent text-primary-deep" : "bg-primary-tint text-primary"
-                          }`}
-                        >
-                          {n}
-                        </span>
-                      )}
                     </button>
                   );
                 })}
