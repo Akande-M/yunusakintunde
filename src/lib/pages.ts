@@ -51,7 +51,6 @@ type SectionBody =
   | { type: "legislative"; heading: string; intro: string } // Admin → Achievements → Senate cards
   | { type: "topic"; heading: string; intro: string; topic: Topic } // Admin → Achievements, filtered
   | { type: "areas"; heading: string; intro: string } // local government content from AREA_PAGES
-  | { type: "finder"; heading: string; intro: string } // search AREA_PAGES by local government and category
   | { type: "subpages"; heading: string; intro: string }; // one tab per page linked under this page in the menu
 
 /**
@@ -91,7 +90,6 @@ export const SECTION_LABELS: Record<PageSection["type"], string> = {
   legislative: "Bills & motions (from Achievements → Legislative Duties)",
   topic: "Local government tabs (adds matching Achievements)",
   areas: "Local government tabs from Outreach, Infrastructure & Skills pages",
-  finder: "Project finder (filter by local government and category)",
   subpages: "Tabs of the pages under this page in the menu",
 };
 
@@ -126,8 +124,6 @@ export function blankSection(type: PageSection["type"]): PageSection {
       return { type, heading: "Projects by local government", intro: "" };
     case "subpages":
       return { type, heading: "", intro: "" };
-    case "finder":
-      return { type, heading: "Find a project", intro: "" };
     default:
       return { type, heading: "", intro: "" } as PageSection;
   }

@@ -12,12 +12,6 @@ export const signupSchema = z.object({
     .regex(/^[0-9+()\-\s]+$/, "Enter a valid phone number"),
   lgaWard: z.string().trim().min(2, "Tell us your LGA or ward").max(120),
   intent: z.enum([
-    "Constituency enquiry",
-    "Project or community development request",
-    "Legislative or policy submission",
-    "Invitation or official correspondence",
-    "Media enquiry",
-    "General feedback",
     "Get campaign & newsletter updates",
     "Volunteer",
     "Report a constituency issue",

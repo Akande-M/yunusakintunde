@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getMediaLibrary, youtubeId, type MediaItem } from "@/lib/cms";
 import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
@@ -66,11 +66,6 @@ function Media() {
   const heading = useSiteSettings().page_headers.media;
   const { items: gallery, tabs } = Route.useLoaderData();
   const [filter, setFilter] = useState("All");
-  // /media?tab=Videos opens a tab directly (used by the News & Media page).
-  useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get("tab");
-    if (t && (t === "Videos" || tabs.includes(t))) setFilter(t);
-  }, [tabs]);
   const [open, setOpen] = useState<MediaItem | null>(null);
   const items = gallery.filter(
     (g) => filter === "All" || g.category === filter || (filter === "Videos" && isPlayable(g)),

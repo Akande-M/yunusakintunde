@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  topicOf,
   canonicalUrl,
   getPressLinks,
   savePressLinks,
@@ -11,7 +10,6 @@ import {
   type PressLink,
 } from "@/lib/press";
 import { fetchLinkPreview } from "@/lib/press.functions";
-import { NEWS_TOPICS } from "@/lib/cms-defaults";
 import { abtn, Card, errMsg, inputCls } from "./kit";
 
 /** Fills a link's title, picture, description and date from the news website, keeping what's typed. */
@@ -162,19 +160,6 @@ export function PressLinksEditor() {
                   onChange={(e) => patch(i, { date: e.target.value })}
                 />
               </div>
-              <select
-                className={inputCls}
-                aria-label="Category"
-                value={it.topic || ""}
-                onChange={(e) => patch(i, { topic: e.target.value })}
-              >
-                <option value="">Category: worked out from the headline ({topicOf(it)})</option>
-                {NEWS_TOPICS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
               <textarea
                 className={inputCls}
                 rows={2}

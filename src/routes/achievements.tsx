@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { LGAS, matchLga, ZONES } from "@/lib/lgas";
 import { getAchievements, getRecord } from "@/lib/cms";
 import { ShapedImage } from "@/components/site/ShapedImage";
+import { PromiseTracker } from "@/components/site/PromiseTracker";
 import type { AchievementCard } from "@/lib/achievements-data";
 import { useSiteSettings } from "@/lib/use-settings";
 import { btn, Chip, PageHeader } from "@/components/site/ui";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/achievements")({
       {
         name: "description",
         content:
-          "The development record of Senator Dr Yunus Abiodun Akintunde across Oyo Central: education, healthcare, water, streetlighting, roads and human capital, local government by local government.",
+          "Every project Senator Dr Yunus Abiodun Akintunde has delivered across Oyo Central, local government by local government, plus his sponsored bills and motions, every 2023 promise tracked and the 2027 agenda.",
       },
       {
         property: "og:title",
@@ -25,7 +26,8 @@ export const Route = createFileRoute("/achievements")({
     ],
   }),
   loader: async () => {
-    return { cards: await getAchievements() };
+    const [cards, record] = await Promise.all([getAchievements(), getRecord()]);
+    return { cards, record };
   },
   component: AchievementsPage,
 });
@@ -49,7 +51,7 @@ function sumOf(cards: AchievementCard[], re: RegExp) {
 }
 
 function AchievementsPage() {
-  const { cards } = Route.useLoaderData();
+  const { cards, record } = Route.useLoaderData();
   const { achievements: page } = useSiteSettings();
   // Local governments in zone order (Ibadan, Oyo, Ogbomoso), then the Senate card.
   const ordered = useMemo(() => {
@@ -69,63 +71,31 @@ function AchievementsPage() {
     return !isSenate(c) && matchLga(c.title) === filter.slice(4);
   });
 
+  const lgaCards = cards.filter((c) => !isSenate(c));
+  const stats = [
+    { n: lgaCards.length, l: "Local governments" },
+    { n: lgaCards.reduce((a, c) => a + c.items.length, 0), l: "Projects & programmes" },
+    { n: sumOf(lgaCards, /(\d[\d,]*)\s+solar[- ]powered streetlights/i), l: "Solar streetlights" },
+    { n: sumOf(lgaCards, /(\d[\d,]*)\s+patients/i), l: "Patients treated at outreaches" },
+  ].filter((s) => s.n > 0);
+
   return (
     <>
-      <PageHeader
-        eyebrow="Achievements and development record"
-        title={page.pageTitle}
-        lede={page.pageIntro}
-      />
+      <PageHeader eyebrow="Achievements" title={page.pageTitle} lede={page.pageIntro} />
 
       <section className="border-b border-border bg-card py-8">
         <div className="wrap">
           <dl className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-            {page.stats.map((s) => (
+            {stats.map((s) => (
               <div key={s.l}>
                 <dt className="sr-only">{s.l}</dt>
                 <dd className="font-serif text-[34px] leading-none font-semibold text-primary-deep">
-                  {s.n}
+                  {s.n.toLocaleString("en-NG")}
                 </dd>
                 <div className="mt-1.5 text-[13px] font-semibold text-muted-foreground">{s.l}</div>
               </div>
             ))}
           </dl>
-        </div>
-      </section>
-
-      <section className="border-b border-border py-12 sm:py-14">
-        <div className="wrap">
-          <h2 className="font-serif text-[28px] font-semibold text-primary-deep sm:text-[32px]">
-            {page.overviewHeading}
-          </h2>
-          {page.overview && (
-            <p className="mt-3 max-w-[75ch] text-[16px] text-muted-foreground">{page.overview}</p>
-          )}
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {page.record.map((g, i) => (
-              <Reveal key={g.heading} delay={Math.min(i, 5) * 60}>
-                <div className="h-full rounded-lg border border-border bg-card p-6">
-                  <h3 className="border-b-2 border-accent pb-2 font-sans text-[17px] font-bold text-primary-deep">
-                    {g.heading}
-                  </h3>
-                  <ul className="mt-4 space-y-2.5">
-                    {g.items.map((t) => (
-                      <li key={t} className="flex items-start gap-2.5 text-[14.5px]">
-                        <span
-                          aria-hidden
-                          className="mt-2 size-1.5 shrink-0 rounded-full bg-accent"
-                        />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <h2 className="mt-14 font-serif text-[26px] font-semibold text-primary-deep sm:text-[30px]">
-            Achievements in each local government
-          </h2>
         </div>
       </section>
 
@@ -268,6 +238,8 @@ function AchievementsPage() {
           </div>
         </div>
       </section>
+
+      <PromiseTracker kept={record.kept} agenda={record.agenda} />
 
       <section className="bg-primary-deep py-14 text-on-dark">
         <div className="wrap flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">

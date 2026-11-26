@@ -13,7 +13,8 @@ import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
 import { applyCleanup } from "@/content-updates/2026-11-25-cleanup";
 import { applyFilmContacts } from "@/content-updates/2026-11-25-film-contacts";
 import { applyNationalLeaders } from "@/content-updates/2026-11-25-national-leaders";
-import { applyMasterContent } from "@/content-updates/2026-11-26-master-content";
+import { applyRestoreUpdate22 } from "@/content-updates/2026-11-26-restore-update-22";
+import { applyMasterFacts } from "@/content-updates/2026-11-26-master-facts";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -233,14 +234,24 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
     apply: (progress) => applyNationalLeaders(progress),
   },
   {
-    id: "2026-11-26-master-content",
-    title: "Website master content: every page brought in line with the office's document",
+    id: "2026-11-26-restore-update-22",
+    title: "Undo the master-content update: put the site back as it was after Update 22",
     summary:
-      "Applies the office's master content and developer notes across the site: the homepage (introduction, key areas of focus, constituency at a glance, legislative and project updates), the biography, achievements, awards and recognition, bills and motions (7 bills), committees and oversight, the constituency project pages (education, healthcare, roads, water, streetlights, markets, skills, agriculture, employment and community development) with Completed / Ongoing / Awarded labels and a project finder by local government and category, political leadership, news categories, the footer and the menu. Adds the nine Oyo State 2026 APC Presidential Rally photos to Campaigns & Mobilisation and to the 2027 campaign gallery.",
+      "Restores the homepage, biography, footer, the eight project, legislative and political pages, the achievement cards, the menu and the media gallery exactly as they were before the master-content update was applied.",
     replaces:
-      "This replaces the text and lists on those pages and the homepage, biography and footer wording. Photo galleries and photos are kept. The Oversight tab moves from Political Leadership to Committees & Oversight, and the IGBALAYE radio programme moves to News & Media.",
+      "This removes everything the master-content update changed, including the nine Oyo State 2026 APC Presidential Rally photos.",
     viewUrl: "/",
-    apply: (progress) => applyMasterContent(progress),
+    apply: (progress) => applyRestoreUpdate22(progress),
+  },
+  {
+    id: "2026-11-26-master-facts",
+    title: "The office's facts, in the current page layout",
+    summary:
+      "Corrects figures and wording to match the office's master content without changing any page layout: 9,000+ streetlights with 4,200 more under way, 89 of 120 boreholes delivered, 3,680 optical outreach beneficiaries, 74 job placements, 7 bills (SB.497 and the new SB.1017), motion dates, roads and drainage, community development, awards, committee names, the Senator's full name and third-person wording. Adds the nine Oyo State 2026 APC Presidential Rally photos to Campaigns & Mobilisation and the 2027 campaign gallery.",
+    replaces:
+      "This rewrites specific lines on the homepage, biography, footer, project, legislative, recognition and political pages, the achievement cards and the promise tracker. Photos and layout are unchanged.",
+    viewUrl: "/",
+    apply: (progress) => applyMasterFacts(progress),
   },
 ];
 

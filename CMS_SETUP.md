@@ -311,13 +311,8 @@ No database step. Upload, deploy, then open the CMS dashboard.
 
 - Political Leadership & Party Engagement → Stakeholder Engagements tab ends with a "With National Leaders" gallery (7 photos in `public/site-images/stakeholders/`). Captions are editable in Pages.
 
-## Update 23: office master content and developer notes
+## Update 24: rollback of Update 23, then the office's facts in the existing layout
 
-- Every page follows the office's master content ("SYA website update"): homepage, biography, achievements and development record, awards and recognition, bills and motions, committees and oversight, constituency projects A–J, political leadership, news and media, contact and footer.
-- Status labels: in any page list, start an item with `[Completed]`, `[Ongoing]`, `[Awarded]` or `[Planned]` to show a badge. Items without one show no status (awaiting confirmation). Never mark an awarded or ongoing project as completed.
-- Project finder: the "Project finder" section (Constituency Projects page) filters every local-government section on the Infrastructure, Healthcare & Community and Skills pages by local government, category (from the section heading) and status. Link to one LGA with `#find-oyo-east`.
-- Homepage: new editable blocks under Header, footer & home → Homepage (about band, key areas of focus, legislative and project updates, constituency at a glance, closing call to action).
-- Achievements: figures, overview and the development record by sector are edited under Achievements → Page text.
-- News & Media: categories (from the master content) on the News page; press stories get a category in News → In the press (or one is worked out from the headline). Press releases, gallery and IGBALAYE radio sections follow.
-- Contact form subjects include constituency enquiries, project requests, legislative submissions, invitations, media enquiries and feedback.
-- The promise tracker was removed from the Achievements page (its figures were not in the office's record).
+- All code is back to Update 22. Start here → "Undo the master-content update" restores the content as it was after Update 22 (from a snapshot taken just before Update 23).
+- Then "The office's facts, in the current page layout" corrects figures and wording in place (streetlights, boreholes, optical outreach, jobs, bills SB.497 and SB.1017, motions, roads, community development, awards, committee names, the Senator's full name, third-person wording) and adds the Oyo State 2026 APC Presidential Rally photos. No layout changes.
+- Three files from Update 23 are empty placeholders and can be deleted on GitHub: src/components/site/ProjectFinder.tsx, src/components/site/ProjectStatus.tsx, src/content-updates/2026-11-26-master-content.ts.

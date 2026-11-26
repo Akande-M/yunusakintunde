@@ -33,12 +33,6 @@ type Signup = {
 };
 
 const INTENTS = [
-  "Constituency enquiry",
-  "Project or community development request",
-  "Legislative or policy submission",
-  "Invitation or official correspondence",
-  "Media enquiry",
-  "General feedback",
   "Get campaign & newsletter updates",
   "Volunteer",
   "Report a constituency issue",

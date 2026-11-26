@@ -519,11 +519,9 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
             ? "The bills and motions are edited in Achievements → the “Legislative Duties” (Senate) card."
             : s.type === "subpages"
               ? "Shows one tab for each page linked under this page in the top menu, with that page's content. Edit those pages and this updates too."
-              : s.type === "finder"
-                ? "Shows a search of every section tagged with a local government on the Outreach, Infrastructure and Skills pages, filtered by local government and by category (the category comes from the section heading, e.g. Education, Roads & Drainage, Water Supply). Status labels come from the list items: start an item with [Completed], [Ongoing], [Awarded] or [Planned]."
-                : s.type === "areas"
-                  ? "Shows tabs for the 11 local governments, filled with every section tagged with a local government on the Outreach, Infrastructure and Skills pages. Edit those pages and this updates too."
-                  : "Shows tabs for the 11 local governments. Each tab holds this page's sections tagged with that local government, plus matching items from Achievements.";
+              : s.type === "areas"
+                ? "Shows tabs for the 11 local governments, filled with every section tagged with a local government on the Outreach, Infrastructure and Skills pages. Edit those pages and this updates too."
+                : "Shows tabs for the 11 local governments. Each tab holds this page's sections tagged with that local government, plus matching items from Achievements.";
       return (
         <>
           <p className="mb-4 rounded-sm bg-primary-tint px-3 py-2 text-[13px] text-primary">
@@ -910,15 +908,12 @@ function PageEditor() {
                     {isOpen && (
                       <div className="mt-4 border-t border-border pt-4">
                         <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                          {s.type !== "topic" &&
-                            s.type !== "areas" &&
-                            s.type !== "subpages" &&
-                            s.type !== "finder" && (
-                              <LgaSelect
-                                value={s.lga ?? ""}
-                                onChange={(lga) => setSection(i, { ...s, lga })}
-                              />
-                            )}
+                          {s.type !== "topic" && s.type !== "areas" && s.type !== "subpages" && (
+                            <LgaSelect
+                              value={s.lga ?? ""}
+                              onChange={(lga) => setSection(i, { ...s, lga })}
+                            />
+                          )}
                           <label className="flex items-center gap-2 text-[12.5px] font-semibold text-muted-foreground">
                             Tab
                             <input
@@ -954,12 +949,7 @@ function PageEditor() {
                 className={abtn.outline}
                 onClick={() => {
                   const lga =
-                    filter !== "*" &&
-                    adding !== "topic" &&
-                    adding !== "areas" &&
-                    adding !== "finder"
-                      ? filter
-                      : "";
+                    filter !== "*" && adding !== "topic" && adding !== "areas" ? filter : "";
                   setOpen(new Set([page.sections.length]));
                   set("sections", [...page.sections, { ...blankSection(adding), lga }]);
                 }}

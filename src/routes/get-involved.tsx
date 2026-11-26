@@ -12,7 +12,7 @@ import { LgaContactsSection } from "@/components/site/LgaContactsSection";
 export const Route = createFileRoute("/get-involved")({
   head: () => ({
     meta: [
-      { title: "Contact and Get Involved | Senator Dr Yunus Abiodun Akintunde, Oyo Central" },
+      { title: "Get Involved: Join the Akintunde 2027 campaign | Oyo Central" },
       {
         name: "description",
         content:
@@ -29,21 +29,12 @@ export const Route = createFileRoute("/get-involved")({
   component: GetInvolved,
 });
 
-const CHANNELS = [
-  "Constituency enquiries",
-  "Project and community development requests",
-  "Legislative and policy submissions",
-  "Invitations and official correspondence",
-  "Media enquiries",
-  "General feedback",
-];
-
 const EMPTY: SignupInput = {
   fullName: "",
   email: "",
   phone: "",
   lgaWard: "",
-  intent: "Constituency enquiry",
+  intent: "Get campaign & newsletter updates",
   message: "",
   consent: false as unknown as true,
 };
@@ -117,48 +108,10 @@ function GetInvolved() {
   return (
     <>
       <PageHeader
-        eyebrow="Contact and constituency engagement"
-        title="Get in touch"
-        lede="Senator Akintunde’s office welcomes communication from constituents, community leaders, organisations, professional groups and members of the public."
+        eyebrow="Get involved"
+        title="Join the Akintunde 2027 campaign"
+        lede="Volunteer, get campaign updates, support the re-election effort, or reach the constituency office directly."
       />
-
-      <section className="border-b border-border py-10 sm:py-12">
-        <div className="wrap grid gap-8 lg:grid-cols-[1fr_1fr]">
-          <div>
-            <h2 className="font-serif text-[24px] font-semibold text-primary-deep">
-              Constituency engagement
-            </h2>
-            <p className="mt-3 text-[15.5px] text-muted-foreground">
-              Senator Akintunde’s constituency liaison structure provides a channel for communities
-              across the 11 local government areas to communicate their needs and development
-              priorities.
-            </p>
-            <p className="mt-3 text-[15.5px] text-muted-foreground">
-              Constituents are encouraged to engage through the appropriate official channels so
-              that concerns, proposals and feedback can be directed to the relevant office.
-            </p>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h2 className="font-sans text-[13px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
-              Contact the office about
-            </h2>
-            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-              {CHANNELS.map((c) => (
-                <li key={c} className="flex items-start gap-2.5 text-[14.5px] font-semibold">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-accent" />
-                  {c}
-                </li>
-              ))}
-            </ul>
-            <a
-              href="#signup"
-              className="mt-4 inline-block text-[14px] font-bold text-primary underline underline-offset-4"
-            >
-              Send a message
-            </a>
-          </div>
-        </div>
-      </section>
 
       <LgaContactsSection data={contacts} />
 
@@ -197,7 +150,7 @@ function GetInvolved() {
           </div>
 
           <div id="signup" className="border border-border bg-card p-6 sm:p-8">
-            <h2 className="mb-5 text-[19px] font-semibold">Send a message or sign up</h2>
+            <h2 className="mb-5 text-[19px] font-semibold">Sign up to get involved</h2>
 
             {mutation.isSuccess ? (
               <div
@@ -265,28 +218,18 @@ function GetInvolved() {
                   />
                 </Field>
 
-                <Field label="Subject" htmlFor="intent" error={errors["intent"]}>
+                <Field label="I'd like to…" htmlFor="intent" error={errors["intent"]}>
                   <select
                     id="intent"
                     className={inputCls}
                     value={values.intent}
                     onChange={(e) => set("intent", e.target.value as SignupInput["intent"])}
                   >
-                    <optgroup label="Contact the office">
-                      <option>Constituency enquiry</option>
-                      <option>Project or community development request</option>
-                      <option>Legislative or policy submission</option>
-                      <option>Invitation or official correspondence</option>
-                      <option>Media enquiry</option>
-                      <option>General feedback</option>
-                    </optgroup>
-                    <optgroup label="Get involved">
-                      <option>Get campaign &amp; newsletter updates</option>
-                      <option>Volunteer</option>
-                      <option>Report a constituency issue</option>
-                      <option>Host a town hall in my ward</option>
-                      <option>Share project testimonial</option>
-                    </optgroup>
+                    <option>Get campaign &amp; newsletter updates</option>
+                    <option>Volunteer</option>
+                    <option>Report a constituency issue</option>
+                    <option>Host a town hall in my ward</option>
+                    <option>Share project testimonial</option>
                   </select>
                 </Field>
 

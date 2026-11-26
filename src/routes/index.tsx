@@ -4,9 +4,7 @@ import { getAchievements, getEndorsements, getNewsList, youtubeId } from "@/lib/
 import { AchievementsSection } from "@/components/site/Achievements";
 import { useSiteSettings } from "@/lib/use-settings";
 import { AutoCarousel } from "@/components/site/AutoCarousel";
-import { ArrowRight, Check, Play } from "lucide-react";
-import { ZONES, lgaSlug } from "@/lib/lgas";
-import { asStatus, StatusBadge } from "@/components/site/ProjectStatus";
+import { Play } from "lucide-react";
 import { NewsCard, SectionHead, Eyebrow, btn, SmartImage } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
 
@@ -17,17 +15,17 @@ import { PressCard, PressReader, sortPress } from "@/components/site/PressCovera
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Senator Dr Yunus Abiodun Akintunde | Oyo Central Senatorial District" },
+      { title: "Senator Dr Yunus Abiodun Akintunde | Oyo Central Re-Election 2027" },
       {
         name: "description",
         content:
-          "Senator Dr Yunus Abiodun Akintunde represents Oyo Central Senatorial District in the 10th Senate: legislative work, constituency projects and development across 11 local government areas.",
+          "Senator Dr Yunus Abiodun Akintunde represents Oyo Central in the 10th Senate: 7 bills, more than 9,000 solar streetlights, 89 solar-powered boreholes and projects across 11 local governments.",
       },
       { property: "og:title", content: "Senator Dr Yunus Abiodun Akintunde | Oyo Central" },
       {
         property: "og:description",
         content:
-          "Representation that reaches the people: the legislative and constituency record of Senator Akintunde across Oyo Central.",
+          "The record of a sitting Senator for Oyo Central, and the case for a second term in 2027.",
       },
     ],
   }),
@@ -43,6 +41,24 @@ export const Route = createFileRoute("/")({
   },
   component: Home,
 });
+
+const VALUE_PROPS = [
+  {
+    tag: "Delivered",
+    title: "A record you can check, ward by ward",
+    body: "More than 9,000 solar streetlights, 89 solar-powered boreholes, classrooms, roads and healthcare across the Ibadan, Oyo and Ogbomoso zones.",
+  },
+  {
+    tag: "Active",
+    title: "A voice in the Senate for Oyo Central",
+    body: "7 bills sponsored and supported, Pioneer Chairman of the Senate Committee on South West Development Commission, and Deputy Chairman of the Senate Committee on Police Affairs.",
+  },
+  {
+    tag: "Ahead",
+    title: "A clear plan for term two",
+    body: "The 2027 Agenda builds directly on what is already working. See exactly what comes next for the district.",
+  },
+];
 
 function CampaignVideo({
   url,
@@ -196,43 +212,6 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-19">
-        <div className="wrap grid gap-12 lg:grid-cols-[1.1fr_.9fr]">
-          <Reveal>
-            <Eyebrow>About Senator Akintunde</Eyebrow>
-            <h2 className="font-serif text-[28px] leading-tight font-semibold text-primary-deep sm:text-[34px]">
-              {home.tagline}
-            </h2>
-            {home.intro
-              .split(/\n\s*\n/)
-              .filter(Boolean)
-              .map((p, i) => (
-                <p key={i} className="mt-4 text-[16.5px] leading-relaxed text-muted-foreground">
-                  {p}
-                </p>
-              ))}
-            <Link to="/biography" className={`${btn.outline} mt-7`}>
-              Read the biography
-            </Link>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="rounded-lg border border-border bg-card p-6 sm:p-7">
-              <h3 className="font-sans text-[13px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
-                {home.focusHeading}
-              </h3>
-              <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                {home.focusAreas.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-[15px] font-semibold">
-                    <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-primary" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       <section className="bg-primary-deep py-15 text-on-dark">
         <div className="wrap grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <Reveal>
@@ -268,105 +247,25 @@ function Home() {
 
       <AchievementsSection cards={achievements} />
 
-      <section className="border-y border-border bg-paper-2 py-16 sm:py-19">
+      <section className="py-16 sm:py-19">
         <div className="wrap">
           <SectionHead
-            eyebrow="What is happening now"
-            title="Legislative activities and project updates"
+            eyebrow="The case for a second term"
+            title="Why Oyo Central should re-elect Akintunde"
           />
-          <div className="grid gap-6 lg:grid-cols-2">
-            {(
-              [
-                {
-                  title: "In the Senate",
-                  items: home.legislativeUpdates,
-                  to: "/$slug",
-                  slug: "bills-and-motions",
-                  more: "All bills and motions",
-                },
-                {
-                  title: "Constituency projects",
-                  items: home.projectUpdates,
-                  to: "/$slug",
-                  slug: "constituency-interventions-and-development-projects",
-                  more: "Find a project in your local government",
-                },
-              ] as const
-            ).map((col, ci) => (
-              <Reveal key={col.title} delay={ci * 100}>
-                <div className="flex h-full flex-col rounded-lg border border-border bg-card p-6 sm:p-7">
-                  <h3 className="font-serif text-[22px] font-semibold text-primary-deep">
-                    {col.title}
-                  </h3>
-                  <ul className="mt-4 divide-y divide-border">
-                    {col.items.map((u, i) => {
-                      const st = asStatus(u.status);
-                      return (
-                        <li key={i} className="py-3.5">
-                          {st && <StatusBadge status={st} className="mb-1.5" />}
-                          <div className="text-[15.5px] font-bold text-foreground">{u.title}</div>
-                          {u.text && (
-                            <p className="mt-0.5 text-[14px] text-muted-foreground">{u.text}</p>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <Link
-                    to={col.to}
-                    params={{ slug: col.slug }}
-                    className="mt-auto inline-flex items-center gap-1.5 self-start pt-4 text-[14px] font-bold text-primary hover:underline"
-                  >
-                    {col.more} <ArrowRight className="size-4" />
-                  </Link>
-                </div>
+          <div className="hairline-grid grid sm:grid-cols-3">
+            {VALUE_PROPS.map((v, i) => (
+              <Reveal
+                key={v.title}
+                delay={i * 90}
+                className="bg-card px-6 py-7 transition-all duration-300 hover:-translate-y-1 hover:bg-primary-tint/40 hover:shadow-[0_14px_30px_rgba(18,52,36,.09)]"
+              >
+                <span className="text-xs font-bold text-accent-deep">{v.tag}</span>
+                <h3 className="mt-2 text-[19px] leading-snug font-semibold">{v.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{v.body}</p>
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="py-16 sm:py-19">
-        <div className="wrap grid items-start gap-10 lg:grid-cols-[.9fr_1.1fr]">
-          <Reveal>
-            <Eyebrow>{home.glanceHeading}</Eyebrow>
-            <h2 className="font-serif text-[28px] leading-tight font-semibold text-primary-deep sm:text-[34px]">
-              {home.featuredTitle}
-            </h2>
-            <p className="mt-4 text-[16.5px] leading-relaxed text-muted-foreground">
-              {home.featuredBody}
-            </p>
-            <p className="mt-4 text-[15px] font-semibold text-foreground">{home.glanceIntro}</p>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {ZONES.map((z) => (
-                <div key={z.zone} className="rounded-lg border border-border bg-card p-5">
-                  <div className="text-[11.5px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
-                    {z.zone} zone
-                  </div>
-                  <ul className="mt-3 space-y-2">
-                    {z.lgas.map((l) => (
-                      <li key={l}>
-                        <Link
-                          to="/$slug"
-                          params={{ slug: "constituency-interventions-and-development-projects" }}
-                          hash={`find-${lgaSlug(l)}`}
-                          className="group flex items-center justify-between gap-2 text-[15px] font-semibold text-foreground hover:text-primary"
-                        >
-                          {l}
-                          <ArrowRight
-                            aria-hidden
-                            className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
-                          />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -441,9 +340,11 @@ function Home() {
 
       <section className="border-t border-border bg-paper-2 py-16">
         <div className="wrap text-center">
-          <h2 className="text-[24px] font-semibold sm:text-[28px]">{home.ctaTitle}</h2>
+          <h2 className="text-[24px] font-semibold sm:text-[28px]">
+            Help Senator Akintunde continue the good work.
+          </h2>
           <p className="mx-auto mt-3 mb-7 max-w-[58ch] text-[17px] text-muted-foreground">
-            {home.ctaBody}
+            Volunteer your time, join a ward team, or simply stay in the loop as we head into 2027.
           </p>
           <Link to="/get-involved" className={`${btn.gold} px-7 text-[15px]`}>
             Stand With Senator Akintunde

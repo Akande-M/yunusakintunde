@@ -31,7 +31,7 @@ export const SITE = {
   tagline:
     "Official website of Senator Dr Yunus Abiodun Akintunde, Oyo Central Senatorial District",
   email: "office@yunusakintunde.com",
-  phone: "",
+  phone: "+234 (0) 800 000 0000",
   office: "Oyo town, Oyo West LGA, Oyo State",
   party: "All Progressives Congress (APC)",
   partyShort: "APC",
@@ -63,12 +63,12 @@ export const PROMISES_KEPT: Commitment[] = [
   },
   {
     title: "Sponsoring of beneficial bills",
-    detail: "6 bills sponsored or co-sponsored to date.",
+    detail: "7 bills sponsored and supported to date.",
     status: "delivered",
   },
   {
     title: "Facilitation of impactful projects across Oyo Central",
-    detail: "38 community projects delivered across Ibadan, Oyo and Ogbomoso zones.",
+    detail: "Projects in education, healthcare, roads, water, streetlighting, markets and empowerment across all 11 local governments.",
     status: "delivered",
   },
   {
@@ -118,7 +118,7 @@ export const AGENDA_2027: Commitment[] = [
   },
   {
     title: "Expand solar-powered infrastructure to 20 additional communities",
-    detail: "Building on 38 delivered projects with a measurable term-two target.",
+    detail: "Building on more than 9,000 solar streetlights and 89 solar-powered boreholes delivered in term one.",
     status: "upcoming",
     statusLabel: "2027 pledge",
   },
