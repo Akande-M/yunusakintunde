@@ -6,7 +6,7 @@ import type { MenuNode } from "@/lib/pages";
 export const Route = createFileRoute("/sitemap")({
   head: () => ({
     meta: [
-      { title: "Sitemap | Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
+      { title: "Sitemap | Senator Dr Yunus Abiodun Akintunde, Oyo Central" },
       {
         name: "description",
         content:

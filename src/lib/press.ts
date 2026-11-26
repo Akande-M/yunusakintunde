@@ -9,7 +9,42 @@ export type PressLink = {
   date: string;
   image: string;
   summary: string;
+  /** One of the News & Media categories; empty = worked out from the headline. */
+  topic?: string;
 };
+
+/** Best guess of a story's category from its headline, used when none is set. */
+const TOPIC_RULES: [string, RegExp][] = [
+  [
+    "Press Releases and Official Statements",
+    /statement|press release|condol|congratulat|felicitat|commends|urged|condemn/i,
+  ],
+  [
+    "Legislative Bills and Motions",
+    /\bbill\b|motion|legislat|public hearing|upgrade|budget|passes/i,
+  ],
+  ["Employment Facilitation", /\bjobs?\b|employ|recruit|placement/i],
+  [
+    "Education and Healthcare",
+    /school|educat|student|utme|health|medical|hospital|optical|universit|college/i,
+  ],
+  ["Youth and Women Empowerment", /empower|youth|women|skill|training|laptop|grant|farmers?/i],
+  [
+    "Constituency Projects",
+    /project|road|borehole|streetlight|classroom|commission|market|transformer|days in office|years in office/i,
+  ],
+  ["Senate Activities", /senate|plenary|committee|chamber|security/i],
+  [
+    "Political and Party Engagements",
+    /\bapc\b|party|rally|campaign|election|2027|rivals|politic|analyst|consolidation|cap fits|clarion|agility|leadership|governance|master planner|good listener|doing more/i,
+  ],
+  ["Official Visits and Meetings", /visit|meet|courtesy|receives|hosts|delegation/i],
+];
+
+export function topicOf(it: Pick<PressLink, "title" | "topic">): string {
+  if (it.topic) return it.topic;
+  return TOPIC_RULES.find(([, re]) => re.test(it.title))?.[0] ?? "Official Visits and Meetings";
+}
 
 export const PRESS_KEY = "press_links";
 
@@ -97,6 +132,7 @@ export function normalizePress(v: unknown): PressLink[] {
       date: String(x.date ?? ""),
       image: String(x.image ?? ""),
       summary: String(x.summary ?? ""),
+      topic: String(x.topic ?? ""),
     }));
 }
 

@@ -10,7 +10,7 @@ import { btn, PageHeader } from "@/components/site/ui";
 const STATIC_CARD = "/support-card.jpg";
 const TITLE = "I Support Senator Akintunde for 2027";
 const SHARE_TEXT =
-  "I SUPPORT Senator Yunus Abiodun Akintunde, PhD for 2027! Four years of delivery for Oyo Central. Show your support too:";
+  "I SUPPORT Senator Dr Yunus Abiodun Akintunde for 2027! Four years of delivery for Oyo Central. Show your support too:";
 
 export const Route = createFileRoute("/support")({
   loader: () => getOrigin(),
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/support")({
         {
           name: "description",
           content:
-            "Show your support for Senator Yunus Abiodun Akintunde, PhD. Share the card on WhatsApp, Facebook and X.",
+            "Show your support for Senator Dr Yunus Abiodun Akintunde. Share the card on WhatsApp, Facebook and X.",
         },
         { property: "og:title", content: TITLE },
         {
@@ -142,7 +142,7 @@ function Support() {
             <div className="relative overflow-hidden rounded-lg border border-border bg-primary-deep shadow-[0_24px_60px_-24px_rgba(18,52,36,.45)]">
               <img
                 src={preview}
-                alt="I SUPPORT SENATOR AKINTUNDE FOR 2027. Senator Yunus Abiodun Akintunde, PhD, Senator for Oyo Central Senatorial District, All Progressives Congress."
+                alt="I SUPPORT SENATOR AKINTUNDE FOR 2027. Senator Dr Yunus Abiodun Akintunde, Senator for Oyo Central Senatorial District, All Progressives Congress."
                 width={1080}
                 height={1350}
                 className="block aspect-[4/5] w-full object-cover"

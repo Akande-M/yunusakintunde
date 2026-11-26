@@ -152,6 +152,63 @@ function PageSettings() {
               folder="site"
             />
           </Field>
+          <Field
+            label="Figures at the top of the page"
+            hint="One per line: the number, then a | and the label. E.g. 89 | Solar-powered boreholes delivered"
+          >
+            <textarea
+              className={inputCls}
+              rows={4}
+              defaultValue={value.stats.map((x) => `${x.n} | ${x.l}`).join("\n")}
+              onBlur={(e) =>
+                set(
+                  "stats",
+                  e.target.value
+                    .split("\n")
+                    .map((l) => l.split("|").map((x) => x.trim()))
+                    .filter(([n, l]) => n && l)
+                    .map(([n, l]) => ({ n: n!, l: l! })),
+                )
+              }
+            />
+          </Field>
+          <Field label="Overview heading">
+            <input
+              className={inputCls}
+              value={value.overviewHeading}
+              onChange={(e) => set("overviewHeading", e.target.value)}
+            />
+          </Field>
+          <Field label="Overview text">
+            <textarea
+              className={inputCls}
+              rows={3}
+              value={value.overview}
+              onChange={(e) => set("overview", e.target.value)}
+            />
+          </Field>
+          <Field
+            label="Development record by sector"
+            hint="A line starting with # is a sector heading; the lines under it are its points."
+          >
+            <textarea
+              className={inputCls}
+              rows={14}
+              defaultValue={value.record
+                .map((g) => [`# ${g.heading}`, ...g.items].join("\n"))
+                .join("\n\n")}
+              onBlur={(e) => {
+                const out: { heading: string; items: string[] }[] = [];
+                for (const raw of e.target.value.split("\n")) {
+                  const l = raw.trim();
+                  if (!l) continue;
+                  if (l.startsWith("#")) out.push({ heading: l.replace(/^#+\s*/, ""), items: [] });
+                  else if (out.length) out[out.length - 1]!.items.push(l.replace(/^[-*•]\s*/, ""));
+                }
+                set("record", out);
+              }}
+            />
+          </Field>
         </div>
         <div>
           <span className="mb-1.5 block text-[13px] font-bold">Preview</span>

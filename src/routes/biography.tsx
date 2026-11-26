@@ -9,13 +9,13 @@ import { ShapedImage } from "@/components/site/ShapedImage";
 export const Route = createFileRoute("/biography")({
   head: () => ({
     meta: [
-      { title: "Biography | Senator Yunus Abiodun Akintunde, PhD, Oyo Central" },
+      { title: "Biography | Senator Dr Yunus Abiodun Akintunde, Oyo Central" },
       {
         name: "description",
         content:
-          "From Pakoyi, Oyo town to the 10th National Assembly: the education, business and public-service record of Senator Yunus Abiodun Akintunde, PhD.",
+          "From Pakoyi, Oyo town to the 10th National Assembly: the education, business and public-service record of Senator Dr Yunus Abiodun Akintunde.",
       },
-      { property: "og:title", content: "Biography | Senator Yunus Abiodun Akintunde, PhD" },
+      { property: "og:title", content: "Biography | Senator Dr Yunus Abiodun Akintunde" },
       {
         property: "og:description",
         content:

@@ -4,7 +4,13 @@ import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { youtubeId } from "@/lib/cms";
-import { IMAGE_SLOTS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
+import {
+  IMAGE_SLOTS,
+  mergeSettings,
+  PROJECT_STATUSES,
+  type SiteSettings,
+  type UpdateItem,
+} from "@/lib/cms-defaults";
 import {
   FooterForm,
   HeaderForm,
@@ -445,7 +451,180 @@ function HomeForm({
           />
         </Field>
       </Card>
+      <Card>
+        <h2 className="mb-3 text-[15px] font-bold">About band (under the photos)</h2>
+        <Field label="Headline" hint="E.g. Do More. Delivering representation through action.">
+          <input
+            className={inputCls}
+            value={home.tagline}
+            onChange={(e) => set("tagline", e.target.value)}
+          />
+        </Field>
+        <Field label="Introduction" hint="Leave a blank line between paragraphs.">
+          <textarea
+            className={inputCls}
+            rows={8}
+            value={home.intro}
+            onChange={(e) => set("intro", e.target.value)}
+          />
+        </Field>
+        <Field label="Focus list heading">
+          <input
+            className={inputCls}
+            value={home.focusHeading}
+            onChange={(e) => set("focusHeading", e.target.value)}
+          />
+        </Field>
+        <Field label="Key areas of focus" hint="One per line.">
+          <textarea
+            className={inputCls}
+            rows={10}
+            value={home.focusAreas.join("\n")}
+            onChange={(e) => set("focusAreas", e.target.value.split("\n"))}
+            onBlur={(e) =>
+              set(
+                "focusAreas",
+                e.target.value
+                  .split("\n")
+                  .map((x) => x.trim())
+                  .filter(Boolean),
+              )
+            }
+          />
+        </Field>
+      </Card>
+      <UpdatesEditor
+        title="In the Senate (current legislative activities)"
+        items={home.legislativeUpdates}
+        onChange={(v) => set("legislativeUpdates", v)}
+      />
+      <UpdatesEditor
+        title="Constituency project updates"
+        items={home.projectUpdates}
+        onChange={(v) => set("projectUpdates", v)}
+      />
+      <Card>
+        <h2 className="mb-3 text-[15px] font-bold">Constituency at a glance</h2>
+        <Field label="Small heading">
+          <input
+            className={inputCls}
+            value={home.glanceHeading}
+            onChange={(e) => set("glanceHeading", e.target.value)}
+          />
+        </Field>
+        <Field label="Featured message">
+          <input
+            className={inputCls}
+            value={home.featuredTitle}
+            onChange={(e) => set("featuredTitle", e.target.value)}
+          />
+        </Field>
+        <Field label="Featured message text">
+          <textarea
+            className={inputCls}
+            rows={3}
+            value={home.featuredBody}
+            onChange={(e) => set("featuredBody", e.target.value)}
+          />
+        </Field>
+        <Field label="Constituency line">
+          <input
+            className={inputCls}
+            value={home.glanceIntro}
+            onChange={(e) => set("glanceIntro", e.target.value)}
+          />
+        </Field>
+      </Card>
+      <Card>
+        <h2 className="mb-3 text-[15px] font-bold">Closing call to action</h2>
+        <Field label="Heading">
+          <input
+            className={inputCls}
+            value={home.ctaTitle}
+            onChange={(e) => set("ctaTitle", e.target.value)}
+          />
+        </Field>
+        <Field label="Text">
+          <textarea
+            className={inputCls}
+            rows={2}
+            value={home.ctaBody}
+            onChange={(e) => set("ctaBody", e.target.value)}
+          />
+        </Field>
+      </Card>
       {footer}
     </div>
+  );
+}
+
+/** Rows of "status · title · detail" for the homepage update lists. */
+function UpdatesEditor({
+  title,
+  items,
+  onChange,
+}: {
+  title: string;
+  items: UpdateItem[];
+  onChange: (v: UpdateItem[]) => void;
+}) {
+  const patch = (i: number, p: Partial<UpdateItem>) =>
+    onChange(items.map((x, j) => (j === i ? { ...x, ...p } : x)));
+  return (
+    <Card>
+      <h2 className="mb-1 text-[15px] font-bold">{title}</h2>
+      <p className="mb-3 text-[13px] text-muted-foreground">
+        Shown on the homepage under “Legislative activities and project updates”. Use a status only
+        when the office has confirmed it; never mark an awarded or ongoing project as completed.
+      </p>
+      <ul className="space-y-3">
+        {items.map((u, i) => (
+          <li key={i} className="rounded-sm border border-border p-3">
+            <div className="grid gap-2 sm:grid-cols-[150px_1fr_auto]">
+              <select
+                className={inputCls}
+                aria-label="Status"
+                value={u.status}
+                onChange={(e) => patch(i, { status: e.target.value })}
+              >
+                <option value="">No status</option>
+                {PROJECT_STATUSES.map((st) => (
+                  <option key={st}>{st}</option>
+                ))}
+              </select>
+              <input
+                className={`${inputCls} font-semibold`}
+                aria-label="Title"
+                placeholder="Title"
+                value={u.title}
+                onChange={(e) => patch(i, { title: e.target.value })}
+              />
+              <button
+                type="button"
+                className={abtn.icon}
+                aria-label={`Remove ${u.title || "this line"}`}
+                onClick={() => onChange(items.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="size-4" />
+              </button>
+            </div>
+            <input
+              className={`${inputCls} mt-2`}
+              aria-label="Detail"
+              placeholder="One line of detail (optional)"
+              value={u.text}
+              onChange={(e) => patch(i, { text: e.target.value })}
+            />
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        className={`${abtn.outline} mt-3`}
+        onClick={() => onChange([...items, { status: "", title: "", text: "" }])}
+      >
+        <Plus className="size-4" /> Add a line
+      </button>
+    </Card>
   );
 }

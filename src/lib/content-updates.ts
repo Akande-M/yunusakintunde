@@ -13,6 +13,7 @@ import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
 import { applyCleanup } from "@/content-updates/2026-11-25-cleanup";
 import { applyFilmContacts } from "@/content-updates/2026-11-25-film-contacts";
 import { applyNationalLeaders } from "@/content-updates/2026-11-25-national-leaders";
+import { applyMasterContent } from "@/content-updates/2026-11-26-master-content";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -230,6 +231,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
     replaces: "Nothing is replaced or removed.",
     viewUrl: "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
     apply: (progress) => applyNationalLeaders(progress),
+  },
+  {
+    id: "2026-11-26-master-content",
+    title: "Website master content: every page brought in line with the office's document",
+    summary:
+      "Applies the office's master content and developer notes across the site: the homepage (introduction, key areas of focus, constituency at a glance, legislative and project updates), the biography, achievements, awards and recognition, bills and motions (7 bills), committees and oversight, the constituency project pages (education, healthcare, roads, water, streetlights, markets, skills, agriculture, employment and community development) with Completed / Ongoing / Awarded labels and a project finder by local government and category, political leadership, news categories, the footer and the menu. Adds the nine Oyo State 2026 APC Presidential Rally photos to Campaigns & Mobilisation and to the 2027 campaign gallery.",
+    replaces:
+      "This replaces the text and lists on those pages and the homepage, biography and footer wording. Photo galleries and photos are kept. The Oversight tab moves from Political Leadership to Committees & Oversight, and the IGBALAYE radio programme moves to News & Media.",
+    viewUrl: "/",
+    apply: (progress) => applyMasterContent(progress),
   },
 ];
 

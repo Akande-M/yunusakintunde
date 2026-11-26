@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getMediaLibrary, youtubeId, type MediaItem } from "@/lib/cms";
 import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, PageHeader, SmartImage } from "@/components/site/ui";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/media")({
         content:
           "Photographs from the Senate chamber, delivered constituency projects, town halls and the 2027 campaign trail, plus an archived 2023 set.",
       },
-      { property: "og:title", content: "Media | Senator Yunus Abiodun Akintunde, PhD" },
+      { property: "og:title", content: "Media | Senator Dr Yunus Abiodun Akintunde" },
       {
         property: "og:description",
         content: "Senate proceedings, delivered projects and the road to 2027 in pictures.",
@@ -66,6 +66,11 @@ function Media() {
   const heading = useSiteSettings().page_headers.media;
   const { items: gallery, tabs } = Route.useLoaderData();
   const [filter, setFilter] = useState("All");
+  // /media?tab=Videos opens a tab directly (used by the News & Media page).
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t && (t === "Videos" || tabs.includes(t))) setFilter(t);
+  }, [tabs]);
   const [open, setOpen] = useState<MediaItem | null>(null);
   const items = gallery.filter(
     (g) => filter === "All" || g.category === filter || (filter === "Videos" && isPlayable(g)),

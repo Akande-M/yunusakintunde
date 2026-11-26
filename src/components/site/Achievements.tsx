@@ -135,7 +135,7 @@ export function LetsDoMore({
       >
         <img
           src={portrait}
-          alt="Senator Yunus Abiodun Akintunde, PhD"
+          alt="Senator Dr Yunus Abiodun Akintunde"
           className="size-full object-cover object-[50%_18%]"
           loading="lazy"
         />

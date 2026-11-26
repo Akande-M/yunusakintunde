@@ -142,7 +142,7 @@ const pdf = createClientOnlyFn(
     doc.setFontSize(10);
     doc.setTextColor(90, 100, 95);
     doc.text(
-      `Senator Yunus Abiodun Akintunde, PhD · Akintunde 2027 · ${body.length} contacts · exported ${format(new Date(), "d MMM yyyy, HH:mm")}`,
+      `Senator Dr Yunus Abiodun Akintunde · Akintunde 2027 · ${body.length} contacts · exported ${format(new Date(), "d MMM yyyy, HH:mm")}`,
       40,
       62,
     );

@@ -310,3 +310,14 @@ No database step. Upload, deploy, then open the CMS dashboard.
 ## Update 22: photos with national leaders
 
 - Political Leadership & Party Engagement → Stakeholder Engagements tab ends with a "With National Leaders" gallery (7 photos in `public/site-images/stakeholders/`). Captions are editable in Pages.
+
+## Update 23: office master content and developer notes
+
+- Every page follows the office's master content ("SYA website update"): homepage, biography, achievements and development record, awards and recognition, bills and motions, committees and oversight, constituency projects A–J, political leadership, news and media, contact and footer.
+- Status labels: in any page list, start an item with `[Completed]`, `[Ongoing]`, `[Awarded]` or `[Planned]` to show a badge. Items without one show no status (awaiting confirmation). Never mark an awarded or ongoing project as completed.
+- Project finder: the "Project finder" section (Constituency Projects page) filters every local-government section on the Infrastructure, Healthcare & Community and Skills pages by local government, category (from the section heading) and status. Link to one LGA with `#find-oyo-east`.
+- Homepage: new editable blocks under Header, footer & home → Homepage (about band, key areas of focus, legislative and project updates, constituency at a glance, closing call to action).
+- Achievements: figures, overview and the development record by sector are edited under Achievements → Page text.
+- News & Media: categories (from the master content) on the News page; press stories get a category in News → In the press (or one is worked out from the headline). Press releases, gallery and IGBALAYE radio sections follow.
+- Contact form subjects include constituency enquiries, project requests, legislative submissions, invitations, media enquiries and feedback.
+- The promise tracker was removed from the Achievements page (its figures were not in the office's record).

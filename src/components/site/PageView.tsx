@@ -1,3 +1,5 @@
+import { ProjectFinder } from "./ProjectFinder";
+import { parseStatus, StatusBadge, StatusLegend } from "./ProjectStatus";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AchievementCard } from "@/lib/achievements-data";
@@ -29,7 +31,8 @@ export type PageData = {
 export const needsProjects = (p: SitePage) => p.sections.some((s) => s.type === "projects");
 export const needsAchievements = (p: SitePage) =>
   p.sections.some((s) => s.type === "legislative" || s.type === "topic");
-export const needsAreas = (p: SitePage) => p.sections.some((s) => s.type === "areas");
+export const needsAreas = (p: SitePage) =>
+  p.sections.some((s) => s.type === "areas" || s.type === "finder");
 export const needsSubpages = (p: SitePage) => p.sections.some((s) => s.type === "subpages");
 /** Sections shown inside the local-government tabs rather than down the page. */
 const inTabs = (s: PageSection) =>
@@ -76,22 +79,26 @@ function AchievementTile({ text, image, n }: { text: string; image: string; n?: 
 }
 
 /** "Title: description" shows the title in bold with the description under it. */
-function ListText({ text, plain = false }: { text: string; plain?: boolean }) {
+function ListText({ text: raw, plain = false }: { text: string; plain?: boolean }) {
+  const { status, rest: text } = parseStatus(raw);
+  const badge = status ? <StatusBadge status={status} className="mb-1.5" /> : null;
   const at = text.indexOf(": ");
   if (at < 3)
     return (
-      <span
-        className={
-          plain
-            ? "text-[15px] text-foreground"
-            : "pt-1.5 text-[15.5px] font-semibold text-foreground"
-        }
-      >
-        {text}
+      <span className={plain ? "" : "pt-1.5"}>
+        {badge && <span className="block">{badge}</span>}
+        <span
+          className={
+            plain ? "text-[15px] text-foreground" : "text-[15.5px] font-semibold text-foreground"
+          }
+        >
+          {text}
+        </span>
       </span>
     );
   return (
     <span className="pt-1">
+      {badge && <span className="block">{badge}</span>}
       <span className="block text-[15.5px] font-bold text-foreground">{text.slice(0, at)}</span>
       <span className="mt-1 block text-[14.5px] text-muted-foreground">{text.slice(at + 2)}</span>
     </span>
@@ -361,6 +368,8 @@ function Section({
         </section>
       );
     }
+    case "finder":
+      return <ProjectFinder areas={data.areas ?? []} heading={s.heading} intro={s.intro} />;
     // Topic and areas sections are shown as the local-government tabs (see LgaTabs).
     default:
       return null;
@@ -760,6 +769,9 @@ function LgaTabs({ page, data }: { page: SitePage; data: PageData }) {
 export function PageView({ page, data }: { page: SitePage; data: PageData }) {
   const tabsAt = page.sections.findIndex(inTabs);
   const namedAt = page.sections.findIndex((s) => Boolean(s.tab));
+  const usesStatus = page.sections.some(
+    (s) => (s.type === "list" && s.items.some((t) => parseStatus(t).status)) || s.type === "finder",
+  );
   let n = 0;
   return (
     <>
@@ -777,6 +789,7 @@ export function PageView({ page, data }: { page: SitePage; data: PageData }) {
                 {page.intro}
               </p>
             )}
+            {usesStatus && <StatusLegend className="mt-5" />}
           </div>
           {page.heroImage && (
             <ShapedImage

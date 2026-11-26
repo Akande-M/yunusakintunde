@@ -2,10 +2,14 @@ import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-route
 
 /** Pages that were merged into tabs of another page: old links open the right tab. */
 const MOVED: Record<string, string> = {
-  "constituency-engagements": "/political-leadership-and-party-engagement#tab-constituency-engagements",
-  "campaigns-and-mobilisation": "/political-leadership-and-party-engagement#tab-campaigns-mobilisation",
-  "stakeholder-engagements": "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
-  "oversight-and-institutional-engagement": "/political-leadership-and-party-engagement#tab-oversight",
+  "constituency-engagements":
+    "/political-leadership-and-party-engagement#tab-constituency-engagements",
+  "campaigns-and-mobilisation":
+    "/political-leadership-and-party-engagement#tab-campaigns-mobilisation",
+  "stakeholder-engagements":
+    "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
+  "oversight-and-institutional-engagement":
+    "/political-leadership-and-party-engagement#tab-oversight",
 };
 import { getAchievements, getRecord } from "@/lib/cms";
 import { getAreaSections, getComingSoon, getPage, getSubpages } from "@/lib/pages";
@@ -52,7 +56,7 @@ export const Route = createFileRoute("/$slug")({
     if (loaderData.kind === "soon")
       return {
         meta: [
-          { title: `${loaderData.label} | Senator Yunus Abiodun Akintunde, PhD` },
+          { title: `${loaderData.label} | Senator Dr Yunus Abiodun Akintunde` },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -60,7 +64,7 @@ export const Route = createFileRoute("/$slug")({
     const description = p.seoDescription || p.intro.slice(0, 160);
     return {
       meta: [
-        { title: `${p.title} | Senator Yunus Abiodun Akintunde, PhD` },
+        { title: `${p.title} | Senator Dr Yunus Abiodun Akintunde` },
         { name: "description", content: description },
         { property: "og:title", content: `${p.title} | Senator Akintunde` },
         { property: "og:description", content: description },
