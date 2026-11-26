@@ -12,6 +12,7 @@ import { applyPoliticalOversightSkills } from "@/content-updates/2026-11-25-poli
 import { applyPressFceBook } from "@/content-updates/2026-11-25-press-fce-book";
 import { applyCleanup } from "@/content-updates/2026-11-25-cleanup";
 import { applyFilmContacts } from "@/content-updates/2026-11-25-film-contacts";
+import { applyNationalLeaders } from "@/content-updates/2026-11-25-national-leaders";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -220,6 +221,15 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This replaces the homepage campaign film link and caption, if one was set. Nothing else is removed.",
     viewUrl: "/",
     apply: (progress) => applyFilmContacts(progress),
+  },
+  {
+    id: "2026-11-25-national-leaders",
+    title: "Photos with national leaders on Stakeholder Engagements",
+    summary:
+      "Seven photos of the Senator with late President Buhari, President Tinubu, First Lady Senator Oluremi Tinubu and Senator Aliyu Wamakko are added as a “With National Leaders” gallery at the end of the Stakeholder Engagements tab. They also appear in the Media gallery.",
+    replaces: "Nothing is replaced or removed.",
+    viewUrl: "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
+    apply: (progress) => applyNationalLeaders(progress),
   },
 ];
 

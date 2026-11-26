@@ -306,3 +306,7 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - "In the press" cards whose website gave no picture show a photo of the Senator (`SENATOR_PHOTOS` in `PressCoverage.tsx`) with the outlet's name on it.
 - Get Involved: "Contact Us" with a tab per local government (CRC first, then LOs, then SAs; phone numbers call when tapped). Edit under Header, footer & home → Local contacts (stored in `site_settings.lga_contacts`). Link to one tab with `/get-involved#contact-oyo-east`.
 - Video uploads over 50 MB are made smaller in the browser before upload (720p, bitrate chosen to fit). It runs in real time, so the tab must stay open; very long videos lose quality, so YouTube is still best for anything over about 10 minutes. True "unlimited" uploads need the storage bucket's 50 MB limit raised in the database.
+
+## Update 22: photos with national leaders
+
+- Political Leadership & Party Engagement → Stakeholder Engagements tab ends with a "With National Leaders" gallery (7 photos in `public/site-images/stakeholders/`). Captions are editable in Pages.
