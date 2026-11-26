@@ -41,7 +41,11 @@ export function LgaContactsSection({ data }: { data: LgaContacts }) {
       className="scroll-mt-24 border-b border-border bg-paper-2 py-12 sm:py-14"
     >
       <div className="wrap">
-        <SectionHead eyebrow="Your local government" title={data.heading || "Contact Us"} />
+        <SectionHead
+          eyebrow="Your local government"
+          title={data.heading || "Contact Us"}
+          titleAs="h1"
+        />
         {data.intro && (
           <p className="-mt-3 mb-6 max-w-[70ch] text-[16px] text-muted-foreground">{data.intro}</p>
         )}

@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useSiteSettings } from "@/lib/use-settings";
 import { signupSchema, submitSignup, type SignupInput } from "@/lib/signup.functions";
-import { PageHeader, btn } from "@/components/site/ui";
+import { btn } from "@/components/site/ui";
 import { getLgaContacts } from "@/lib/lga-contacts";
 import { LgaContactsSection } from "@/components/site/LgaContactsSection";
 
@@ -107,17 +107,14 @@ function GetInvolved() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Get involved"
-        title="Join the Akintunde 2027 campaign"
-        lede="Volunteer, get campaign updates, support the re-election effort, or reach the constituency office directly."
-      />
-
       <LgaContactsSection data={contacts} />
 
       <section className="py-12 sm:py-14">
-        <div className="wrap grid items-start gap-12 lg:grid-cols-2">
-          <div>
+        <div className="wrap grid gap-12 lg:grid-cols-2">
+          <div className="flex flex-col">
+            <h2 className="mb-4 font-serif text-[24px] font-semibold sm:text-[28px]">
+              Constituency office
+            </h2>
             <ApcBadge className="mb-6" />
             <ul>
               {CONTACT.map((c) => (
@@ -136,17 +133,22 @@ function GetInvolved() {
               ))}
             </ul>
 
-            <a href="#signup" className={`${btn.gold} mt-7 w-full sm:w-auto`}>
-              Volunteer for 2027
-            </a>
-
-            <p className="mt-5 text-[13px] text-muted-foreground">
-              Prefer to support the campaign financially instead?{" "}
-              <a href="#signup" className="font-semibold text-primary underline underline-offset-2">
-                Learn how to contribute
+            <div className="mt-auto pt-7">
+              <a href="#signup" className={`${btn.gold} w-full sm:w-auto`}>
+                Volunteer for 2027
               </a>
-              .
-            </p>
+
+              <p className="mt-5 text-[13px] text-muted-foreground">
+                Prefer to support the campaign financially instead?{" "}
+                <a
+                  href="#signup"
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  Learn how to contribute
+                </a>
+                .
+              </p>
+            </div>
           </div>
 
           <div id="signup" className="border border-border bg-card p-6 sm:p-8">

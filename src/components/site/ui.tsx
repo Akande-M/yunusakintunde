@@ -20,16 +20,19 @@ export function SectionHead({
   eyebrow,
   title,
   action,
+  titleAs = "h2",
 }: {
   eyebrow?: string;
   title: string;
   action?: ReactNode;
+  titleAs?: "h1" | "h2";
 }) {
+  const Title = titleAs;
   return (
     <div className="mb-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
       <div className="min-w-0">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h2 className="text-[26px] leading-tight font-semibold sm:text-[30px]">{title}</h2>
+        <Title className="text-[26px] leading-tight font-semibold sm:text-[30px]">{title}</Title>
       </div>
       {action}
     </div>
