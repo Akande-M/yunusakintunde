@@ -105,13 +105,6 @@ function AchievementsPage() {
             <Chip active={filter === "All"} onClick={() => setFilter("All")}>
               All
             </Chip>
-            <Link
-              to="/$slug"
-              params={{ slug: "bills-and-motions" }}
-              className="inline-flex min-h-10 items-center rounded-full border border-border bg-card px-4 text-[13.5px] font-semibold text-primary hover:border-primary"
-            >
-              Bills & motions in the Senate →
-            </Link>
           </div>
           <div className="mb-8 grid gap-4 rounded-lg border border-border bg-card p-4 sm:p-5 lg:grid-cols-[1.25fr_1fr_.6fr]">
             {ZONES.map((z) => (
