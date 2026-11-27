@@ -1,5 +1,10 @@
 # Cloud SQL update
 
+# Political leadership and oversight
+
+- [x] Move the Oversight tab and its content to Committees & Oversight.
+- [x] Remove Political & Party Leadership dropdown links and verify desktop/mobile navigation.
+
 - [x] Apply the uploaded schema SQL as one migration with approved grants and plain staff-invite user IDs.
 - [x] Run the uploaded image-link updates separately.
 - [x] Verify the database changes and save the migration files.

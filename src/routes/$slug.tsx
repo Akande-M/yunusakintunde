@@ -5,7 +5,7 @@ const MOVED: Record<string, string> = {
   "constituency-engagements": "/political-leadership-and-party-engagement#tab-constituency-engagements",
   "campaigns-and-mobilisation": "/political-leadership-and-party-engagement#tab-campaigns-mobilisation",
   "stakeholder-engagements": "/political-leadership-and-party-engagement#tab-stakeholder-engagements",
-  "oversight-and-institutional-engagement": "/political-leadership-and-party-engagement#tab-oversight",
+  "oversight-and-institutional-engagement": "/committees-and-oversight#tab-oversight",
 };
 import { getAchievements, getRecord } from "@/lib/cms";
 import { getAreaSections, getComingSoon, getPage, getSubpages } from "@/lib/pages";
