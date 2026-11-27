@@ -4,7 +4,14 @@ import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
 import { youtubeId } from "@/lib/cms";
-import { IMAGE_SLOTS, mergeSettings, type SiteSettings } from "@/lib/cms-defaults";
+import {
+  DEFAULT_ENGAGEMENT_LINE,
+  DEFAULT_GLANCE_TILES,
+  IMAGE_SLOTS,
+  mergeSettings,
+  type GlanceTile,
+  type SiteSettings,
+} from "@/lib/cms-defaults";
 import {
   FooterForm,
   HeaderForm,
@@ -344,9 +351,12 @@ function HomeForm({
       </Card>
 
       <Card>
-        <h2 className="mb-1 text-[15px] font-bold">Headline numbers</h2>
+        <h2 className="mb-1 text-[15px] font-bold">Key figures (homepage and Achievements page)</h2>
         <p className="mb-3 text-[12.5px] text-muted-foreground">
-          The first one also appears on the floating card beside the portrait.
+          These are the approved figures. They show on the homepage and at the top of the
+          Achievements page, so both always agree. Type <code>{"{projects}"}</code> as the number to
+          show the live count of projects & programmes from the achievement cards. The projects
+          figure also appears on the card beside the portrait.
         </p>
         <div className="space-y-2">
           {home.stats.map((s, i) => (
@@ -387,6 +397,88 @@ function HomeForm({
             <Plus className="size-4" /> Add number
           </button>
         )}
+        <Field
+          label="Line under the figures"
+          hint="The office asked for no engagement count until the records are compiled."
+        >
+          <input
+            className={inputCls}
+            value={home.engagementLine ?? DEFAULT_ENGAGEMENT_LINE}
+            onChange={(e) => set("engagementLine", e.target.value)}
+          />
+        </Field>
+      </Card>
+
+      <Card>
+        <h2 className="mb-1 text-[15px] font-bold">The record at a glance</h2>
+        <p className="mb-3 text-[12.5px] text-muted-foreground">
+          The tiles under the 2023 manifesto scorecard. Each has a figure, the area of work, a short
+          note and the page it opens (e.g. /outreach or /infrastructure-projects#tab-education).
+          Type <code>{"{projects}"}</code> for the live projects count.
+        </p>
+        <div className="space-y-3">
+          {(home.glanceTiles?.length ? home.glanceTiles : DEFAULT_GLANCE_TILES).map((t, i, all) => {
+            const patch = (p: Partial<GlanceTile>) =>
+              set(
+                "glanceTiles",
+                all.map((x, j) => (j === i ? { ...x, ...p } : x)),
+              );
+            return (
+              <div
+                key={i}
+                className="grid gap-2 rounded-sm border border-border p-3 sm:grid-cols-[1fr_120px_auto]"
+              >
+                <input
+                  className={`${inputCls} font-semibold`}
+                  aria-label="Area"
+                  value={t.l}
+                  onChange={(e) => patch({ l: e.target.value })}
+                />
+                <input
+                  className={inputCls}
+                  aria-label="Figure"
+                  value={t.n}
+                  onChange={(e) => patch({ n: e.target.value })}
+                />
+                <button
+                  className={abtn.icon}
+                  aria-label={`Remove ${t.l}`}
+                  onClick={() =>
+                    set(
+                      "glanceTiles",
+                      all.filter((_, j) => j !== i),
+                    )
+                  }
+                >
+                  <Trash2 className="size-4" />
+                </button>
+                <input
+                  className={`${inputCls} sm:col-span-2`}
+                  aria-label="Note"
+                  value={t.note}
+                  onChange={(e) => patch({ note: e.target.value })}
+                />
+                <input
+                  className={`${inputCls} sm:col-span-3`}
+                  aria-label="Link"
+                  value={t.href}
+                  onChange={(e) => patch({ href: e.target.value })}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <button
+          className={`${abtn.outline} mt-3`}
+          onClick={() =>
+            set("glanceTiles", [
+              ...(home.glanceTiles?.length ? home.glanceTiles : DEFAULT_GLANCE_TILES),
+              { l: "", n: "", note: "", href: "/" },
+            ])
+          }
+        >
+          <Plus className="size-4" /> Add tile
+        </button>
       </Card>
 
       <Card>

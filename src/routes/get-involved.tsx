@@ -12,16 +12,16 @@ import { LgaContactsSection } from "@/components/site/LgaContactsSection";
 export const Route = createFileRoute("/get-involved")({
   head: () => ({
     meta: [
-      { title: "Get Involved: Join the Akintunde 2027 campaign | Oyo Central" },
+      { title: "Get in Touch: Contact the Senator's Office | Oyo Central" },
       {
         name: "description",
         content:
-          "Volunteer, get updates, report a constituency issue or host a town hall. Reach the Oyo Central constituency office of Senator Dr Yunus Abiodun Akintunde.",
+          "Contact the office of Senator Dr Yunus Abiodun Akintunde: the senatorial office, the liaison officers in your local government, and an enquiry form.",
       },
-      { property: "og:title", content: "Join the Akintunde 2027 campaign" },
+      { property: "og:title", content: "Contact the Senator's Office" },
       {
         property: "og:description",
-        content: "Volunteer, sign up for updates, or contact the Oyo Central constituency office.",
+        content: "Send an enquiry or reach the liaison officers in your local government.",
       },
     ],
   }),
@@ -34,7 +34,7 @@ const EMPTY: SignupInput = {
   email: "",
   phone: "",
   lgaWard: "",
-  intent: "Get campaign & newsletter updates",
+  intent: "Constituency enquiry",
   message: "",
   consent: false as unknown as true,
 };
@@ -74,11 +74,13 @@ function GetInvolved() {
   const submit = useServerFn(submitSignup);
   const { contact } = useSiteSettings();
   const { contacts } = Route.useLoaderData();
+  // A placeholder phone number (e.g. 0800 000 0000) is never shown.
+  const phone = /000\s*0000|\[[^\]]*\]/.test(contact.phone) ? "" : contact.phone;
   const CONTACT = [
-    { icon: "✉", label: "Email", value: contact.email },
-    { icon: "☎", label: "Phone", value: contact.phone },
-    { icon: "⚑", label: "Constituency office", value: contact.office },
-    { icon: "◷", label: "Office hours", value: contact.hours },
+    { icon: "⚑", label: "Senatorial office", value: contact.office },
+    { icon: "✉", label: "Official email", value: contact.email },
+    { icon: "☎", label: "Office telephone", value: phone },
+    { icon: "◷", label: "Opening days and hours", value: contact.hours },
   ].filter((c) => c.value);
 
   const mutation = useMutation({
@@ -113,7 +115,7 @@ function GetInvolved() {
         <div className="wrap grid gap-12 lg:grid-cols-2">
           <div className="flex flex-col">
             <h2 className="mb-4 font-serif text-[24px] font-semibold sm:text-[28px]">
-              Constituency office
+              Contact the Senator’s office
             </h2>
             <ApcBadge className="mb-6" />
             <ul>
@@ -135,35 +137,27 @@ function GetInvolved() {
 
             <div className="mt-auto pt-7">
               <a href="#signup" className={`${btn.gold} w-full sm:w-auto`}>
-                Volunteer for 2027
+                Send an enquiry
               </a>
-
               <p className="mt-5 text-[13px] text-muted-foreground">
-                Prefer to support the campaign financially instead?{" "}
-                <a
-                  href="#signup"
-                  className="font-semibold text-primary underline underline-offset-2"
-                >
-                  Learn how to contribute
-                </a>
-                .
+                For matters in your local government, you can also contact the liaison officers
+                listed above.
               </p>
             </div>
           </div>
 
           <div id="signup" className="border border-border bg-card p-6 sm:p-8">
-            <h2 className="mb-5 text-[19px] font-semibold">Sign up to get involved</h2>
+            <h2 className="mb-5 text-[19px] font-semibold">Send an enquiry</h2>
 
             {mutation.isSuccess ? (
               <div
                 role="status"
                 className="border-l-2 border-primary bg-primary-tint px-5 py-6 text-sm"
               >
-                <p className="font-bold text-primary-deep">Thank you, you&apos;re signed up.</p>
-                <p className="mt-1 text-muted-foreground">
-                  The constituency office will be in touch. You can unsubscribe from updates at any
-                  time.
+                <p className="font-bold text-primary-deep">
+                  Thank you, your message has been sent.
                 </p>
+                <p className="mt-1 text-muted-foreground">The Senator’s office will be in touch.</p>
                 <button
                   type="button"
                   onClick={() => mutation.reset()}
@@ -220,18 +214,20 @@ function GetInvolved() {
                   />
                 </Field>
 
-                <Field label="I'd like to…" htmlFor="intent" error={errors["intent"]}>
+                <Field label="Subject" htmlFor="intent" error={errors["intent"]}>
                   <select
                     id="intent"
                     className={inputCls}
                     value={values.intent}
                     onChange={(e) => set("intent", e.target.value as SignupInput["intent"])}
                   >
-                    <option>Get campaign &amp; newsletter updates</option>
-                    <option>Volunteer</option>
+                    <option>Constituency enquiry</option>
                     <option>Report a constituency issue</option>
-                    <option>Host a town hall in my ward</option>
-                    <option>Share project testimonial</option>
+                    <option>Project or community development request</option>
+                    <option>Legislative or policy submission</option>
+                    <option>Invitation or official correspondence</option>
+                    <option>Media enquiry</option>
+                    <option>General feedback</option>
                   </select>
                 </Field>
 
@@ -254,15 +250,15 @@ function GetInvolved() {
                     className="mt-0.5 size-4 shrink-0 accent-[var(--primary)]"
                   />
                   <span className="text-[12.5px] leading-relaxed">
-                    I consent to receive campaign updates and newsletters by email and/or phone from
-                    the Akintunde 2027 campaign, in line with the{" "}
+                    I agree that the office of Senator Akintunde may contact me by email or phone
+                    about my enquiry, in line with the{" "}
                     <Link
                       to="/privacy"
                       className="font-bold text-primary underline underline-offset-2"
                     >
                       Privacy Policy
                     </Link>
-                    . I can unsubscribe at any time.
+                    .
                   </span>
                 </label>
                 {errors["consent"] && (
@@ -273,7 +269,7 @@ function GetInvolved() {
 
                 {mutation.isError && (
                   <p role="alert" className="mb-3 text-[13px] font-semibold text-destructive">
-                    Something went wrong sending your details. Please try again.
+                    Something went wrong sending your message. Please try again.
                   </p>
                 )}
 
@@ -282,7 +278,7 @@ function GetInvolved() {
                   disabled={mutation.isPending}
                   className={`${btn.primary} mt-3 w-full`}
                 >
-                  {mutation.isPending ? "Submitting…" : "Submit"}
+                  {mutation.isPending ? "Sending…" : "Send enquiry"}
                 </button>
               </form>
             )}

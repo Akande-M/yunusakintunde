@@ -333,6 +333,25 @@ function SectionFields({ s, onChange }: { s: PageSection; onChange: (s: PageSect
             />
           </Field>
           <SectionPhoto s={s} onChange={onChange} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Button under the cards (optional)" hint="e.g. See the awards in pictures">
+              <input
+                className={inputCls}
+                value={s.moreLabel ?? ""}
+                onChange={(e) => onChange({ ...s, moreLabel: e.target.value })}
+              />
+            </Field>
+            <Field
+              label="Button link"
+              hint="A page (/media) or a gallery on this page: # and its heading in small letters with dashes, e.g. #recognition-in-pictures"
+            >
+              <input
+                className={inputCls}
+                value={s.moreHref ?? ""}
+                onChange={(e) => onChange({ ...s, moreHref: e.target.value })}
+              />
+            </Field>
+          </div>
           <div className="space-y-3">
             {s.items.map((c, i) => (
               <div key={i} className="rounded-sm border border-border bg-paper-2 p-4">

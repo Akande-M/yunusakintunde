@@ -8,6 +8,14 @@ import { SectionHead } from "./ui";
 const PER_PAGE = 16; // 4 × 4
 
 const niceDate = (d: string) => {
+  // "2023-07" (month only, when the exact day isn't known) → "July 2023".
+  if (/^\d{4}-\d{2}$/.test(d)) {
+    try {
+      return format(new Date(`${d}-01T12:00:00`), "MMMM yyyy");
+    } catch {
+      return "";
+    }
+  }
   if (!/^\d{4}-\d{2}-\d{2}/.test(d)) return "";
   try {
     return format(new Date(`${d.slice(0, 10)}T12:00:00`), "d MMM yyyy");
@@ -83,7 +91,12 @@ export function PressCard({ it, onOpen }: { it: PressLink; onOpen: (it: PressLin
       <Thumb item={it} />
       <div className="flex flex-1 flex-col p-4">
         <div className="mb-2 flex items-center justify-between gap-2 text-[11.5px] font-extrabold tracking-[0.06em] uppercase">
-          <span className="truncate text-accent-deep">{it.source}</span>
+          <span className="truncate text-accent-deep">
+            <span className="font-semibold tracking-normal text-muted-foreground normal-case">
+              From{" "}
+            </span>
+            {it.source}
+          </span>
           {niceDate(it.date) && (
             <span className="shrink-0 font-semibold tracking-normal text-muted-foreground normal-case">
               {niceDate(it.date)}

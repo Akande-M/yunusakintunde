@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Badge, Collection, PageTitle, type FieldDef } from "@/components/admin/kit";
 import { StatusStamp } from "@/components/site/StatusStamp";
+import { SCORE_STATUSES, scoreStatus } from "@/components/site/ManifestoScorecard";
 
 export const Route = createFileRoute("/admin/record")({
   component: RecordAdmin,
@@ -28,6 +29,31 @@ const COMMITMENT_FIELDS: FieldDef[] = [
     label: "Custom stamp text (optional)",
     type: "text",
     hint: "Overrides the stamp wording, e.g. “2027 pledge”.",
+  },
+  { name: "published", label: "Show on website", type: "toggle" },
+];
+
+/** 2023 promises: the scorecard status is chosen from the four the office uses. */
+const SCORECARD_FIELDS: FieldDef[] = [
+  {
+    name: "title",
+    label: "Promise (as worded in the 2023 manifesto)",
+    type: "text",
+    required: true,
+  },
+  {
+    name: "status_label",
+    label: "Scorecard status",
+    type: "select",
+    options: SCORE_STATUSES.map((v) => ({ value: v, label: v })),
+    hint: "Never mark something Delivered unless the office has the records to show it.",
+  },
+  {
+    name: "detail",
+    label: "What was done / evidence",
+    type: "textarea",
+    rows: 3,
+    hint: "Facts only, e.g. “74 placements in federal institutions”. Type {projects} to show the live count of projects & programmes.",
   },
   { name: "published", label: "Show on website", type: "toggle" },
 ];
@@ -123,23 +149,33 @@ function RecordAdmin() {
           table="commitments"
           match={{ list: tab }}
           noun={tab === "kept" ? "promise" : "agenda item"}
-          fields={COMMITMENT_FIELDS}
+          fields={tab === "kept" ? SCORECARD_FIELDS : COMMITMENT_FIELDS}
           defaults={{
             title: "",
             detail: "",
             status: tab === "kept" ? "progress" : "upcoming",
-            status_label: tab === "agenda" ? "2027 pledge" : "",
+            status_label: tab === "agenda" ? "2027 pledge" : "Not yet delivered",
             published: true,
           }}
           summary={(r: Row) => ({
             title: String(r["title"]),
             subtitle: String(r["detail"] ?? ""),
-            badge: (
-              <StatusStamp
-                status={r["status"] as "delivered" | "progress" | "upcoming"}
-                {...(r["status_label"] ? { label: String(r["status_label"]) } : {})}
-              />
-            ),
+            badge:
+              tab === "kept" ? (
+                <Badge>
+                  {scoreStatus({
+                    title: String(r["title"]),
+                    detail: "",
+                    status: r["status"] as "delivered" | "progress" | "upcoming",
+                    ...(r["status_label"] ? { statusLabel: String(r["status_label"]) } : {}),
+                  })}
+                </Badge>
+              ) : (
+                <StatusStamp
+                  status={r["status"] as "delivered" | "progress" | "upcoming"}
+                  {...(r["status_label"] ? { label: String(r["status_label"]) } : {})}
+                />
+              ),
           })}
         />
       )}

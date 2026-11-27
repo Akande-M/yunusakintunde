@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { NEWS_FILTERS } from "@/lib/site-data";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { getNewsList } from "@/lib/cms";
-import { getPressLinks } from "@/lib/press";
+import {
+  categoryOf,
+  getPressLinks,
+  NEWS_CATEGORIES,
+  postCategory,
+  type NewsCategory,
+} from "@/lib/press";
 import { PressCoverage } from "@/components/site/PressCoverage";
 import { useSiteSettings } from "@/lib/use-settings";
 import { Chip, NewsCard, PageHeader } from "@/components/site/ui";
@@ -33,8 +38,21 @@ export const Route = createFileRoute("/news/")({
 function News() {
   const heading = useSiteSettings().page_headers.news;
   const { news, press } = Route.useLoaderData();
-  const [filter, setFilter] = useState<(typeof NEWS_FILTERS)[number]>("All");
-  const items = news.filter((n) => filter === "All" || n.category === filter);
+  const [filter, setFilter] = useState<NewsCategory | "All">("All");
+  // /news#press-releases (from the menu) opens that category.
+  const routerHash = useRouterState({ select: (st) => st.location.hash });
+  useEffect(() => {
+    const h = window.location.hash.replace(/^#/, "");
+    const hit = NEWS_CATEGORIES.find((c) => c.toLowerCase().replace(/[^a-z0-9]+/g, "-") === h);
+    if (hit) setFilter(hit);
+  }, [routerHash]);
+  const items = news.filter(
+    (n) => filter === "All" || postCategory(n.category, n.title) === filter,
+  );
+  const stories = press.filter((p) => filter === "All" || categoryOf(p) === filter);
+  const count = (c: NewsCategory) =>
+    news.filter((n) => postCategory(n.category, n.title) === c).length +
+    press.filter((p) => categoryOf(p) === c).length;
 
   return (
     <>
@@ -42,23 +60,28 @@ function News() {
       <section className="py-12 sm:py-14">
         <div className="wrap">
           <div className="mb-7 flex flex-wrap gap-2.5">
-            {NEWS_FILTERS.map((f) => (
-              <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
-                {f}
+            <Chip active={filter === "All"} onClick={() => setFilter("All")}>
+              All
+            </Chip>
+            {NEWS_CATEGORIES.filter((c) => count(c) > 0).map((c) => (
+              <Chip key={c} active={filter === c} onClick={() => setFilter(c)}>
+                {c}
               </Chip>
             ))}
           </div>
-          <div className="hairline-grid grid sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((n) => (
-              <NewsCard key={n.title} {...n} />
-            ))}
-          </div>
-          {items.length === 0 && (
+          {items.length > 0 && (
+            <div className="hairline-grid grid sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((n) => (
+                <NewsCard key={n.title} {...n} />
+              ))}
+            </div>
+          )}
+          {items.length === 0 && stories.length === 0 && (
             <p className="text-sm text-muted-foreground">No updates in this category yet.</p>
           )}
         </div>
       </section>
-      <PressCoverage items={press} />
+      <PressCoverage key={filter} items={stories} />
     </>
   );
 }

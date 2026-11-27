@@ -37,7 +37,80 @@ export type HomeSettings = {
   /** Still image shown on the film before it plays. Empty = the film-cover photo. */
   campaignVideoPoster?: string;
   heroSlides: HeroSlide[];
+  /** Line under the key figures; the office asked for no engagement count until records exist. */
+  engagementLine?: string;
+  /** "The record at a glance" tiles under the manifesto scorecard. */
+  glanceTiles?: GlanceTile[];
 };
+
+/** One tile: headline figure (n), area (l), short note and the page it links to. */
+export type GlanceTile = { n: string; l: string; note: string; href: string };
+
+export const DEFAULT_GLANCE_TILES: GlanceTile[] = [
+  {
+    l: "Legislative representation",
+    n: "7 bills",
+    note: "Sponsored and supported in the 10th Senate",
+    href: "/bills-and-motions",
+  },
+  {
+    l: "Education",
+    n: "4 ICT centres",
+    note: "Plus classroom blocks and a 23-school renovation programme",
+    href: "/infrastructure-projects#tab-education",
+  },
+  {
+    l: "Healthcare",
+    n: "3,680",
+    note: "Eye outreach beneficiaries across 11 local governments",
+    href: "/outreach",
+  },
+  {
+    l: "Road infrastructure",
+    n: "3 ongoing",
+    note: "Road and erosion projects, with 12 more awarded",
+    href: "/infrastructure-projects#tab-roads-infrastructure",
+  },
+  {
+    l: "Water supply",
+    n: "89 of 120",
+    note: "Solar-powered boreholes delivered",
+    href: "/infrastructure-projects#tab-water-solar-lighting",
+  },
+  {
+    l: "Solar lighting",
+    n: "9,000+",
+    note: "Solar streetlights installed; 4,200 more under way",
+    href: "/infrastructure-projects#tab-water-solar-lighting",
+  },
+  {
+    l: "Employment & skills",
+    n: "74 jobs",
+    note: "Federal placements, plus training for over 1,300 people",
+    href: "/skills-jobs-and-empowerment#tab-jobs-human-capital",
+  },
+  {
+    l: "Agriculture & empowerment",
+    n: "7,200",
+    note: "Bags of NPK fertiliser, plus a ₦25 million traders’ grant",
+    href: "/skills-jobs-and-empowerment#tab-agriculture",
+  },
+  {
+    l: "Community & political engagement",
+    n: "11 LGAs",
+    note: "Regular constituency engagements across every local government",
+    href: "/political-leadership-and-party-engagement",
+  },
+  {
+    l: "Projects & programmes",
+    n: "{projects}",
+    note: "Recorded across the 11 local governments",
+    href: "/achievements",
+  },
+];
+
+export const DEFAULT_ENGAGEMENT_LINE =
+  "Regular constituency engagements across the 11 local government areas of Oyo Central Senatorial District.";
 
 export type FooterSettings = {
   topLine: string;
@@ -180,10 +253,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     heroBody:
       "Senator Dr Yunus Abiodun Akintunde represents Oyo Central Senatorial District in the 10th Senate of the Federal Republic of Nigeria, combining lawmaking, oversight and institutional advocacy with interventions across the 11 local government areas of Oyo Central.",
     stats: [
+      { n: "11", l: "Local governments" },
+      { n: "{projects}", l: "Projects & programmes" },
       { n: "9,000+", l: "Solar streetlights installed" },
-      { n: "11", l: "Local governments reached" },
-      { n: "7", l: "Bills sponsored and supported" },
-      { n: "89", l: "Solar-powered boreholes delivered" },
+      { n: "3,680", l: "Optical outreach beneficiaries" },
     ],
     quote:
       "In 2023, Oyo Central gave me a mandate on the strength of a promise. Today, I am asking for a second term on the strength of a record, and a plan to continue the good work we started together.",
@@ -235,7 +308,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     eyebrow: "Biography",
     title: "Senator Dr Yunus Abiodun Akintunde",
     intro:
-      "Sitting Senator, Oyo Central Senatorial District, since 2023, and seeking a second term in 2027. Businessman, academic and philanthropist from Onikanko Compound, Pakoyi, Oyo town.",
+      "Senator Dr Yunus Abiodun Akintunde is a Nigerian legislator, author and energy economist representing Oyo Central Senatorial District in the 10th National Assembly.",
     showApcBadge: true,
     facts: [
       { n: "1962", l: "Born in Pakoyi, Oyo town" },

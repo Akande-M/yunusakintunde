@@ -32,6 +32,9 @@ type SectionBody =
       /** Optional photo shown beside the heading. */
       image?: string;
       caption?: string;
+      /** Optional button under the cards, e.g. "See the awards in pictures" → #recognition-in-pictures. */
+      moreLabel?: string;
+      moreHref?: string;
     }
   | { type: "gallery"; heading: string; images: GalleryImage[] }
   | {
@@ -149,6 +152,10 @@ export function normalizeSections(v: unknown): PageSection[] {
     if (base.type === "list" || base.type === "cards") {
       base.image = siteUrl(str(base.image));
       base.caption = str(base.caption);
+    }
+    if (base.type === "cards") {
+      base.moreLabel = str(raw["moreLabel"]);
+      base.moreHref = str(raw["moreHref"]);
     }
     if (base.type === "cards")
       base.items = (Array.isArray(base.items) ? base.items : []).map((i) => ({

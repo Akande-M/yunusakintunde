@@ -15,6 +15,7 @@ import { applyFilmContacts } from "@/content-updates/2026-11-25-film-contacts";
 import { applyNationalLeaders } from "@/content-updates/2026-11-25-national-leaders";
 import { applyRestoreUpdate22 } from "@/content-updates/2026-11-26-restore-update-22";
 import { applyMasterFacts } from "@/content-updates/2026-11-26-master-facts";
+import { applyOfficeFeedback } from "@/content-updates/2026-11-27-office-feedback";
 
 /*
  * Content updates: new or rewritten content that ships with the code (text, captions, photos
@@ -252,6 +253,16 @@ export const CONTENT_UPDATES: ContentUpdate[] = [
       "This rewrites specific lines on the homepage, biography, footer, project, legislative, recognition and political pages, the achievement cards and the promise tracker. Photos and layout are unchanged.",
     viewUrl: "/",
     apply: (progress) => applyMasterFacts(progress),
+  },
+  {
+    id: "2026-11-27-office-feedback",
+    title: "Office feedback: 2023 manifesto scorecard, no repeated photos, Recognition showcase",
+    summary:
+      "Adds the 2023 manifesto scorecard (11 promises with the statuses the office confirmed) and hides the old promise tracker and the 2027 agenda until the current manifesto is supplied. Uses one set of key figures on the homepage and Achievements. Removes stand-in and repeated photos so every photo appears once. Reorganises Recognition with an awards showcase and adds COP29. Updates the Biography headline, the office address, the date of the “30 days in office” story, tab names and the menu.",
+    replaces:
+      "This hides the previous promise tracker and 2027 agenda (they are kept and can be shown again under Record & Agenda), removes photos from the achievement cards except four accurate ones, and rewrites the Recognition page text. Nothing is deleted.",
+    viewUrl: "/",
+    apply: (progress) => applyOfficeFeedback(progress),
   },
 ];
 

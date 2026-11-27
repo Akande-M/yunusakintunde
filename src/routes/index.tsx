@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { getAchievements, getEndorsements, getNewsList, youtubeId } from "@/lib/cms";
+import { keyFigures } from "@/lib/key-figures";
+import { getAchievements, getEndorsements, getNewsList, getRecord, youtubeId } from "@/lib/cms";
+import { ManifestoScorecard } from "@/components/site/ManifestoScorecard";
+import { RecordAtAGlance } from "@/components/site/RecordAtAGlance";
+import { countProjects } from "@/lib/key-figures";
+import { DEFAULT_ENGAGEMENT_LINE, DEFAULT_GLANCE_TILES } from "@/lib/cms-defaults";
 import { AchievementsSection } from "@/components/site/Achievements";
 import { useSiteSettings } from "@/lib/use-settings";
 import { AutoCarousel } from "@/components/site/AutoCarousel";
@@ -30,14 +35,21 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const [news, endorsements, achievements, press] = await Promise.all([
+    const [news, endorsements, achievements, press, record] = await Promise.all([
       getNewsList(9),
       getEndorsements(),
       getAchievements(),
       getPressLinks().catch(() => []),
+      getRecord(),
     ]);
     // The four newest stories from "In the press" join the news carousel.
-    return { news, endorsements, achievements, press: sortPress(press).slice(0, 4) };
+    return {
+      news,
+      endorsements,
+      achievements,
+      press: sortPress(press).slice(0, 4),
+      promises: record.kept,
+    };
   },
   component: Home,
 });
@@ -54,9 +66,9 @@ const VALUE_PROPS = [
     body: "7 bills sponsored and supported, Pioneer Chairman of the Senate Committee on South West Development Commission, and Deputy Chairman of the Senate Committee on Police Affairs.",
   },
   {
-    tag: "Ahead",
-    title: "A clear plan for term two",
-    body: "The 2027 Agenda builds directly on what is already working. See exactly what comes next for the district.",
+    tag: "Accountable",
+    title: "Every 2023 promise, scored honestly",
+    body: "The manifesto scorecard shows each promise as delivered, facilitated or not yet delivered, with what was done and where to see the evidence.",
   },
 ];
 
@@ -129,10 +141,11 @@ function CampaignVideo({
 }
 
 function Home() {
-  const { news, endorsements, achievements, press } = Route.useLoaderData();
+  const { news, endorsements, achievements, press, promises } = Route.useLoaderData();
   const [reading, setReading] = useState<PressLink | null>(null);
   const { home, images } = useSiteSettings();
-  const headlineStat = home.stats[0];
+  const figures = keyFigures(home.stats, achievements);
+  const headlineStat = figures.find((f) => /project/i.test(f.l)) ?? figures[0] ?? { n: "", l: "" };
 
   return (
     <>
@@ -148,11 +161,11 @@ function Home() {
                 {home.heroBody}
               </p>
               <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:flex-wrap">
-                <Link to="/support" className={btn.gold}>
-                  Support Senator Akintunde in 2027
+                <Link to="/get-involved" className={btn.gold}>
+                  Get in touch
                 </Link>
                 <Link to="/achievements" className={btn.outline}>
-                  See the full record
+                  Explore achievements
                 </Link>
               </div>
               <ApcBadge size="lg" className="mt-6" />
@@ -191,7 +204,7 @@ function Home() {
           </div>
 
           <dl className="mt-14 grid grid-cols-2 border-t border-border sm:grid-cols-4">
-            {home.stats.map((s, i) => (
+            {figures.map((s, i) => (
               <Reveal
                 key={s.l}
                 delay={i * 80}
@@ -209,6 +222,9 @@ function Home() {
               </Reveal>
             ))}
           </dl>
+          <p className="py-4 text-center text-[13.5px] font-semibold text-muted-foreground">
+            {home.engagementLine || DEFAULT_ENGAGEMENT_LINE}
+          </p>
         </div>
       </section>
 
@@ -246,6 +262,13 @@ function Home() {
       </section>
 
       <AchievementsSection cards={achievements} />
+
+      <ManifestoScorecard items={promises} projects={countProjects(achievements)} compact />
+
+      <RecordAtAGlance
+        tiles={home.glanceTiles?.length ? home.glanceTiles : DEFAULT_GLANCE_TILES}
+        projects={countProjects(achievements)}
+      />
 
       <section className="py-16 sm:py-19">
         <div className="wrap">
@@ -340,15 +363,32 @@ function Home() {
 
       <section className="border-t border-border bg-paper-2 py-16">
         <div className="wrap text-center">
-          <h2 className="text-[24px] font-semibold sm:text-[28px]">
-            Help Senator Akintunde continue the good work.
-          </h2>
+          <h2 className="text-[24px] font-semibold sm:text-[28px]">Contact the Senator’s office</h2>
           <p className="mx-auto mt-3 mb-7 max-w-[58ch] text-[17px] text-muted-foreground">
-            Volunteer your time, join a ward team, or simply stay in the loop as we head into 2027.
+            Send an enquiry, reach the liaison officers in your local government, or explore the
+            record.
           </p>
-          <Link to="/get-involved" className={`${btn.gold} px-7 text-[15px]`}>
-            Stand With Senator Akintunde
-          </Link>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link to="/get-involved" className={`${btn.gold} px-7 text-[15px]`}>
+              Get in touch
+            </Link>
+            <Link to="/achievements" className={btn.outline}>
+              Explore achievements
+            </Link>
+            <Link to="/$slug" params={{ slug: "bills-and-motions" }} className={btn.outline}>
+              Legislative record
+            </Link>
+            <Link
+              to="/$slug"
+              params={{ slug: "constituency-interventions-and-development-projects" }}
+              className={btn.outline}
+            >
+              Constituency projects
+            </Link>
+            <Link to="/news" className={btn.outline}>
+              Latest news
+            </Link>
+          </div>
         </div>
       </section>
     </>

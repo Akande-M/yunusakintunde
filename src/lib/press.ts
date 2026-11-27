@@ -121,3 +121,43 @@ export async function savePressLinks(items: PressLink[]) {
     .upsert({ key: PRESS_KEY, value: { items } }, { onConflict: "key" });
   if (error) throw error;
 }
+
+/** The News & Media categories the office asked for. */
+export const NEWS_CATEGORIES = [
+  "Legislative Activities",
+  "Constituency Projects",
+  "Community Engagements",
+  "Political Activities",
+  "Press Releases",
+  "Media Interviews",
+] as const;
+export type NewsCategory = (typeof NEWS_CATEGORIES)[number];
+
+const CATEGORY_RULES: [NewsCategory, RegExp][] = [
+  ["Media Interviews", /youtube\.com|youtu\.be|interview|on video|tells? (tvc|channels|arise)/i],
+  ["Press Releases", /statement|press release|urged|condemn|condol|congratulat|felicitat/i],
+  [
+    "Legislative Activities",
+    /senate|\bbill\b|motion|budget|plenary|committee|geomatics|upgrade|public hearing|constitution amendment/i,
+  ],
+  [
+    "Constituency Projects",
+    /project|commission|empowers?|recruitment|borehole|streetlight|classroom|road|grant|farmers|laptops|years in office|days in office|transforming/i,
+  ],
+  ["Community Engagements", /stakeholders?|community|town hall|security|visit|courtesy|meets?\b/i],
+];
+
+/** A story's category, from what it is about (title, source and link). */
+export function categoryOf(it: { title: string; url?: string; source?: string }): NewsCategory {
+  const text = `${it.title} ${it.url ?? ""} ${it.source ?? ""}`;
+  return CATEGORY_RULES.find(([, re]) => re.test(text))?.[0] ?? "Political Activities";
+}
+
+/** The office's own news posts, by their CMS category. */
+export function postCategory(category: string, title: string): NewsCategory {
+  if (/senate/i.test(category)) return "Legislative Activities";
+  if (/constituency/i.test(category)) return "Constituency Projects";
+  if (/campaign/i.test(category)) return "Political Activities";
+  if (/media/i.test(category)) return categoryOf({ title });
+  return categoryOf({ title });
+}

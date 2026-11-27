@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Award, Globe2, GraduationCap, Landmark, Mic, Trophy, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AchievementCard } from "@/lib/achievements-data";
 import type { Project } from "@/lib/site-data";
@@ -103,18 +104,55 @@ function Frame({
   tone,
   compact,
   narrow,
+  id,
   children,
 }: {
   tone: string;
   compact: boolean;
   narrow?: boolean;
+  id?: string | undefined;
   children: ReactNode;
 }) {
-  if (compact) return <div className="py-6">{children}</div>;
+  if (compact)
+    return (
+      <div id={id} className="scroll-mt-28 py-6">
+        {children}
+      </div>
+    );
   return (
-    <section className={`py-12 sm:py-14 ${tone}`}>
+    <section id={id} className={`scroll-mt-24 py-12 sm:py-14 ${tone}`}>
       <div className={`wrap ${narrow ? "max-w-[900px]" : ""}`}>{children}</div>
     </section>
+  );
+}
+
+/** "Recognition in pictures" → "recognition-in-pictures", for links to a gallery. */
+const anchorOf = (h: string) =>
+  h
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+/** An icon for a card without a photo, chosen from its wording (awards, lectures, travel…). */
+function CardIcon({ title }: { title: string }) {
+  const t = title.toLowerCase();
+  const Ico = /cop2|climate|korea|international|delegation|baku|dubai|seoul/.test(t)
+    ? Globe2
+    : /lectur|speaker|guest/.test(t)
+      ? Mic
+      : /universit|academ|ambassador|ui@75|college|cpeelsa|student/.test(t)
+        ? GraduationCap
+        : /youth|patron|community/.test(t)
+          ? Users
+          : /senate|committee|commissioner|chairman|governor/.test(t)
+            ? Landmark
+            : /best|award|honour|merit/.test(t)
+              ? Trophy
+              : Award;
+  return (
+    <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary-tint text-primary">
+      <Ico className="size-6" aria-hidden />
+    </span>
   );
 }
 
@@ -231,29 +269,37 @@ function Section({
             caption={s.caption}
             compact={compact}
           />
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {s.items.map((c, i) => (
               <Reveal key={i} as="li" delay={Math.min(i, 6) * 50} className="flex">
                 <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
                   {c.image && <ShapedImage url={c.image} alt={c.title} maxPortraitHeight={false} />}
-                  <div className="p-5">
-                    <h3 className="font-sans text-[16px] font-bold text-primary">{c.title}</h3>
-                    {c.text && (
-                      <p className="mt-2 text-sm whitespace-pre-line text-muted-foreground">
-                        {c.text}
-                      </p>
-                    )}
+                  <div className={c.image ? "p-5" : "flex gap-4 p-5"}>
+                    {!c.image && <CardIcon title={`${c.title} ${c.text}`} />}
+                    <div className="min-w-0">
+                      <h3 className="font-sans text-[16px] font-bold text-primary">{c.title}</h3>
+                      {c.text && (
+                        <p className="mt-2 text-sm whitespace-pre-line text-muted-foreground">
+                          {c.text}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </article>
               </Reveal>
             ))}
           </ul>
+          {s.moreLabel && s.moreHref && (
+            <a href={s.moreHref} className={`${btn.outline} mt-7`}>
+              {s.moreLabel}
+            </a>
+          )}
         </Frame>
       );
     case "gallery":
       if (!s.images.length) return null;
       return (
-        <Frame tone={tone} compact={compact}>
+        <Frame tone={tone} compact={compact} id={s.heading ? anchorOf(s.heading) : undefined}>
           <Head title={s.heading} compact={compact} />
           <PhotoGallery images={s.images} label={s.heading || "Photo"} />
         </Frame>
@@ -488,6 +534,8 @@ const tabSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 function SectionTabs({ page, data }: { page: SitePage; data: PageData }) {
   const names = [...new Set(page.sections.map((s) => s.tab).filter((t): t is string => !!t))];
   const [sel, setSel] = useState(names[0] ?? "");
+  // Menu links change the hash through the router (no "hashchange" event), so follow it too.
+  const routerHash = useRouterState({ select: (st) => st.location.hash });
   useEffect(() => {
     const fromHash = () => {
       const h = window.location.hash.replace(/^#tab-/, "");
@@ -503,7 +551,7 @@ function SectionTabs({ page, data }: { page: SitePage; data: PageData }) {
     window.addEventListener("hashchange", fromHash);
     return () => window.removeEventListener("hashchange", fromHash);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [names.join("|")]);
+  }, [names.join("|"), routerHash]);
   const current = page.sections.filter((s) => s.tab === sel);
   return (
     <section id="page-tabs" className="scroll-mt-24 py-10 sm:py-12">
@@ -607,6 +655,7 @@ function LgaTabs({ page, data }: { page: SitePage; data: PageData }) {
   };
   const first = LGAS.find((l) => count(l) > 0) ?? LGAS[0]!;
   const [sel, setSel] = useState(first);
+  const routerHash = useRouterState({ select: (st) => st.location.hash });
 
   // A link like /outreach#lga-oyo-east opens that local government's tab.
   useEffect(() => {
@@ -624,7 +673,7 @@ function LgaTabs({ page, data }: { page: SitePage; data: PageData }) {
     fromHash();
     window.addEventListener("hashchange", fromHash);
     return () => window.removeEventListener("hashchange", fromHash);
-  }, []);
+  }, [routerHash]);
 
   const c = content.get(sel)!;
   const byPage = new Map<string, AreaSection[]>();
@@ -800,11 +849,11 @@ export function PageView({ page, data }: { page: SitePage; data: PageData }) {
             Let's do more for Oyo Central.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link to="/support" className={btn.gold}>
-              Support Senator Akintunde in 2027
-            </Link>
-            <Link to="/get-involved" className={btn.ghostDark}>
+            <Link to="/get-involved" className={btn.gold}>
               Get in touch
+            </Link>
+            <Link to="/achievements" className={btn.ghostDark}>
+              Explore achievements
             </Link>
           </div>
         </div>

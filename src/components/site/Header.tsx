@@ -39,8 +39,10 @@ function MenuLink({
         {children}
       </a>
     );
+  // "/infrastructure-projects#tab-education" opens that page on that tab.
+  const [to = "/", hash] = href.split("#");
   return (
-    <Link to={href as "/"} className={className} onClick={onClick}>
+    <Link to={to as "/"} {...(hash ? { hash } : {})} className={className} onClick={onClick}>
       {children}
     </Link>
   );

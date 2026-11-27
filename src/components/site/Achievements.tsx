@@ -174,18 +174,31 @@ export function LetsDoMore({
 function LgaCard({ card }: { card: AchievementCard }) {
   const { achievements: page } = useSiteSettings();
   const ref = useRef<HTMLElement>(null);
-  const [active, setActive] = useState(false);
+  // How many times the card has come into view: each entry replays the one-by-one reveal.
+  // The items are always visible; the reveal is only an animation, so a phone, a carousel or a
+  // browser that never reports the card as "in view" still shows every item.
+  const [play, setPlay] = useState(0);
 
-  // Replays the one-by-one reveal every time this card slides into view.
   useEffect(() => {
     const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
-      setActive(true);
+    if (
+      !el ||
+      typeof IntersectionObserver === "undefined" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    )
       return;
-    }
-    const io = new IntersectionObserver(([e]) => setActive(!!e && e.intersectionRatio > 0.6), {
-      threshold: [0, 0.6, 1],
-    });
+    let inView = false;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e) return;
+        const vh = e.rootBounds?.height || window.innerHeight;
+        const seen = e.intersectionRatio > 0.5 || e.intersectionRect.height > vh * 0.35;
+        if (seen && !inView) setPlay((n) => n + 1);
+        if (seen) inView = true;
+        else if (!e.isIntersecting) inView = false;
+      },
+      { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -238,11 +251,9 @@ function LgaCard({ card }: { card: AchievementCard }) {
           const Ico = iconFor(item.text);
           return (
             <li
-              key={i}
-              style={{ transitionDelay: active ? `${i * 110}ms` : "0ms" }}
-              className={`flex items-start gap-3 border-b border-border/70 py-3 transition-all duration-500 ease-out ${
-                active ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
-              }`}
+              key={`${play}-${i}`}
+              style={play ? { animationDelay: `${i * 110}ms` } : undefined}
+              className={`flex items-start gap-3 border-b border-border/70 py-3 ${play ? "slide-in-x" : ""}`}
             >
               <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground">
                 {i + 1}

@@ -316,3 +316,24 @@ No database step. Upload, deploy, then open the CMS dashboard.
 - All code is back to Update 22. Start here → "Undo the master-content update" restores the content as it was after Update 22 (from a snapshot taken just before Update 23).
 - Then "The office's facts, in the current page layout" corrects figures and wording in place (streetlights, boreholes, optical outreach, jobs, bills SB.497 and SB.1017, motions, roads, community development, awards, committee names, the Senator's full name, third-person wording) and adds the Oyo State 2026 APC Presidential Rally photos. No layout changes.
 - Three files from Update 23 are empty placeholders and can be deleted on GitHub: src/components/site/ProjectFinder.tsx, src/components/site/ProjectStatus.tsx, src/content-updates/2026-11-26-master-content.ts.
+
+## Update 25: the office's feedback (manifesto scorecard, one photo in one place)
+
+After uploading and republishing, open **Start here** and apply “Office feedback: 2023 manifesto scorecard…”.
+
+- **2023 manifesto scorecard** on the homepage (after Major achievements) and on Achievements. Edit it under
+  **Record & Agenda → 2023 promises**: each promise has a status (Delivered, Facilitated, Ongoing, Not yet delivered)
+  and “What was done”. `{projects}` in the text shows the live project count. The old tracker rows and the 2027
+  agenda are hidden (not deleted) until the current manifesto is supplied.
+- **Key figures** (homepage and Achievements) are edited in one place: **Header, footer & home → Key figures**.
+  `{projects}` counts the achievement-card items automatically. “The record at a glance” tiles are edited there too.
+- **No repeated photos**: achievement cards keep only four accurate photos; every photo appears once across the site
+  (page header photos are not repeated in the page body). The Media Gallery is the archive; the rally photos are in
+  both the gallery and Campaigns & Mobilisation, as requested.
+- **Recognition**: awards showcase at the top (links to “Recognition in pictures”), then lists by category; COP29 added.
+- **CMS Pages**: Biography and Achievements are listed under About with Recognition.
+- **Contact** page is “Get in touch”: office (Owode, Oyo town), email, enquiry form, local liaison contacts.
+  Phone and opening hours stay hidden until they are entered under Header, footer & home → Contact.
+- **Menu**: Constituency submenu (Education, Healthcare & Outreach, Roads & Infrastructure, Water & Solar Lighting,
+  Markets & Electricity, Skills, Jobs & Empowerment, Agriculture), Political submenu (4 tabs), News & Media → Press Releases.
+- **News** has the six categories from the office’s guide; press items show “From {source}”.

@@ -39,6 +39,8 @@ const MAIN_PAGES: {
   search?: { tab: string };
   what: string;
   Icon: LucideIcon;
+  /** Listed under this top-menu group (e.g. About) instead of "Main pages". */
+  group?: string;
 }[] = [
   {
     title: "Home",
@@ -62,13 +64,15 @@ const MAIN_PAGES: {
     edit: "/admin/biography",
     what: "Introduction, key facts, story, photos and timeline",
     Icon: UserRound,
+    group: "About",
   },
   {
     title: "Achievements",
     view: "/achievements",
     edit: "/admin/achievements",
-    what: "Achievement cards and photos for each local government, Senate bills & motions, page heading",
+    what: "Achievement cards for each local government, page heading. The 2023 scorecard is under Record & Agenda.",
     Icon: Trophy,
+    group: "About",
   },
   {
     title: "News & Updates",
@@ -173,7 +177,9 @@ function PagesList() {
 
       <h2 className="mb-3 font-serif text-[19px] font-semibold">Main pages</h2>
       <ul className="mb-9 grid gap-3 md:grid-cols-2">
-        {MAIN_PAGES.map((p) => (
+        {MAIN_PAGES.filter(
+          (p) => !p.group || !groups.some((g) => g.label.toLowerCase() === p.group!.toLowerCase()),
+        ).map((p) => (
           <li
             key={p.title}
             className="flex items-start gap-3.5 rounded-sm border border-border bg-card p-4"
@@ -231,6 +237,40 @@ function PagesList() {
                 {g.label}
               </h3>
               <ul className="divide-y divide-border rounded-sm border border-border bg-card">
+                {MAIN_PAGES.filter(
+                  (p) => p.group && p.group.toLowerCase() === g.label.toLowerCase(),
+                ).map((p) => (
+                  <li key={p.title} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                    <div className="min-w-0 flex-1">
+                      <Link
+                        to={p.edit as "/admin/content"}
+                        className="block truncate text-[14.5px] font-bold hover:text-primary"
+                      >
+                        {p.title}
+                      </Link>
+                      <span className="text-[12.5px] text-muted-foreground">
+                        {p.view} · {p.what}
+                      </span>
+                    </div>
+                    <Badge tone="green">Published</Badge>
+                    <a
+                      href={p.view}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={abtn.icon}
+                      aria-label={`View ${p.title}`}
+                    >
+                      <ExternalLink className="size-4" />
+                    </a>
+                    <Link
+                      to={p.edit as "/admin/content"}
+                      className={abtn.icon}
+                      aria-label={`Edit ${p.title}`}
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
+                  </li>
+                ))}
                 {g.rows.map((r) => (
                   <li key={r.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">

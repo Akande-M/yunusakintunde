@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { countProjects, keyFigures } from "@/lib/key-figures";
 import { useMemo, useState } from "react";
-import { LGAS, matchLga, ZONES } from "@/lib/lgas";
+import { LGAS, lgaSlug, matchLga, ZONES } from "@/lib/lgas";
 import { getAchievements, getRecord } from "@/lib/cms";
 import { ShapedImage } from "@/components/site/ShapedImage";
-import { PromiseTracker } from "@/components/site/PromiseTracker";
+import { ManifestoScorecard } from "@/components/site/ManifestoScorecard";
 import type { AchievementCard } from "@/lib/achievements-data";
 import { useSiteSettings } from "@/lib/use-settings";
 import { btn, Chip, PageHeader } from "@/components/site/ui";
 import { Reveal } from "@/components/site/Reveal";
-import { Emphasised, ItemArt, LetsDoMore } from "@/components/site/Achievements";
+import { Emphasised, iconFor, LetsDoMore } from "@/components/site/Achievements";
 
 export const Route = createFileRoute("/achievements")({
   head: () => ({
@@ -38,6 +39,38 @@ const slug = (s: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+
+/** File name without the upload prefix, so the same photo uploaded twice counts once. */
+const fileKey = (url: string) =>
+  (url.split("#")[0]!.split("/").pop() ?? url).replace(/^[0-9a-f]{8}-/, "").toLowerCase();
+
+/**
+ * Up to two real photos per card, with a caption naming what they show. Project photos named
+ * in the "Also" list come first. A photo used on more than one card is left out everywhere,
+ * so no picture is repeated or shown against the wrong place.
+ */
+function cardPhotos(cards: AchievementCard[]) {
+  const uses = new Map<string, number>();
+  for (const c of cards) {
+    const seen = new Set<string>();
+    for (const x of [...c.extraItems, ...c.items]) if (x.image) seen.add(fileKey(x.image));
+    for (const k of seen) uses.set(k, (uses.get(k) ?? 0) + 1);
+  }
+  const out = new Map<string, { url: string; caption: string }[]>();
+  for (const c of cards) {
+    const picked: { url: string; caption: string }[] = [];
+    const keys = new Set<string>();
+    for (const x of [...c.extraItems, ...c.items]) {
+      if (picked.length >= 2 || !x.image) continue;
+      const k = fileKey(x.image);
+      if (keys.has(k) || (uses.get(k) ?? 0) > 1) continue;
+      keys.add(k);
+      picked.push({ url: x.image, caption: x.text.replace(/\.$/, "") });
+    }
+    out.set(c.title, picked);
+  }
+  return out;
+}
 
 /** Adds up a figure that appears in the wording, e.g. "714 solar-powered streetlights". */
 function sumOf(cards: AchievementCard[], re: RegExp) {
@@ -71,13 +104,9 @@ function AchievementsPage() {
     return !isSenate(c) && matchLga(c.title) === filter.slice(4);
   });
 
-  const lgaCards = cards.filter((c) => !isSenate(c));
-  const stats = [
-    { n: lgaCards.length, l: "Local governments" },
-    { n: lgaCards.reduce((a, c) => a + c.items.length, 0), l: "Projects & programmes" },
-    { n: sumOf(lgaCards, /(\d[\d,]*)\s+solar[- ]powered streetlights/i), l: "Solar streetlights" },
-    { n: sumOf(lgaCards, /(\d[\d,]*)\s+patients/i), l: "Patients treated at outreaches" },
-  ].filter((s) => s.n > 0);
+  const { home } = useSiteSettings();
+  const stats = keyFigures(home.stats, cards);
+  const photos = useMemo(() => cardPhotos(cards), [cards]);
 
   return (
     <>
@@ -90,7 +119,7 @@ function AchievementsPage() {
               <div key={s.l}>
                 <dt className="sr-only">{s.l}</dt>
                 <dd className="font-serif text-[34px] leading-none font-semibold text-primary-deep">
-                  {s.n.toLocaleString("en-NG")}
+                  {s.n}
                 </dd>
                 <div className="mt-1.5 text-[13px] font-semibold text-muted-foreground">{s.l}</div>
               </div>
@@ -178,71 +207,97 @@ function AchievementsPage() {
                   </span>
                 </div>
 
-                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {c.items.map((it, i) => {
-                    return (
-                      <Reveal key={i} as="li" delay={Math.min(i, 7) * 50} className="flex">
-                        <article className="flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card">
-                          <div className="relative bg-primary-tint">
-                            {it.image ? (
-                              <ShapedImage url={it.image} alt={it.text} maxPortraitHeight={false} />
-                            ) : (
-                              <ItemArt text={it.text} />
-                            )}
-                            <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary-deep text-[13px] font-bold text-primary-foreground">
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+                  <div>
+                    <ol className="grid gap-x-6 sm:grid-cols-2">
+                      {c.items.map((it, i) => {
+                        const Ico = iconFor(it.text);
+                        return (
+                          <li
+                            key={i}
+                            className="flex items-start gap-3 border-b border-border/70 py-3"
+                          >
+                            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground">
                               {i + 1}
                             </span>
-                          </div>
-                          <p className="p-4 text-[14px] leading-snug">
-                            <Emphasised text={it.text} />
-                          </p>
-                        </article>
-                      </Reveal>
-                    );
-                  })}
-                </ol>
-
-                {c.extraItems.length > 0 && (
-                  <div className="mt-6 rounded-lg border border-border bg-paper-2 p-5">
-                    <h3 className="mb-4 text-[12px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
-                      {c.extraHeading || "Also"}
-                    </h3>
-                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                      {c.extraItems.map((x, i) => (
-                        <li
-                          key={i}
-                          className="overflow-hidden rounded-md border border-border bg-card"
-                        >
-                          {x.image ? (
-                            <ShapedImage url={x.image} alt={x.text} maxPortraitHeight={false} />
-                          ) : (
-                            <ItemArt text={`${c.extraHeading} ${x.text}`} />
-                          )}
-                          <p className="px-3.5 py-3 text-[13.5px] leading-snug font-semibold">
-                            {x.text}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
+                            <Ico className="mt-0.5 size-5 shrink-0 text-accent-deep" aria-hidden />
+                            <span className="text-[14.5px] leading-snug">
+                              <Emphasised text={it.text} />
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                    {c.extraItems.length > 0 && (
+                      <div className="mt-5 rounded-lg border border-border bg-paper-2 p-4">
+                        <h3 className="mb-2.5 text-[12px] font-extrabold tracking-[0.08em] text-accent-deep uppercase">
+                          {c.extraHeading || "Also"}
+                        </h3>
+                        <ul className="flex flex-wrap gap-2">
+                          {c.extraItems.map((x, i) => (
+                            <li
+                              key={i}
+                              className="rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-semibold"
+                            >
+                              {x.text}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {!isSenate(c) && matchLga(c.title) && (
+                      <Link
+                        to="/$slug"
+                        params={{ slug: "infrastructure-projects" }}
+                        hash={`lga-${lgaSlug(matchLga(c.title)!)}`}
+                        className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold text-primary hover:underline"
+                      >
+                        Full project list for {matchLga(c.title)} →
+                      </Link>
+                    )}
+                    {isSenate(c) && (
+                      <Link
+                        to="/$slug"
+                        params={{ slug: "bills-and-motions" }}
+                        className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold text-primary hover:underline"
+                      >
+                        Bills & motions in full →
+                      </Link>
+                    )}
                   </div>
-                )}
+                  {photos.get(c.title)!.length > 0 && (
+                    <div className="grid content-start gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                      {photos.get(c.title)!.map((ph) => (
+                        <figure
+                          key={ph.url}
+                          className="overflow-hidden rounded-lg border border-border bg-card"
+                        >
+                          <ShapedImage url={ph.url} alt={ph.caption} maxPortraitHeight={false} />
+                          <figcaption className="px-3.5 py-2.5 text-[13px] leading-snug font-semibold">
+                            {ph.caption}
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </section>
             ))}
           </div>
         </div>
       </section>
 
-      <PromiseTracker kept={record.kept} agenda={record.agenda} />
+      <ManifestoScorecard items={record.kept} projects={countProjects(cards)} />
 
       <section className="bg-primary-deep py-14 text-on-dark">
         <div className="wrap flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">
           {page.portrait && <LetsDoMore portrait={page.portrait} tagline={page.tagline} />}
           <div className="flex flex-wrap justify-center gap-3">
-            <Link to="/support" className={btn.gold}>
-              Support Senator Akintunde in 2027
+            <Link to="/get-involved" className={btn.gold}>
+              Get in touch
             </Link>
-            <Link to="/get-involved" className={btn.ghostDark}>
-              Join the campaign
+            <Link to="/$slug" params={{ slug: "bills-and-motions" }} className={btn.ghostDark}>
+              Legislative record
             </Link>
           </div>
         </div>

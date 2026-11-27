@@ -32,10 +32,10 @@ export const SITE = {
     "Official website of Senator Dr Yunus Abiodun Akintunde, Oyo Central Senatorial District",
   email: "office@yunusakintunde.com",
   phone: "+234 (0) 800 000 0000",
-  office: "Oyo town, Oyo West LGA, Oyo State",
+  office: "Owode, Oyo town, Oyo State",
   party: "All Progressives Congress (APC)",
   partyShort: "APC",
-  hours: "Mon–Fri, 9am–4pm",
+  hours: "",
 };
 
 export const NAV = [

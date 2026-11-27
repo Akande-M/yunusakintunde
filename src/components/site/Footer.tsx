@@ -85,14 +85,20 @@ export function Footer() {
           ))}
         </nav>
 
-        <nav aria-label="Get involved">
+        <nav aria-label="Get in touch">
           <h2 className="mb-3.5 font-sans text-[13px] font-bold text-primary-foreground">
-            Get involved
+            Get in touch
           </h2>
-          {["Volunteer", "Newsletter", "Support the campaign", "Report an issue"].map((l) => (
+          {[
+            { l: "Contact the Senator’s office", hash: "" },
+            { l: "Send an enquiry", hash: "signup" },
+            { l: "Report a constituency issue", hash: "signup" },
+            { l: "Local government liaison officers", hash: "contact-us" },
+          ].map(({ l, hash }) => (
             <Link
               key={l}
               to="/get-involved"
+              {...(hash ? { hash } : {})}
               className="mb-2.5 block text-sm hover:text-primary-foreground"
             >
               {l}

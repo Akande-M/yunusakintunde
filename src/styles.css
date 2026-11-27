@@ -163,6 +163,22 @@
   animation: rise-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
+@keyframes slide-in-x {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Plays once per entry; the item is visible without it (no blank cards if it never runs). */
+@utility slide-in-x {
+  animation: slide-in-x 0.5s ease-out backwards;
+}
+
 /* Site buttons: slightly rounded, soft shadow and a bold little bounce on hover. */
 @keyframes btn-bounce {
   0% {
