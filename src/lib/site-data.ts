@@ -274,12 +274,12 @@ export const NEWS_FILTERS = [
 ] as const;
 
 export type GalleryCategory =
-  "In Office" | "2027 Campaign Trail" | "Projects" | "Videos" | "2023 Archive";
+  "In Office" | "APC 2026 Campaign" | "Projects" | "Videos" | "2023 Archive";
 
 export const GALLERY_FILTERS = [
   "All",
   "In Office",
-  "2027 Campaign Trail",
+  "APC 2026 Campaign",
   "Projects",
   "Videos",
   "2023 Archive",
@@ -307,7 +307,7 @@ export const GALLERY: {
   {
     image: img.portraitFist,
     alt: "Senator Akintunde raising his fist at a campaign gathering",
-    category: "2027 Campaign Trail",
+    category: "APC 2026 Campaign",
     caption: "Ward rally, Ogbomoso",
   },
   {
@@ -325,7 +325,7 @@ export const GALLERY: {
   {
     image: img.portraitStanding,
     alt: "Senator Akintunde standing in a cap and polo shirt",
-    category: "2027 Campaign Trail",
+    category: "APC 2026 Campaign",
     caption: "Volunteer meet-up, Oyo town",
   },
   {
