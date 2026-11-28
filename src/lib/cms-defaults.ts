@@ -369,7 +369,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     },
     media: {
       eyebrow: "Photos & video",
-      title: "Photos ofIn office, on the campaign trail",
+      title: "Photos of projects, official duties, and the 2026 APC campaign trail.",
       lede: "Photos of projects, official duties, and more.",
     },
   },
