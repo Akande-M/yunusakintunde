@@ -193,11 +193,13 @@ function Home() {
                 RE-ELECT 2027
               </span>
               {headlineStat && (
-                <div className="mt-4 max-w-[240px] border border-border bg-card px-5 py-4 sm:absolute sm:-bottom-8 sm:-left-5 sm:mt-0 sm:shadow-[0_12px_30px_rgba(18,52,36,.12)]">
+                <div className="mt-4 flex items-baseline gap-3 border border-border bg-card px-5 py-4 sm:-ml-5 sm:mt-5">
                   <div className="font-serif text-[26px] font-bold text-primary">
                     {headlineStat.n}
                   </div>
-                  <div className="text-[12.5px] text-muted-foreground">{headlineStat.l}</div>
+                  <div className="text-[12.5px] font-semibold text-muted-foreground">
+                    {headlineStat.l}
+                  </div>
                 </div>
               )}
             </div>
