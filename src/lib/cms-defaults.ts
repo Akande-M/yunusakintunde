@@ -369,8 +369,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     },
     media: {
       eyebrow: "Photos & video",
-      title: "In office, on the campaign trail",
-      lede: "Senate proceedings, constituency visits, delivered projects, and the road to 2027, plus an archived record of 2023.",
+      title: "Photos ofIn office, on the campaign trail",
+      lede: "Photos of projects, official duties, and more.",
     },
   },
   images: DEFAULT_IMAGES,
